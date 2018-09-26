@@ -1,11 +1,18 @@
 import torchvision.models as tmodels
-import importlib
+from importlib import import_module
 import torch
 import torch.nn as nn
 import torch.distributed as dist
 
 
-def generic_load(arch, pretrained, weights):
+def case_getattr(obj, attr):
+    casemap = {}
+    for x in obj.__dict__:
+        casemap[x.lower().replace('_', '')] = x
+    return getattr(obj, casemap[attr.lower().replace('_', '')])
+
+
+def generic_load(arch, pretrained, weights, args):
     if arch in tmodels.__dict__:  # torchvision models
         if pretrained:
             print("=> using pre-trained model '{}'".format(arch))
@@ -14,8 +21,9 @@ def generic_load(arch, pretrained, weights):
         else:
             print("=> creating model '{}'".format(arch))
             model = tmodels.__dict__[arch]()
-    else:  # defined as script in this directory
-        model = importlib.import_module('.' + arch, package='models').model
+    else:  # defined as script in bases
+        #model = import_module('.bases.' + arch, package='models').get(args)
+        model = case_getattr(import_module('models.bases.' + arch), arch).get(args)
         if not weights == '':
             print('loading pretrained-weights from {}'.format(weights))
             model.load_state_dict(torch.load(weights))
@@ -27,10 +35,9 @@ def replace_last_layer(model, args):
         newcls = list(model.classifier.children())
         model.classifier = nn.Sequential(*newcls[:-1])
     elif hasattr(model, 'fc'):
-        assert False, 'Not implemented'
-        model.fc = nn.Linear(1, 1)
+        model.fc = nn.Linear(model.fc.in_features, args.nclass)
         if hasattr(model, 'AuxLogits'):
-            model.AuxLogits.fc = nn.Linear(1, 1)
+            model.AuxLogits.fc = nn.Linear(model.AuxLogists.fc.in_features, args.nclass)
     elif hasattr(model, 'replace_logits'):
         model.replace_logits(args.nclass)
     else:

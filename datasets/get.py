@@ -11,12 +11,12 @@ def case_getattr(obj, attr):
     casemap = {}
     for x in obj.__dict__:
         casemap[x.lower()] = x
-    return getattr(obj, casemap[attr.lower()])
+    return getattr(obj, casemap[attr.replace('_', '')])
 
 
 def get_dataset(args):
-    dataset = importlib.import_module('.' + args.dataset.lower(), package='datasets')
-    datasets = case_getattr(dataset, args.dataset).get(args)
+    obj = importlib.import_module('.' + args.dataset, package='datasets')
+    datasets = case_getattr(obj, args.dataset).get(args)
     train_dataset, val_dataset, valvideo_dataset = datasets[:3]
 
     if args.distributed:
@@ -35,7 +35,7 @@ def get_dataset(args):
         num_workers=args.workers, pin_memory=False)
 
     valvideo_loader = torch.utils.data.DataLoader(
-        valvideo_dataset, batch_size=valvideo_dataset.testGAP, shuffle=False,
+        valvideo_dataset, batch_size=valvideo_dataset.test_gap, shuffle=False,
         num_workers=args.workers, pin_memory=False)
 
     return train_loader, val_loader, valvideo_loader

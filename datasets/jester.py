@@ -1,45 +1,25 @@
 """ Dataset loader for the Charades dataset """
 import torch
-from datasets.charadesrgb import Charades
+from datasets.charades import Charades
 from datasets.utils import cache
 import numpy as np
 from glob import glob
 
 
-def _parse_jester_labels(filename):
-    labels = {}
-    with open(filename) as f:
-        for i, line in enumerate(f):
-            labels[line.strip()] = i
-    return labels
-
-
-def _parse_jester_csv(filename, cls2int):
-    labels = {}
-    with open(filename) as f:
-        for row in f:
-            row = row.strip()
-            vid, label = row.split(';')
-            labelnumber = cls2int[label]
-            labels[vid] = {'class': labelnumber}
-    return labels
-
-
 class Jester(Charades):
-    def __init__(self, root, split, labelpath, cachedir, transform=None, target_transform=None):
+    def __init__(self, args, root, split, labelpath, cachedir, transform=None, target_transform=None, test_gap=50):
         self.num_classes = 27
         self.transform = transform
         self.target_transform = target_transform
-        self.cls2int = _parse_jester_labels('/nfs.yoda/gsigurds/jester/jester-v1-labels.csv')
-        self.labels = _parse_jester_csv(labelpath, self.cls2int)
+        self.cls2int = self.parse_jester_labels(args.label_file)
+        self.labels = self.parse_jester_csv(labelpath, self.cls2int)
         self.root = root
-        self.testGAP = 50
-        cachename = '{}/{}_{}.pkl'.format(cachedir,
-                                          self.__class__.__name__, split)
-        self.data = cache(cachename)(self.prepare)(root, self.labels, split)
+        self.test_gap = test_gap
+        cachename = '{}/{}_{}.pkl'.format(cachedir, self.__class__.__name__, split)
+        self.data = cache(cachename)(self._prepare)(root, self.labels, split)
 
-    def prepare(self, path, labels, split):
-        FPS, GAP, testGAP = 24, 4, self.testGAP
+    def _prepare(self, path, labels, split):
+        gap, test_gap = 4, self.test_gap
         datadir = path
         image_paths, targets, ids, times = [], [], [], []
 
@@ -52,24 +32,35 @@ class Jester(Charades):
             if n == 0:
                 continue
             if split == 'val_video':
-                target = torch.IntTensor(self.num_classes).zero_()
-                target[int(label['class'])] = 1
-                spacing = np.linspace(0, n - 1, testGAP)
-                for loc in spacing:
-                    impath = '{}/{:05d}.jpg'.format(
-                        iddir, int(np.floor(loc)) + 1)
-                    image_paths.append(impath)
-                    targets.append(target)
-                    ids.append(vid)
-                    times.append(int(np.floor(loc)) + 1)
+                spacing = np.linspace(0, n - 1, test_gap)
             else:
-                for ii in range(0, n - 1, GAP):
-                    target = torch.IntTensor(self.num_classes).zero_()
-                    target[int(label['class'])] = 1
-                    impath = '{}/{:05d}.jpg'.format(
-                        iddir, ii + 1)
-                    image_paths.append(impath)
-                    targets.append(target)
-                    ids.append(vid)
-                    times.append(ii)
+                spacing = range(0, n - 1, gap)
+            target = torch.IntTensor(self.num_classes).zero_()
+            target[int(label['class'])] = 1
+            for loc in spacing:
+                impath = '{}/{:05d}.jpg'.format(
+                    iddir, int(np.floor(loc)) + 1)
+                image_paths.append(impath)
+                targets.append(target)
+                ids.append(vid)
+                times.append(int(np.floor(loc)) + 1)
         return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'times': times}
+
+    @staticmethod
+    def parse_jester_labels(filename):
+        labels = {}
+        with open(filename) as f:
+            for i, line in enumerate(f):
+                labels[line.strip()] = i
+        return labels
+
+    @staticmethod
+    def parse_jester_csv(filename, cls2int):
+        labels = {}
+        with open(filename) as f:
+            for row in f:
+                row = row.strip()
+                vid, label = row.split(';')
+                labelnumber = cls2int[label]
+                labels[vid] = {'class': labelnumber}
+        return labels

@@ -17,18 +17,17 @@ def ordered_load_state(model, chkpoint):
     except RuntimeError, e:  # assume order is the same, and use new labels
         print(e)
         print('keys do not match model, trying to align')
-        modelkeys = model.state_dict().keys()
-        fixed = OrderedDict([(z, y) for (x, y), z in zip(chkpoint.items(), modelkeys)])
+        model_keys = model.state_dict().keys()
+        fixed = OrderedDict([(z, y) for (_, y), z in zip(chkpoint.items(), model_keys)])
         model.load_state_dict(fixed)
 
 
 def load_partial_state(model, state_dict):
     # @chenyuntc
     sd = model.state_dict()
-    sd = OrderedDict([(x.replace('module.', '').replace('mA.', ''), y) for x, y in sd.items()])
+    sd = OrderedDict([(x.replace('module.', '').replace('mA.', '').replace('basenet.', ''), y) for x, y in sd.items()])
     for k0, v in state_dict.items():
-        k = k0.replace('module.', '')
-        k = k0.replace('mA.', '')
+        k = k0.replace('module.', '').replace('mA.', '').replace('basenet.', '')
         if k not in sd or not sd[k].shape == v.shape:
             print('ignoring state key for loading: {}'.format(k))
             continue
@@ -44,16 +43,22 @@ def load(args, model, optimizer):
                 print("=> loading checkpoint '{}'".format(resume))
                 chkpoint = torch.load(resume)
                 if isinstance(chkpoint, dict) and 'state_dict' in chkpoint:
+                    try:
+                        ordered_load_state(model, chkpoint['state_dict'])
+                        optimizer.load_state_dict(chkpoint['optimizer'])
+                    except Exception, e:
+                        print(e)
+                        print('loading partial state 2')
+                        load_partial_state(model, chkpoint['state_dict'])
+                    print("=> loaded checkpoint '{}' (epoch {})"
+                          .format(resume, chkpoint['epoch']))
                     if args.start_epoch == 0:
                         args.start_epoch = chkpoint['epoch']
                         print('setting start epoch to model epoch {}'.format(args.start_epoch))
-                    best_metric = chkpoint['mAP']
                     if 'scores' in chkpoint and args.metric in chkpoint['scores']:
                         best_metric = chkpoint['scores'][args.metric]
-                    ordered_load_state(model, chkpoint['state_dict'])
-                    optimizer.load_state_dict(chkpoint['optimizer'])
-                    print("=> loaded checkpoint '{}' (epoch {})"
-                          .format(resume, chkpoint['epoch']))
+                    else:
+                        best_metric = chkpoint['mAP']
                     return best_metric
                 else:
                     try:
@@ -66,8 +71,6 @@ def load(args, model, optimizer):
                     return 0
                 break
             else:
-                #raise ValueError("no checkpoint found at '{}'".format(args.resume))
-                #raise ValueError("no checkpoint found at '{}'".format(args.resume))
                 print("=> no checkpoint found, starting from scratch: '{}'".format(resume))
     return 0
 
@@ -83,7 +86,6 @@ def save(epoch, args, model, optimizer, is_best, scores, metric):
         'epoch': epoch + 1,
         'arch': args.arch,
         'state_dict': model.state_dict(),
-        'mAP': scores['mAP'],
         'best_metric': scores[metric],
         'scores': scores,
         'optimizer': optimizer.state_dict(),

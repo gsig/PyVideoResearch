@@ -24,18 +24,20 @@ def parse():
                         help='name of dataset under datasets/')
     parser.add_argument('--train-file', default='./Charades_v1_train.csv')
     parser.add_argument('--val-file', default='./Charades_v1_test.csv')
+    parser.add_argument('--label-file', default='', help='path to list of labels for dataset')
+    parser.add_argument('--temporal-segments', default=3, type=int, help='for loading data for TSN')
 
     # Model parameters
     parser.add_argument('--arch', '-a', metavar='ARCH', default='alexnet',
                         help='model architecture: ')
-    parser.add_argument('--inputsize', default=224, type=int)
+    parser.add_argument('--input-size', default=224, type=int)
     parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                         help='use pre-trained model')
     parser.add_argument('--pretrained-weights', default='')
     parser.add_argument('--nclass', default=157, type=int)
-    parser.add_argument('--wrapper', default='AsyncTFBase',
+    parser.add_argument('--wrapper', default='async_tf_base',
                         help='child of nn.Module that wraps the base arch. ''default'' for no wrapper')
-    parser.add_argument('--criterion', default='AsyncTFCriterion', help=' ''default'' for only sigmoid loss')
+    parser.add_argument('--criterion', default='async_tf_criterion', help=' ''default'' for only sigmoid loss')
 
     # System parameters
     parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
@@ -57,6 +59,7 @@ def parse():
                         help='manual epoch number (useful on restarts)')
     parser.add_argument('-b', '--batch-size', default=256, type=int,
                         metavar='N', help='mini-batch size (default: 256)')
+    parser.add_argument('--video-batch-size', default=-1, type=int, help='size for video testing, -1 for whole batch')
     parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float,
                         metavar='LR', help='initial learning rate')
     parser.add_argument('--lr-decay-rate', default='6', type=str)
@@ -70,6 +73,7 @@ def parse():
     parser.add_argument('--accum-grad', default=1, type=int)
     parser.add_argument('--warmups', default=0, type=int)
     parser.add_argument('--no-val-video', dest='no_val_video', action='store_true')
+    parser.add_argument('--synchronous', dest='synchronous', action='store_true')
 
     # Asynchronous Temporal Fields Parameters
     parser.add_argument('--temporal-weight', default=1.0, type=float)
@@ -81,11 +85,12 @@ def parse():
     parser.add_argument('--adjustment', dest='adjustment', action='store_true')
     parser.add_argument('--originalloss-weight', default=1, type=float)
     parser.add_argument('--window-smooth', default=3, type=int)
-    parser.add_argument('--synchronous', dest='synchronous', action='store_true')
     parser.add_argument('--videoloss', dest='videoloss', action='store_true')
     args = parser.parse_args()
     args.distributed = args.world_size > 1
     args.cache = args.cache_dir + args.name + '/'
+    if args.valdata == '':
+        args.valdata = args.data
     if not os.path.exists(args.cache):
         os.makedirs(args.cache)
 

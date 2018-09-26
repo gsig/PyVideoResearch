@@ -2,29 +2,28 @@
 Initialize the model module
 New models can be defined by adding scripts under models/
 """
-import importlib
-from models.utils import set_distributed_backend, replace_last_layer, generic_load
-from models.layers.DefaultCriterion import DefaultCriterion
+from importlib import import_module
+from models.utils import set_distributed_backend, replace_last_layer, generic_load, case_getattr
+from models.layers.default_criterion import DefaultCriterion
 
 
-def create_model(args):
+def get_model(args):
     """ Create base model, and wrap it with an optional wrapper, useful for extending models
     """
 
-    if args.wrapper == 'default':
-        wrapper = lambda x, y, z: x
-    else:
-        wrapper = getattr(importlib.import_module('.' + args.wrapper, package='models.layers'), args.wrapper)
-
-    model = generic_load(args.arch, args.pretrained, args.pretrained_weights)
+    model = generic_load(args.arch, args.pretrained, args.pretrained_weights, args)
     model = replace_last_layer(model, args)
-    model = wrapper(model, model.in_features, args)
+    if not args.wrapper == 'default':
+        #wrapper = case_getattr(import_module('.wrappers.' + args.wrapper, package='models.layers'), args.wrapper)
+        wrapper = case_getattr(import_module('models.wrappers.' + args.wrapper), args.wrapper)
+        model = wrapper(model, args)
     model = set_distributed_backend(model, args)
 
     # define loss function
     if args.criterion == 'default':
         criterion = DefaultCriterion
     else:
-        criterion = getattr(importlib.import_module('.' + args.criterion, package='models.layers'), args.criterion)
+        #criterion = case_getattr(import_module('.criteria' + args.criterion, package='models.layers'), args.criterion)
+        criterion = case_getattr(import_module('models.criteria.' + args.criterion), args.criterion)
     criterion = criterion(args).cuda()
     return model, criterion

@@ -11,7 +11,7 @@ subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
 
 
 def opts(opt):
-    opt.dataset = 'testdata1'
+    opt.dataset = 'mock_dataset1'
     opt.lr_decay_rate = 100
     opt.lr = 1e-1
     opt.temporal_weight = 5.

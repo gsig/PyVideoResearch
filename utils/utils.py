@@ -1,5 +1,14 @@
 import torch
 import time
+import numpy as np
+import random
+
+
+def seed(manualseed):
+    random.seed(manualseed)
+    np.random.seed(manualseed)
+    torch.manual_seed(manualseed)
+    torch.cuda.manual_seed(manualseed)
 
 
 class AverageMeter(object):

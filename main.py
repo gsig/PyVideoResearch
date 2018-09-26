@@ -7,22 +7,14 @@
 """
 import torch
 import torch.backends.cudnn as cudnn
-import numpy as np
-import random
 import train
-from models.get import create_model
+from models.get import get_model 
 from datasets.get import get_dataset
 import checkpoints
 from opts import parse
 from utils import tee
+from utils.utils import seed
 from utils.experiments import get_script_dir_commit_hash, experiment_checksums, experiment_folder
-
-
-def seed(manualseed):
-    random.seed(manualseed)
-    np.random.seed(manualseed)
-    torch.manual_seed(manualseed)
-    torch.cuda.manual_seed(manualseed)
 
 
 def validate(trainer, val_loader, valvideo_loader, model, criterion, args, epoch=-1):
@@ -30,6 +22,7 @@ def validate(trainer, val_loader, valvideo_loader, model, criterion, args, epoch
     scores.update(trainer.validate(val_loader, model, criterion, epoch, args))
     if not args.no_val_video:
         scores.update(trainer.validate_video(valvideo_loader, model, criterion, epoch, args))
+    return scores
 
 
 def main():
@@ -43,7 +36,7 @@ def main():
     print('checksums:\n{}'.format(experiment_checksums()))
     seed(args.manual_seed)
 
-    model, criterion = create_model(args)
+    model, criterion = get_model(args)
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
@@ -69,6 +62,7 @@ def main():
             trainer.train_sampler.set_epoch(epoch)
         scores = {}
         scores.update(trainer.train(train_loader, model, criterion, optimizer, epoch, args))
+        scores.update(validate(trainer, val_loader, valvideo_loader, model, criterion, args, epoch))
         is_best = scores[args.metric] > best_score
         best_score = max(scores[args.metric], best_score)
         checkpoints.save(epoch, args, model, optimizer, is_best, scores, args.metric)

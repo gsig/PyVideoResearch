@@ -5,6 +5,13 @@ from PIL import Image
 import numpy as np
 
 
+def flow_loader(path):
+    # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
+    with open(path, 'rb') as f:
+        img = Image.open(f)
+        return img.convert('L')
+
+
 def opencv_video_loader(path):
     import cv2
     cap = cv2.VideoCapture(path)
@@ -19,11 +26,17 @@ def opencv_video_loader(path):
     return frames
 
 
-def ffmpeg_video_loader(path):
+def ffmpeg_video_info(path):
     import ffmpeg  # @ffmpeg-python
     probe = ffmpeg.probe(path)
     video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
     assert video_stream is not None
+    return video_stream
+
+
+def ffmpeg_video_loader(path):
+    import ffmpeg  # @ffmpeg-python
+    video_stream = ffmpeg_video_info(path)
     width = int(video_stream['width'])
     height = int(video_stream['height'])
     fps = video_stream['avg_frame_rate'].split('/')
@@ -88,19 +101,19 @@ def default_loader(path):
         return pil_loader(path)
 
 
-def cache(cachefile):
-    """ Creates a decorator that caches the result to cachefile """
-    def cachedecorator(fn):
+def cache(cache_file):
+    """ Creates a decorator that caches the result to cache_file """
+    def cache_decorator(fn):
         def newf(*args, **kwargs):
-            print('cachefile {}'.format(cachefile))
-            if os.path.exists(cachefile):
-                with open(cachefile, 'rb') as f:
-                    print("Loading cached result from '%s'" % cachefile)
+            print('cache_file {}'.format(cache_file))
+            if os.path.exists(cache_file):
+                with open(cache_file, 'rb') as f:
+                    print("Loading cached result from '%s'" % cache_file)
                     return pickle.load(f)
             res = fn(*args, **kwargs)
-            with open(cachefile, 'wb') as f:
-                print("Saving result to cache '%s'" % cachefile)
+            with open(cache_file, 'wb') as f:
+                print("Saving result to cache '%s'" % cache_file)
                 pickle.dump(res, f)
             return res
         return newf
-    return cachedecorator
+    return cache_decorator

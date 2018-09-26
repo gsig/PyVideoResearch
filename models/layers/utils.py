@@ -1,8 +1,13 @@
+import torch
+import torch.nn.functional as F
+from torch.autograd import Variable
+
+
 def gtmat(sizes, target):
     # convert target to a matrix of zeros and ones
     out = torch.zeros(*sizes)
     for i, t in enumerate(target):
-        t = t.data[0] if type(t) is torch.Tensor else t
+        t = t.item() if type(t) is torch.Tensor else t
         if len(sizes) == 3:
             out[i, t, :] = 1
         else:
@@ -74,5 +79,3 @@ def nll_loss(soft_target, logdist, reduce=True):
         return out.mean()
     else:
         return out
-
-

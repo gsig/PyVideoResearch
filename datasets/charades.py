@@ -8,44 +8,24 @@ from glob import glob
 import csv
 
 
-def _parse_charades_csv(filename):
-    labels = {}
-    with open(filename) as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            vid = row['id']
-            actions = row['actions']
-            if actions == '':
-                actions = []
-            else:
-                actions = [a.split(' ') for a in actions.split(';')]
-                actions = [{'class': x, 'start': float(
-                    y), 'end': float(z)} for x, y, z in actions]
-            labels[vid] = actions
-    return labels
-
-
-def _cls2int(x):
-    return int(x[1:])
-
-
 class Charades(Dataset):
-    def __init__(self, root, split, labelpath, cachedir, transform=None, target_transform=None, inputsize=224):
+    def __init__(self, args, root, split, label_path, cachedir,
+                 transform=None, target_transform=None, input_size=224, test_gap=50):
         self.num_classes = 157
         self.transform = transform
         self.target_transform = target_transform
-        self.labels = _parse_charades_csv(labelpath)
+        self.labels = self.parse_charades_csv(label_path)
         self.root = root
-        if not hasattr(self, 'testGAP'):
-            self.testGAP = 50
-        cachename = '{}/{}_{}.pkl'.format(cachedir,
-                                          self.__class__.__name__, split)
-        self.data = cache(cachename)(self.prepare)(root, self.labels, split)
+        self.input_size = input_size
+        self.test_gap = test_gap
+        cachename = '{}/{}_{}.pkl'.format(cachedir, self.__class__.__name__, split)
+        self.data = cache(cachename)(self._prepare)(root, self.labels, split)
+        super(Charades, self).__init__(test_gap=test_gap)
 
-    def prepare(self, path, labels, split):
-        FPS, GAP, testGAP = 24, 4, self.testGAP
+    def _prepare(self, path, labels, split):
+        fps, gap, test_gap = 24, 4, self.test_gap
         datadir = path
-        image_paths, targets, ids, times = [], [], [], []
+        image_paths, targets, ids, times, ns = [], [], [], [], []
 
         for i, (vid, label) in enumerate(labels.iteritems()):
             iddir = datadir + '/' + vid
@@ -55,30 +35,26 @@ class Charades(Dataset):
                 print("{} {}".format(i, iddir))
             if n == 0:
                 continue
+
             if split == 'val_video':
+                spacing = np.linspace(0, n-1, test_gap)
+            else:
+                spacing = range(0, n-1, gap)
+            for loc in spacing:
+                ii = np.floor(loc)
                 target = torch.IntTensor(self.num_classes).zero_()
                 for x in label:
-                    target[_cls2int(x['class'])] = 1
-                spacing = np.linspace(0, n-1, testGAP)
-                for loc in spacing:
-                    impath = '{}/{}-{:06d}.jpg'.format(
-                        iddir, vid, int(np.floor(loc))+1)
-                    image_paths.append(impath)
-                    targets.append(target)
-                    ids.append(vid)
-                    times.append(int(np.floor(loc))+1)
-            else:
-                for ii in range(0, n-1, GAP):
-                    target = torch.IntTensor(self.num_classes).zero_()
-                    for x in label:
-                        if x['start'] < ii/float(FPS) < x['end']:
-                            target[_cls2int(x['class'])] = 1
-                    impath = '{}/{}-{:06d}.jpg'.format(
-                        iddir, vid, ii+1)
-                    image_paths.append(impath)
-                    targets.append(target)
-                    ids.append(vid)
-                    times.append(ii)
+                    if split == 'val_video':
+                        target[self.cls2int(x['class'])] = 1
+                    elif x['start'] < ii/float(fps) < x['end']:
+                        target[self.cls2int(x['class'])] = 1
+                impath = '{}/{}-{:06d}.jpg'.format(
+                    iddir, vid, int(np.floor(loc))+1)
+                image_paths.append(impath)
+                targets.append(target)
+                ids.append(vid)
+                times.append(int(np.floor(loc))+1)
+                ns.append(n)
         return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'times': times}
 
     def __getitem__(self, index):
@@ -100,6 +76,27 @@ class Charades(Dataset):
             target = self.target_transform(target)
         return img, target, meta
 
+    @staticmethod
+    def parse_charades_csv(filename):
+        labels = {}
+        with open(filename) as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                vid = row['id']
+                actions = row['actions']
+                if actions == '':
+                    actions = []
+                else:
+                    actions = [a.split(' ') for a in actions.split(';')]
+                    actions = [{'class': x, 'start': float(
+                        y), 'end': float(z)} for x, y, z in actions]
+                labels[vid] = actions
+        return labels
+
+    @staticmethod
+    def cls2int(x):
+        return int(x[1:])
+
     def __len__(self):
         return len(self.data['image_paths'])
 
@@ -108,12 +105,10 @@ class Charades(Dataset):
         """ Entry point. Call this function to get all Charades dataloaders """
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
-        train_file = args.train_file
-        val_file = args.val_file
         train_dataset = cls(
-            args.data, 'train', train_file, args.cache,
+            args, args.data, 'train', args.train_file, args.cache,
             transform=transforms.Compose([
-                transforms.RandomResizedCrop(args.inputsize),
+                transforms.RandomResizedCrop(args.input_size),
                 transforms.ColorJitter(
                     brightness=0.4, contrast=0.4, saturation=0.4),
                 transforms.RandomHorizontalFlip(),
@@ -121,18 +116,18 @@ class Charades(Dataset):
                 normalize,
             ]))
         val_dataset = cls(
-            args.data, 'val', val_file, args.cache,
+            args, args.data, 'val', args.val_file, args.cache,
             transform=transforms.Compose([
-                transforms.Resize(int(256./224*args.inputsize)),
-                transforms.CenterCrop(args.inputsize),
+                transforms.Resize(int(256./224*args.input_size)),
+                transforms.CenterCrop(args.input_size),
                 transforms.ToTensor(),
                 normalize,
             ]))
         valvideo_dataset = cls(
-            args.data, 'val_video', val_file, args.cache,
+            args, args.data, 'val_video', args.val_file, args.cache,
             transform=transforms.Compose([
-                transforms.Resize(int(256./224*args.inputsize)),
-                transforms.CenterCrop(args.inputsize),
+                transforms.Resize(int(256./224*args.input_size)),
+                transforms.CenterCrop(args.input_size),
                 transforms.ToTensor(),
                 normalize,
             ]))

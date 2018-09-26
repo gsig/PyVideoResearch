@@ -10,10 +10,9 @@ import datasets.video_transforms as videotransforms
 
 class CharadesVideo(Charades):
     def __init__(self, *args, **kwargs):
-        self.train_gap = 64
-        if 'test_gap' not in kwargs:
-            kwargs['test_gap'] = 25
         super(CharadesVideo, self).__init__(*args, **kwargs)
+        self.train_gap = 64
+        self.test_gap = 25
 
     def _prepare(self, path, labels, split):
         datas = []

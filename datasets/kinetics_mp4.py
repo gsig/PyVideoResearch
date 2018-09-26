@@ -11,22 +11,22 @@ from datasets.utils import ffmpeg_video_loader as video_loader
 
 class Kineticsmp4(Kinetics):
     def __init__(self, *args, **kwargs):
-        self.train_gap = 64
-        if 'test_gap' not in kwargs:
-            kwargs['test_gap'] = 10
-        self.input_size = kwargs['input_size']
         super(Kineticsmp4, self).__init__(*args, **kwargs)
+        self.train_gap = 64
+        self.test_gap = 10
+        self.input_size = kwargs['input_size']
+        self.int2cls = dict([(y, x) for x, y in self.cls2int.items()])
+
+    def _get_video_path(self, path, vid, label):
+        name = self.int2cls[label['class']].replace(' ', '_')
+        iddir = '{}/{}/{}_{:06d}_{:06d}.mp4'.format(
+            datadir, name, vid, label['start'], label['end'])
+        return iddir
 
     def _prepare(self, path, labels, split):
-        datadir = path
-        int2cls = dict([(y, x) for x, y in self.cls2int.items()])
         datas = []
-
         for i, (vid, label) in enumerate(labels.iteritems()):
-            name = int2cls[label['class']].replace(' ', '_')
-            iddir = '{}/{}/{}_{:06d}_{:06d}.mp4'.format(
-                datadir, name, vid, label['start'], label['end'])
-            n = int(float(label['end']) - float(label['start']))
+            iddir = self._get_video_path(path, vid, label)
             if i % 1000 == 0:
                 print("{} {}".format(i, iddir))
             if not os.path.isfile(iddir):
@@ -34,7 +34,6 @@ class Kineticsmp4(Kinetics):
                 continue
             data = {}
             data['base'] = iddir
-            data['n'] = n
             data['labels'] = label
             data['id'] = vid
             if split == 'val_video':

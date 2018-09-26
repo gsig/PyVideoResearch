@@ -34,26 +34,19 @@ class Kinetics(Charades):
             if n == 0:
                 continue
             if split == 'val_video':
+                spacing = np.linspace(0, n - 1, test_gap)
+            else:
+                spacing = range(0, n - 1, GAP)
                 target = torch.IntTensor(self.num_classes).zero_()
                 target[int(label['class'])] = 1
-                spacing = np.linspace(0, n - 1, test_gap)
                 for loc in spacing:
-                    impath = '{}/{}_{:06d}_{:06d}_{}.jpg'.format(
-                        iddir, vid, label['start'], label['end'], int(np.floor(loc)) + 1)
-                    image_paths.append(impath)
-                    targets.append(target)
-                    ids.append(vid)
-                    times.append(int(np.floor(loc)) + 1)
-            else:
-                for ii in range(0, n - 1, GAP):
-                    target = torch.IntTensor(self.num_classes).zero_()
-                    target[int(label['class'])] = 1
+                    ii = int(np.floor(loc))
                     impath = '{}/{}_{:06d}_{:06d}_{}.jpg'.format(
                         iddir, vid, label['start'], label['end'], ii + 1)
                     image_paths.append(impath)
                     targets.append(target)
                     ids.append(vid)
-                    times.append(ii)
+                    times.append(ii + 1)
         return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'times': times}
 
     @staticmethod

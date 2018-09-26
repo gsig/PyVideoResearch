@@ -11,6 +11,7 @@ import csv
 class Charades(Dataset):
     def __init__(self, args, root, split, label_path, cachedir,
                  transform=None, target_transform=None, input_size=224, test_gap=50):
+        super(Charades, self).__init__(test_gap=test_gap)
         self.num_classes = 157
         self.transform = transform
         self.target_transform = target_transform
@@ -20,7 +21,6 @@ class Charades(Dataset):
         self.test_gap = test_gap
         cachename = '{}/{}_{}.pkl'.format(cachedir, self.__class__.__name__, split)
         self.data = cache(cachename)(self._prepare)(root, self.labels, split)
-        super(Charades, self).__init__(test_gap=test_gap)
 
     def _prepare(self, path, labels, split):
         fps, gap, test_gap = 24, 4, self.test_gap

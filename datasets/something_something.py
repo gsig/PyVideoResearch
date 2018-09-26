@@ -33,24 +33,18 @@ class SomethingSomething(Charades):
             if n == 0:
                 continue
             if split == 'val_video':
-                target = torch.IntTensor(self.num_classes).zero_()
-                target[int(label['class'])] = 1
                 spacing = np.linspace(0, n - 1, test_gap)
-                for loc in spacing:
-                    impath = '{}/{}-{:06d}.jpg'.format(iddir, vid, int(np.floor(loc)) + 1)
-                    image_paths.append(impath)
-                    targets.append(target)
-                    ids.append(vid)
-                    times.append(int(np.floor(loc)) + 1)
             else:
-                for ii in range(0, n - 1, gap):
-                    target = torch.IntTensor(self.num_classes).zero_()
-                    target[int(label['class'])] = 1
-                    impath = '{}/{}-{:06d}.jpg'.format(iddir, vid, ii + 1)
-                    image_paths.append(impath)
-                    targets.append(target)
-                    ids.append(vid)
-                    times.append(ii)
+                spacing = range(0, n - 1, gap)
+            target = torch.IntTensor(self.num_classes).zero_()
+            target[int(label['class'])] = 1
+            for loc in spacing:
+                ii = np.floor(loc)
+                impath = '{}/{}-{:06d}.jpg'.format(iddir, vid, ii + 1)
+                image_paths.append(impath)
+                targets.append(target)
+                ids.append(vid)
+                times.append(ii + 1)
         return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'times': times}
 
     @staticmethod
@@ -67,6 +61,6 @@ class SomethingSomething(Charades):
         for row in data:
             vid = row['id']
             label = row['template'].replace('[', '').replace(']', '')
-            labelnumber = cls2int[label]
+            labelnumber = int(cls2int[label])
             labels[vid] = {'class': labelnumber}
         return labels

@@ -18,18 +18,6 @@ def gtmat(sizes, target):
         return out.cuda()
 
 
-def winsmooth(mat, kernelsize=1):
-    print('applying smoothing with kernelsize {}'.format(kernelsize))
-    mat.detach()
-    n = mat.shape[0]
-    out = mat.clone()
-    for m in range(n):
-        a = max(0, m - kernelsize)
-        b = min(n - 1, m + kernelsize)
-        out[m, :] = mat[a:b + 1, :].mean(0)
-    return out
-
-
 def unit(x):
     # normalize tensor in log space to have unit sum for each row
     minx, _ = x.max(1)

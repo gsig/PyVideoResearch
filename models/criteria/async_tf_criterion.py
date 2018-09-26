@@ -1,15 +1,12 @@
 # pylint: disable=W0221,E1101
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import math
 from torch.autograd import Variable
 from random import random
 from models.layers.verbose_gradients import VerboseGradients
-from models.layers.balance_labels import BalanceLabels
 #from memory_profiler import profile
-from models.layers.utils import winsmooth, axb, avg, gtmat
-from criterion import Criterion
+from models.layers.utils import winsmooth, axb, avg
+from default_criterion import DefaultCriterion
 
 
 class MessagePassing(object):
@@ -67,56 +64,31 @@ class MessagePassing(object):
         self.mset(x, idtime, self.storage_gt, mask)
 
 
-class AsyncTFCriterion(Criterion, MessagePassing):
+class AsyncTFCriterion(DefaultCriterion, MessagePassing):
     def __init__(self, args):
         MessagePassing.__init__(self, args.memory_size, args.temporal_weight, args.memory_decay, args.sigma)
-        Criterion.__init__(self, args)
+        DefaultCriterion.__init__(self, args)
         self.msg_n = 5
         self.w_tloss = args.temporalloss_weight
-        self.orig_loss = args.originalloss_weight
         self.adjustment = args.adjustment
-        self.loss = nn.BCELoss()
-        self.balanceloss = args.balanceloss
-        self.BalanceLabels = BalanceLabels()
-        self.winsmooth = args.window_smooth
-        self.videoloss = args.videoloss
+        #self.videoloss = args.videoloss
 
     def forward(self, a, aa, target, id_time, niter=1, synchronous=False):
         mask = [True] * a.shape[0]
         idtime = zip(id_time['id'], id_time['time'])
-        if a.dim() == 3:
-            # temporal mode
-            if self.training:
-                a_video = a.mean(dim=2)
-                a = F.upsample(a, target.shape[1], mode='linear', align_corners=True)
-                target_video = target.max(dim=1)[0]
-                idtime_video = idtime
-                a = a.permute(0, 2, 1).contiguous().view(-1, aa.shape[1])
-                target = target.permute(0, 1, 2).contiguous().view(-1, aa.shape[1])
-                mask = [True if i == 0 else False for x in idtime for i in range(a.shape[0] / len(idtime))]
-                idtime = [x for x in idtime for _ in range(a.shape[0] / len(idtime))]
-                a = torch.cat([a, a_video])
-                target = torch.cat([target, target_video])
-                idtime = idtime + idtime_video
-            else:
-                a = a.mean(dim=2)
-                target = target.max(dim=1)[0]
-
-        if target.shape[0] == 3:
-            # temporal segment mode
-            target = target.max(dim=1)[0]
-            
+        if a.dim() == 3 and self.training:
+            mask = [True if i == 0 else False for x in idtime for i in range(a.shape[1])]
+            idtime_video = idtime
+            idtime = [x for x in idtime for _ in range(a.shape[1])]
+            idtime = idtime + idtime_video
+        a, target = self.process_tensors(a, target)
+           
         #if target.shape[0] != a.shape[0]:
         #    print('upsampling a')
         #    a = F.upsample(a.permute(1,0).unsqueeze(0), target.shape[0], mode='linear', align_corners=True).squeeze(0).permute(1,0)
-        n = a.shape[0]
         self.nc = a.shape[1]
-        if target.dim() == 1:
-            print('converting Nx1 target to NxC')
-            target = Variable(gtmat(a.shape, target.data.long()))
-        target = target.float()
-        if aa.shape[0] < n:
-            aa = aa[0].expand(n, aa.shape[1], aa.shape[2])
+        if aa.shape[0] < a.shape[0]:
+            aa = aa[0].expand(a.shape[0], aa.shape[1], aa.shape[2])
         #if len(idtime) != n:
         #    selector = [int(i) for i in torch.linspace(0, len(idtime)-1, n)]
         #    idtime = [idtime[int(i)] for i in selector]
@@ -135,15 +107,13 @@ class AsyncTFCriterion(Criterion, MessagePassing):
 
         loss = self.loss(qa, target)
         loss += self.loss(torch.nn.Sigmoid()(a), target) * self.orig_loss
-        if self.videoloss:
-            print('applying video loss')
-            loss += self.loss(torch.max(torch.nn.Sigmoid()(a), dim=0)[0], torch.max(target, dim=0)[0]) * self.orig_loss
+        #if self.videoloss:
+        #    print('applying video loss')
+        #    loss += self.loss(torch.max(torch.nn.Sigmoid()(a), dim=0)[0], torch.max(target, dim=0)[0]) * self.orig_loss
         # self.set_msg(a, idtime)
         # self.set_msg(qa, idtime)
-
         self.set_msg(torch.nn.Sigmoid()(a), idtime, mask)
 
-        
         if self.training:
             if self.adjustment:
                 # This is an adjustment that makes the objective a true fully-connected CRF

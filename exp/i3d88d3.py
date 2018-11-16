@@ -52,7 +52,7 @@ args = [
     #'--resume', '/nfs.yoda/gsigurds/ai2/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar'+';'+'/nfs.yoda/gsigurds/ai2/caches/i3d8k/model_best.pth.tar',
     '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model_best.pth.tar'+';'+'/nfs.yoda/gsigurds/ai2/caches/i3d8k/model_best.pth.tar',
     #'--start-epoch', '1',
-    '--evaluate',
+    #'--evaluate',
     '--workers', '16',
     #'--workers', '0',
     '--disable-cudnn-benchmark',

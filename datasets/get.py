@@ -16,13 +16,6 @@ def case_getattr(obj, attr):
     return getattr(obj, casemap[attr.replace('_', '')])
 
 
-def cat_collate(batch):
-    # the dataset returns a list, which gets wrapped in a list, we just unwrap the list
-    # and feed it to the original dataloader
-    assert len(batch) == 1, 'something wrong with val video dataset'
-    return default_collate(batch[0])
-
-
 def my_collate(batch):
     if isinstance(batch[0], collections.Mapping) and 'do_not_collate' in batch[0]:
         return batch
@@ -31,6 +24,13 @@ def my_collate(batch):
         return [my_collate(samples) for samples in transposed]
     else:
         return default_collate(batch)
+
+
+def cat_collate(batch):
+    # the dataset returns a list, which gets wrapped in a list, we just unwrap the list
+    # and feed it to the original dataloader
+    assert len(batch) == 1, 'something wrong with val video dataset'
+    return my_collate(batch[0])
 
 
 def get_dataset(args):

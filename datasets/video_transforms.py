@@ -1,6 +1,9 @@
 import numpy as np
 import numbers
 import random
+#import torchvision.transforms as transforms
+import cv2
+
 
 class RandomCrop(object):
     """Crop the given video sequences (t x h x w) at a random location.
@@ -44,6 +47,7 @@ class RandomCrop(object):
     def __repr__(self):
         return self.__class__.__name__ + '(size={0})'.format(self.size)
 
+
 class CenterCrop(object):
     """Crops the given seq Images at the center.
     Args:
@@ -72,7 +76,6 @@ class CenterCrop(object):
 
         return imgs[:, i:i+th, j:j+tw, :]
 
-
     def __repr__(self):
         return self.__class__.__name__ + '(size={0})'.format(self.size)
 
@@ -100,3 +103,18 @@ class RandomHorizontalFlip(object):
 
     def __repr__(self):
         return self.__class__.__name__ + '(p={})'.format(self.p)
+
+
+class ScaledCenterCrop(object):
+    def __init__(self, size=256):
+        self.size = size
+
+    def __call__(self, imgs):
+        #resize = transforms.Resize((self.size, self.size))
+        resize = lambda x: cv2.resize(x, dsize=(self.size, self.size))
+        out = [resize(img) for img in imgs]
+        out = np.stack(out)
+        return out
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(size={})'.format(self.size)

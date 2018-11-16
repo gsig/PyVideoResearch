@@ -6,9 +6,9 @@ import random
 
 class MockDataset1(Dataset):
     def __init__(self, split):
+        super(Dataset, self).__init__(test_gap, split)
         self.num_classes = 5
-        self.test_gap = 25
-        self.data = self.prepare(split)
+        self._data = self.prepare(split)
 
     def prepare(self, split):
         targets = []

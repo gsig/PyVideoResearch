@@ -12,26 +12,13 @@ class SomethingSomethingTSN(SomethingSomethingwebm, CharadesVideo):
         self.segments = opts.temporal_segments
         super(SomethingSomethingTSN, self).__init__(opts, *args, **kwargs)
 
-    def __getitem__(self, index):
+    def get_item(self, index, shift=None, video=None):
         path = self.data['datas'][index]['base']
-        try:
-            video, fps = video_loader(path)
-        except (TypeError, Exception) as e:
-            print('failed to load video {}'.format(path))
-            print(e)
-            #return self[np.random.randint(len(self))]
-            return self[index+1]
-
         n = video.shape[0]
-        if hasattr(self.data['datas'][index], 'shift'):
-            print('using shift')
-            shift = self.data['datas'][index]['shift']
-            shift = int(shift * (n-1))
+        if shift is None:
+            shift = np.random.randint(n)
         else:
-            if n <= self.train_gap+2:
-                shift = 0
-            else:
-                shift = np.random.randint(n)
+            shift = int(shift * (n-1))
         imgs, targets, metas = [], [], []
         ss = [shift] + [np.random.randint(n)
                         for _ in range(self.segments-1)]
@@ -53,6 +40,8 @@ class SomethingSomethingTSN(SomethingSomethingwebm, CharadesVideo):
             metas.append(meta)
         imgs = np.stack(imgs)
         targets = np.stack(targets)
+        # batch will be b x n x h x w x c
+        # target will be b x n x nc
         return imgs, targets, metas
 
     @classmethod

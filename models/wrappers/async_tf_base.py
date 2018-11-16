@@ -3,7 +3,6 @@ Asynchronous Temporal Fields Base model
 """
 import torch.nn as nn
 import torch
-from torch.autograd import Variable
 from wrapper import Wrapper
 
 
@@ -22,9 +21,9 @@ class AsyncTFBase(Wrapper):
         self.mAAa = nn.Linear(1, self.nc * self.naa, bias=False)
         self.mAAb = nn.Linear(1, self.naa * self.nc, bias=False)
 
-    def forward(self, x):
+    def forward(self, x, meta):
         a = self.mA(x)
-        const = Variable(torch.ones(a.shape[0], 1).cuda())
+        const = torch.ones(a.shape[0], 1).cuda()
         # aa = self.mAA(const)
         aaa = self.mAAa(const).view(-1, self.nc, self.naa)
         aab = self.mAAb(const).view(-1, self.naa, self.nc)

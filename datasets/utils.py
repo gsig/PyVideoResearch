@@ -1,4 +1,4 @@
-import cPickle as pickle
+import pickle
 import os
 import time
 from PIL import Image
@@ -35,37 +35,42 @@ def ffmpeg_video_info(path):
 
 
 def ffmpeg_video_loader(path):
-    import ffmpeg  # @ffmpeg-python
-    video_stream = ffmpeg_video_info(path)
-    width = int(video_stream['width'])
-    height = int(video_stream['height'])
-    fps = video_stream['avg_frame_rate'].split('/')
-    fps = float(fps[0]) / float(fps[1])
-    out, _ = (
-        ffmpeg
-        .input(path)
-        .output('pipe:', format='rawvideo', pix_fmt='rgb24')
-        .run(capture_stdout=True, capture_stderr=True)
-    )
-    video = (
-        np
-        .frombuffer(out, np.uint8)
-        .reshape([-1, height, width, 3])
-    )
-    return video, fps  # n, h, w, c (uint8 [0-255])
+    try:
+        import ffmpeg  # @ffmpeg-python
+        video_stream = ffmpeg_video_info(path)
+        width = int(video_stream['width'])
+        height = int(video_stream['height'])
+        fps = video_stream['avg_frame_rate'].split('/')
+        fps = float(fps[0]) / float(fps[1])
+        out, _ = (
+            ffmpeg
+            .input(path)
+            .output('pipe:', format='rawvideo', pix_fmt='rgb24')
+            .run(capture_stdout=True, capture_stderr=True)
+        )
+        video = (
+            np
+            .frombuffer(out, np.uint8)
+            .reshape([-1, height, width, 3])
+        )
+        return video, fps  # n, h, w, c (uint8 [0-255])
+    except (TypeError, Exception) as e:
+        print('failed to load video {}'.format(path))
+        print(e)
+        return None, None
 
 
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
-    for _ in range(100):
+    for _ in range(10):
         try:
             with open(path, 'rb') as f:
                 img = Image.open(f)
                 return img.convert('RGB')
-        except IOError, e:
+        except IOError as e:
             print(e)
-            print('waiting 60 sec and trying again')
-            time.sleep(60)
+            print('waiting 5 sec and trying again')
+            time.sleep(5)
     raise
 
 

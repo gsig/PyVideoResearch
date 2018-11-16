@@ -14,7 +14,7 @@ def ordered_load_state(model, chkpoint):
     """
     try:
         model.load_state_dict(chkpoint)
-    except RuntimeError, e:  # assume order is the same, and use new labels
+    except RuntimeError as e:  # assume order is the same, and use new labels
         print(e)
         print('keys do not match model, trying to align')
         model_keys = model.state_dict().keys()
@@ -46,7 +46,7 @@ def load(args, model, optimizer):
                     try:
                         ordered_load_state(model, chkpoint['state_dict'])
                         optimizer.load_state_dict(chkpoint['optimizer'])
-                    except Exception, e:
+                    except Exception as e:
                         print(e)
                         print('loading partial state 2')
                         load_partial_state(model, chkpoint['state_dict'])
@@ -58,12 +58,12 @@ def load(args, model, optimizer):
                     if 'scores' in chkpoint and args.metric in chkpoint['scores']:
                         best_metric = chkpoint['scores'][args.metric]
                     else:
-                        best_metric = chkpoint['mAP']
+                        best_metric = 0
                     return best_metric
                 else:
                     try:
                         ordered_load_state(model, chkpoint)
-                    except Exception, e:
+                    except Exception as e:
                         print(e)
                         print('loading partial state')
                         load_partial_state(model, chkpoint)

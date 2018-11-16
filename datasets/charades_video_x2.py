@@ -5,7 +5,10 @@ import datasets.video_transforms as videotransforms
 
 class CharadesVideoX2(CharadesVideo):
     def __init__(self, *args, **kwargs):
-        kwargs['test_gap'] = 50
+        if 'train_gap' not in kwargs:
+            kwargs['train_gap'] = 64
+        if 'test_gap' not in kwargs:
+            kwargs['test_gap'] = 50
         super(CharadesVideoX2, self).__init__(*args, **kwargs)
 
     @classmethod
@@ -22,13 +25,13 @@ class CharadesVideoX2(CharadesVideo):
         val_dataset = cls(
             args, args.data, 'val', val_file, args.cache,
             transform=transforms.Compose([
-                videotransforms.CenterCrop(320)
+                videotransforms.CenterCrop(256)
             ]),
             input_size=args.input_size)
         valvideo_dataset = cls(
             args, args.data, 'val_video', val_file, args.cache,
-            transform=transforms.Compose([
-                videotransforms.CenterCrop(320)
-            ]),
+            #transform=transforms.Compose([
+            #    videotransforms.CenterCrop(256)
+            #]),
             input_size=args.input_size)
         return train_dataset, val_dataset, valvideo_dataset

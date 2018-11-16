@@ -4,7 +4,7 @@ from
 Temporal Segment Networks: Towrads Good Practices for Deep Action Recognition
 Liming Wang et al.
 """
-from wrapper import Wrapper
+from models.wrappers.wrapper import Wrapper
 
 
 class TSNBase(Wrapper):
@@ -12,7 +12,7 @@ class TSNBase(Wrapper):
         self.consensus = lambda x: x.mean(1)
         super(TSNBase, self).__init__(basenet, args)
 
-    def forward(self, x):
+    def forward(self, x, meta):
         # input is b, t, ...
         s = x.shape
         b, t = s[0], s[1]

@@ -1,22 +1,17 @@
 """ Dataset loader for the Charades dataset """
-import torch
 import torchvision.transforms as transforms
 from datasets.kinetics_mp4 import Kineticsmp4
-from PIL import Image
-import numpy as np
 import datasets.video_transforms as videotransforms
-import os
-from datasets.utils import ffmpeg_video_loader as video_loader
 
 
 class Kineticsmp4X(Kineticsmp4):
     def __init__(self, *args, **kwargs):
         super(Kineticsmp4X, self).__init__(*args, **kwargs)
 
-    def __getitem__(self, index):
-        img, target, meta = super(Kineticsmp4X, self).__getitem__(*args, **kwargs)
-        img = img[:, ::2, :, :, :]
-        target = target[:, ::2, :]
+    def get_item(self, index, shift=None, video=None):
+        img, target, meta = super(Kineticsmp4X, self).get_item(index, shift=shift, video=video)
+        img = img[::2, :, :, :]
+        target = target[::2, :]
         return img, target, meta
 
     @classmethod
@@ -33,6 +28,8 @@ class Kineticsmp4X(Kineticsmp4):
         val_dataset = cls(
             args, args.valdata, 'val', val_file, args.cache,
             transform=transforms.Compose([
+                #videotransforms.RandomCrop(args.input_size),
+                #videotransforms.RandomHorizontalFlip()
                 videotransforms.CenterCrop(256)
             ]),
             input_size=args.input_size)

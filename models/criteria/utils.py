@@ -4,22 +4,24 @@ import torch.nn.functional as F
 
 def unroll_time(a, target, training):
     if training:
-        nc = a.shape[1]
+        nc = a.shape[2]
 
         # max over time, and add it to the batch
-        a_video = a.mean(dim=2)
-        a = F.upsample(a, target.shape[1], mode='linear', align_corners=True)
+        a_video = a.mean(dim=1)
         target_video = target.max(dim=1)[0]
 
+        # upsample a in temporal dimension if it is smaller than target (I3D)
+        a = F.upsample(a.permute(0, 2, 1), target.shape[1], mode='linear', align_corners=True).permute(0, 2, 1)
+
         # unroll over time
-        a = a.permute(0, 2, 1).contiguous().view(-1, nc)
-        target = target.permute(0, 1, 2).contiguous().view(-1, nc)
+        a = a.contiguous().view(-1, nc)
+        target = target.contiguous().view(-1, nc)
 
         # combine both
         a = torch.cat([a, a_video])
         target = torch.cat([target, target_video])
     else:
-        a = a.mean(dim=2)
+        a = a.mean(dim=1)
         target = target.max(dim=1)[0]
     return a, target
 

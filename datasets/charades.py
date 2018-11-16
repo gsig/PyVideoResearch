@@ -10,24 +10,29 @@ import csv
 
 class Charades(Dataset):
     def __init__(self, args, root, split, label_path, cachedir,
-                 transform=None, target_transform=None, input_size=224, test_gap=50):
-        super(Charades, self).__init__(test_gap=test_gap)
+                 transform=None, target_transform=None, input_size=224, test_gap=50, train_gap=4, fps=24):
+        super(Charades, self).__init__(test_gap, split)
         self.num_classes = 157
         self.transform = transform
         self.target_transform = target_transform
         self.labels = self.parse_charades_csv(label_path)
         self.root = root
         self.input_size = input_size
-        self.test_gap = test_gap
+        self.fps = fps
+        self.train_gap = train_gap
         cachename = '{}/{}_{}.pkl'.format(cachedir, self.__class__.__name__, split)
-        self.data = cache(cachename)(self._prepare)(root, self.labels, split)
+        self._data = cache(cachename)(self._prepare)(root, self.labels, split)
+
+    @property
+    def data(self):
+        return self._data
 
     def _prepare(self, path, labels, split):
-        fps, gap, test_gap = 24, 4, self.test_gap
+        fps, gap = self.fps, self.train_gap
         datadir = path
         image_paths, targets, ids, times, ns = [], [], [], [], []
 
-        for i, (vid, label) in enumerate(labels.iteritems()):
+        for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
             lines = glob(iddir+'/*.jpg')
             n = len(lines)
@@ -35,9 +40,8 @@ class Charades(Dataset):
                 print("{} {}".format(i, iddir))
             if n == 0:
                 continue
-
             if split == 'val_video':
-                spacing = np.linspace(0, n-1, test_gap)
+                spacing = [0]
             else:
                 spacing = range(0, n-1, gap)
             for loc in spacing:
@@ -55,20 +59,21 @@ class Charades(Dataset):
                 ids.append(vid)
                 times.append(int(np.floor(loc))+1)
                 ns.append(n)
-        return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'times': times}
+        return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'times': times, 'ns': ns}
 
-    def __getitem__(self, index):
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target) where target is class_index of the target class.
-        """
-        path = self.data['image_paths'][index]
-        target = self.data['targets'][index]
+    def get_item(self, index, shift=None):
         meta = {}
+        if shift is None:
+            path = self.data['image_paths'][index]
+            meta['time'] = self.data['times'][index]
+        else:
+            n = self.data['ns'][index]
+            shift = int(shift * (n-1))
+            base = self.data['image_paths'][index][:-10]
+            path = '{}{:06d}.jpg'.format(base, shift+1)
+            meta['time'] = shift
+        target = self.data['targets'][index]
         meta['id'] = self.data['ids'][index]
-        meta['time'] = self.data['times'][index]
         img = default_loader(path)
         if self.transform is not None:
             img = self.transform(img)
@@ -102,7 +107,6 @@ class Charades(Dataset):
 
     @classmethod
     def get(cls, args):
-        """ Entry point. Call this function to get all Charades dataloaders """
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
         train_dataset = cls(

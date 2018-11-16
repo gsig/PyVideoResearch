@@ -5,7 +5,8 @@ import datasets.video_transforms as videotransforms
 
 class CharadesVideoX(CharadesVideo):
     def __init__(self, *args, **kwargs):
-        kwargs['test_gap'] = 50
+        if 'test_gap' not in kwargs:
+            kwargs['test_gap'] = 50
         super(CharadesVideoX, self).__init__(*args, **kwargs)
 
     @classmethod

@@ -10,14 +10,16 @@ import datasets.video_transforms as videotransforms
 
 class CharadesVideo(Charades):
     def __init__(self, *args, **kwargs):
+        if 'train_gap' not in kwargs:
+            kwargs['train_gap'] = 64
+        if 'test_gap' not in kwargs:
+            kwargs['test_gap'] = 50
         super(CharadesVideo, self).__init__(*args, **kwargs)
-        self.train_gap = 64
-        self.test_gap = 25
 
     def _prepare(self, path, labels, split):
         datas = []
 
-        for i, (vid, label) in enumerate(labels.iteritems()):
+        for i, (vid, label) in enumerate(labels.items()):
             iddir = path + '/' + vid
             lines = glob(iddir+'/*.jpg')
             n = len(lines)
@@ -34,42 +36,35 @@ class CharadesVideo(Charades):
             data['n'] = n
             data['labels'] = label
             data['id'] = vid
-            if split == 'val_video':
-                spacing = np.linspace(0, n-self.train_gap-1, self.test_gap)
-                for loc in spacing:
-                    data['shift'] = loc
-                    datas.append(data)
-            else:
-                datas.append(data)
+            datas.append(data)
         return {'datas': datas, 'split': split}
 
-    def __getitem__(self, index, shift=None):
-        ims = []
-        tars = []
-        meta = {}
+    def get_item(self, index, shift=None):
+        ims, tars, meta = [], [], {}
+        meta['do_not_collate'] = True
         fps = 24
         n = self.data['datas'][index]['n']
         if shift is None:
-            if hasattr(self.data['datas'][index], 'shift'):
-                print('using shift')
-                shift = self.data['datas'][index]['shift']
-            else:
-                shift = np.random.randint(n-self.train_gap-2)
-
+            shift = np.random.randint(n-self.train_gap-2)
+        else:
+            shift = int(shift * (n-self.train_gap-2))
         resize = transforms.Resize(int(256./224*self.input_size))
+        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                         std=[0.229, 0.224, 0.225])
         spacing = np.arange(shift, shift+self.train_gap)
         for loc in spacing:
             ii = int(np.floor(loc))
             path = '{}{:06d}.jpg'.format(self.data['datas'][index]['base'], ii+1)
             try:
                 img = default_loader(path)
-            except Exception, e:
+            except Exception as e:
                 print('failed to load image {}'.format(path))
                 print(e)
                 raise
             img = resize(img)
             img = transforms.ToTensor()(img)
-            img = 2*img - 1
+            #img = 2*img - 1
+            img = normalize(img)
             ims.append(img)
             target = torch.IntTensor(self.num_classes).zero_()
             for x in self.data['datas'][index]['labels']:
@@ -84,7 +79,8 @@ class CharadesVideo(Charades):
             img = self.transform(img)
         if self.target_transform is not None:
             target = self.target_transform(target)
-        img = img.transpose([3, 0, 1, 2])
+        # batch will be b x n x h x w x c
+        # target will be b x n x nc
         return img, target, meta
 
     def __len__(self):

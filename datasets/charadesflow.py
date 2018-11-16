@@ -1,4 +1,5 @@
 """ Dataset loader for the Charades dataset """
+from __future__ import division
 import torch
 import torchvision.transforms as transforms
 import datasets.transforms as arraytransforms
@@ -18,10 +19,10 @@ class Charadesflow(Charades):
         datadir = path
         image_paths, targets, ids = [], [], []
 
-        for i, (vid, label) in enumerate(labels.iteritems()):
+        for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
             lines = glob(iddir+'/*.jpg')
-            n = len(lines)/2
+            n = len(lines)//2
             if i % 100 == 0:
                 print("{} {}".format(i, iddir))
             if n == 0:

@@ -1,0 +1,6 @@
+[submodule "external/Detectron.pytorch"]
+	path = external/Detectron.pytorch
+	url = git://github.com/roytseng-tw/Detectron.pytorch.git
+[submodule "external/ActivityNet"]
+	path = external/ActivityNet
+	url = git://github.com/gsig/ActivityNet.git

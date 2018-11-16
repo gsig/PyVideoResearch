@@ -23,7 +23,7 @@ class Jester(Charades):
         datadir = path
         image_paths, targets, ids, times = [], [], [], []
 
-        for i, (vid, label) in enumerate(labels.iteritems()):
+        for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
             lines = glob(iddir + '/*.jpg')
             n = len(lines)

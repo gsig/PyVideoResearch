@@ -6,5 +6,5 @@ class Wrapper(nn.Module):
         super(Wrapper, self).__init__()
         self.basenet = basenet
 
-    def forward(self):
+    def forward(self, x, meta):
         raise NotImplementedError()

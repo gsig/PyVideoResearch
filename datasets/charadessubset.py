@@ -14,4 +14,4 @@ class CharadesSubset(Charades):
         self.root = root
         self.test_gap = test_gap
         cachename = '{}/{}_{}.pkl'.format(cachedir, self.__class__.__name__, split)
-        self.data = cache(cachename)(self._prepare)(root, self.labels, split)
+        self._data = cache(cachename)(self._prepare)(root, self.labels, split)

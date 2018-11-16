@@ -31,7 +31,7 @@ class CharadesVideoPerson3(CharadesVideo):
         datadir = path
         datas = []
 
-        for i, (vid, label) in enumerate(labels.iteritems()):
+        for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
             persondir = '/scratch/gsigurds/anonymous_persons/' + vid
             lines = glob(iddir+'/*.jpg')
@@ -91,7 +91,7 @@ class CharadesVideoPerson3(CharadesVideo):
             path = '{}{:06d}.jpg'.format(self.data['datas'][index]['base'], ii+1)
             try:
                 img = default_loader(path)
-            except Exception, e:
+            except Exception as e:
                 print('failed to load image {}'.format(path))
                 print(e)
                 raise
@@ -125,7 +125,9 @@ class CharadesVideoPerson3(CharadesVideo):
             img = self.transform(img)
         if self.target_transform is not None:
             target = self.target_transform(target)
-        img = img.transpose([3, 0, 1, 2])
+        #img = img.transpose([3, 0, 1, 2])
+        # batch will be b x n x h x w x c
+        # target will be b x n x nc
         return img, target, meta
 
     @classmethod

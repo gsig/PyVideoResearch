@@ -2,10 +2,7 @@
 """
 import torch
 import itertools
-import numpy as np
-from utils import map
-import gc
-from utils.utils import AverageMeter, submission_file, Timer, accuracy
+from misc_utils.utils import AverageMeter, submission_file, Timer
 
 
 def adjust_learning_rate(startlr, decay_rate, optimizer, epoch):
@@ -25,21 +22,26 @@ def adjust_learning_rate(startlr, decay_rate, optimizer, epoch):
         param_group['lr'] = lr
 
 
-class Trainer():
-    def train(self, loader, model, criterion, optimizer, epoch, args, validate=False):
+def part(x, iter_size):
+    n = int(len(x)*iter_size)
+    if iter_size > 1.0:
+        x = itertools.chain.from_iterable(itertools.repeat(x))
+    return itertools.islice(x, n)
+
+
+class Trainer(object):
+    def train(self, loader, model, criterion, optimizer, epoch, metrics, args, validate=False):
         timer = Timer()
         data_time = AverageMeter()
         losses = AverageMeter()
-        top1 = AverageMeter()
-        top5 = AverageMeter()
-        metrics = {}
+        metrics = [m() for m in metrics]
 
         if validate:
             # switch to evaluate mode
             model.eval()
             criterion.eval()
             iter_size = args.val_size
-            setting = 'val epoch'
+            setting = 'Validate Epoch'
         else:
             # switch to train mode
             adjust_learning_rate(args.lr, args.lr_decay_rate, optimizer, epoch)
@@ -47,31 +49,22 @@ class Trainer():
             criterion.train()
             optimizer.zero_grad()
             iter_size = args.train_size
-            setting = 'train epoch'
+            setting = 'Train Epoch'
 
-        def part(x):
-            return itertools.islice(x, int(len(x)*iter_size))
-
-        for i, (input, target, meta) in enumerate(part(loader)):
+        for i, (input, target, meta) in enumerate(part(loader, iter_size)):
             if args.synchronous:
                 assert meta['id'][0] == meta['id'][1], "dataset not synced"
-                print('all ok with sync')
-            gc.collect()
             data_time.update(timer.thetime() - timer.end)
 
-            target = target.long().cuda(async=True)
-            input_var = torch.autograd.Variable(input.cuda())
-            target_var = torch.autograd.Variable(target)
-            output = model(input_var)
-            if type(output) == tuple:
-                output, loss, target_var = criterion(*(output + (target_var, meta)))
-            else:
-                output, loss, target_var = criterion(output, target_var, meta)
-            prec1, prec5 = accuracy(output.data, target_var.cpu().data, topk=(1, 5))
-
+            target = target.cuda(async=True)
+            output = model(input, meta)
+            if type(output) != tuple:
+                output = (output,)
+            scores, loss, score_target = criterion(*(output + (target, meta)))
             losses.update(loss.item(), input.size(0))
-            top1.update(prec1[0], input.size(0))
-            top5.update(prec5[0], input.size(0))
+            with torch.no_grad():
+                for m in metrics:
+                    m.update(scores, score_target)
 
             if not validate:
                 loss.backward()
@@ -86,87 +79,70 @@ class Trainer():
                       'Time {timer.val:.3f} ({timer.avg:.3f})\t'
                       'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
                       'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                      'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
-                      'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
+                      '{metrics}'.format(
                           epoch, i, int(len(loader)*iter_size), len(loader),
                           name=args.name, setting=setting, timer=timer,
-                          data_time=data_time, loss=losses, top1=top1, top5=top5))
+                          data_time=data_time, loss=losses,
+                          metrics=' \t'.join(str(m) for m in metrics)))
+            del loss, output, target  # make sure we don't hold on to the graph
 
-        if validate:
-            metrics.update({'top1val': top1.avg, 'top5val': top5.avg, 'loss_val': losses.avg})
-        else:
-            metrics.update({'top1train': top1.avg, 'top5train': top5.avg, 'loss_train': losses.avg})
+        metrics = dict(m.compute() for m in metrics)
+        metrics.update({'loss_': losses.avg})
+        metrics = dict((k+'val', v) if validate else (k+'train', v) for k, v in metrics.items())
         return metrics
 
-    def validate(self, loader, model, criterion, epoch, args):
+    def validate(self, loader, model, criterion, epoch, metrics, args):
         """
             Validate in the same approach as training
         """
         with torch.no_grad():
-            return self.train(loader, model, criterion, None, epoch, args, validate=True)
+            return self.train(loader, model, criterion, None, epoch, metrics, args, validate=True)
 
-    def validate_video(self, loader, model, criterion, epoch, args):
+    def validate_video(self, loader, model, criterion, epoch, metrics, args):
         """ Run video-level validation on the test set """
         with torch.no_grad():
             timer = Timer()
-            outputs = []
-            gts = []
-            ids = []
-            metrics = {}
+            ids, outputs = [], []
+            metrics = [m() for m in metrics]
 
             # switch to evaluate mode
             model.eval()
             criterion.eval()
 
             for i, (input, target, meta) in enumerate(loader):
-                gc.collect()
-                if 'id' in meta:
-                    assert meta['id'][0] == meta['id'][1], "val_video not synced"
-                    ids.append(meta['id'][0])
-                else:
-                    assert meta[0]['id'][0] == meta[0]['id'][1], "val_video not synced"
-                    ids.append(meta[0]['id'][0])
+                target = target.cuda(async=True)
 
-                target = target.long().cuda(async=True)
-                input_var = torch.autograd.Variable(input.cuda(), volatile=True)
-                target_var = torch.autograd.Variable(target, volatile=True)
-
+                # split batch into smaller chunks
                 if args.video_batch_size == -1:
-                    output = model(input_var)
+                    output = model(input, meta)
                 else:
                     output_chunks = []
-                    for chunk in input_var.split(args.video_batch_size):
-                        output_chunks.append(model(chunk))
+                    for chunk in input.split(args.video_batch_size):
+                        output_chunks.append(model(chunk, meta))
                     if type(output_chunks[0]) == tuple:
                         output = tuple(torch.cat(x) for x in zip(*output_chunks))
                     else:
                         output = torch.cat(output_chunks)
-                if type(output) == tuple:
-                    output, loss, _ = criterion(*(output + (target_var, meta)), synchronous=True)
-                else:
-                    output, loss, _ = criterion(output, target_var, meta, synchronous=True)
+
+                if type(output) != tuple:
+                    output = (output,)
+                scores, loss, score_target = criterion(*(output + (target, meta)), synchronous=True)
+                for m in metrics:
+                    m.update(scores, score_target)
 
                 # store predictions
-                #output_video = output.mean(dim=0)
-                output_video = output.max(dim=0)[0]
-                outputs.append(output_video.data.cpu().numpy())
-                if target.dim() == 3:
-                    gts.append(target.max(dim=0)[0].max(dim=0)[0])
-                else:
-                    gts.append(target.max(dim=0)[0])
-
+                scores_video = scores.max(dim=0)[0]
+                outputs.append(scores_video.cpu())
                 timer.tic()
                 if i % args.print_freq == 0:
-                    print('[{name}] Test2: [{0}/{1}]\t'
-                          'Time {timer.val:.3f} ({timer.avg:.3f})'.format(
-                              i, len(loader), timer=timer, name=args.name))
-            #mAP, _, ap = map.map(np.vstack(outputs), np.vstack(gts))
-            mAP, _, ap = map.charades_map(np.vstack(outputs), np.vstack(gts))
-            prec1, prec5 = accuracy(torch.Tensor(np.vstack(outputs)), torch.Tensor(np.vstack(gts)), topk=(1, 5))
-            print(ap)
-            print(' * mAP {:.3f}'.format(mAP))
-            print(' * prec1 {:.3f} * prec5 {:.3f}'.format(prec1[0], prec5[0]))
+                    print('[{name}] ValidateVideo: [{0}/{1}]\t'
+                          'Time {timer.val:.3f} ({timer.avg:.3f})\t'
+                          '{metrics}'.format(
+                              i, len(loader), timer=timer, name=args.name,
+                              metrics=' \t'.join(str(m) for m in metrics)))
             submission_file(
                 ids, outputs, '{}/epoch_{:03d}.txt'.format(args.cache, epoch+1))
-            metrics.update({'mAP': mAP, 'videoprec1': prec1[0], 'videoprec5': prec5[0]})
+            metrics = dict(m.compute() for m in metrics)
+            metrics = dict((k+'valvideo', v) for k, v in metrics.items())
+            print(metrics)
             return metrics

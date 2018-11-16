@@ -1,11 +1,12 @@
 # pylint: disable=W0221,E1101
 import torch
+import torch.nn as nn
 import math
-from torch.autograd import Variable
 from random import random
 from models.layers.verbose_gradients import VerboseGradients
 #from memory_profiler import profile
-from models.layers.utils import winsmooth, axb, avg
+from models.layers.utils import axb, avg
+from models.criteria.utils import winsmooth
 from default_criterion import DefaultCriterion
 
 
@@ -31,7 +32,7 @@ class MessagePassing(object):
             except (StopIteration, KeyError):
                 return torch.zeros(size)
         out = [meta(ids, time) for ids, time in idtime]
-        return Variable(torch.stack(out, 0).cuda())
+        return torch.stack(out, 0).cuda()
 
     def get_msg(self, idtime, time='past', storage=None):
         storage = self.storage if storage is None else storage
@@ -71,28 +72,23 @@ class AsyncTFCriterion(DefaultCriterion, MessagePassing):
         self.msg_n = 5
         self.w_tloss = args.temporalloss_weight
         self.adjustment = args.adjustment
-        #self.videoloss = args.videoloss
 
-    def forward(self, a, aa, target, id_time, niter=1, synchronous=False):
+    def forward(self, a, aa, target, meta, niter=1, synchronous=False):
         mask = [True] * a.shape[0]
-        idtime = zip(id_time['id'], id_time['time'])
+        if type(meta) is list:
+            idtime = zip(meta[0]['id'], meta[0]['time'])
+        else:
+            idtime = zip(meta['id'], meta['time'])
         if a.dim() == 3 and self.training:
-            mask = [True if i == 0 else False for x in idtime for i in range(a.shape[1])]
+            # temporal mode
+            mask = [True if i == 0 else False for x in idtime for i in range(target.shape[1])]
             idtime_video = idtime
-            idtime = [x for x in idtime for _ in range(a.shape[1])]
+            idtime = [x for x in idtime for _ in range(target.shape[1])]
             idtime = idtime + idtime_video
-        a, target = self.process_tensors(a, target)
-           
-        #if target.shape[0] != a.shape[0]:
-        #    print('upsampling a')
-        #    a = F.upsample(a.permute(1,0).unsqueeze(0), target.shape[0], mode='linear', align_corners=True).squeeze(0).permute(1,0)
+        a, target, meta = self.process_tensors(a, target, meta)
         self.nc = a.shape[1]
         if aa.shape[0] < a.shape[0]:
             aa = aa[0].expand(a.shape[0], aa.shape[1], aa.shape[2])
-        #if len(idtime) != n:
-        #    selector = [int(i) for i in torch.linspace(0, len(idtime)-1, n)]
-        #    idtime = [idtime[int(i)] for i in selector]
-        #    target = target.index_select(0, torch.LongTensor(selector).cuda())
 
         a, aa = VerboseGradients.apply(a, aa)
         msg = self.get_msg(idtime, 'past')
@@ -101,18 +97,15 @@ class AsyncTFCriterion(DefaultCriterion, MessagePassing):
         qa += (aa * msg[:, :, None]).sum(1)
         qa += (aa * fmsg[:, None, :]).sum(2)
         qa = torch.nn.Sigmoid()(qa)
-        if self.balanceloss and self.training:
+        if self.balance_loss and self.training:
             print('balancing loss')
-            qa = self.BalanceLabels(qa, target)
+            qa = self.balance_labels(qa, target)
 
         loss = self.loss(qa, target)
         loss += self.loss(torch.nn.Sigmoid()(a), target) * self.orig_loss
-        #if self.videoloss:
-        #    print('applying video loss')
-        #    loss += self.loss(torch.max(torch.nn.Sigmoid()(a), dim=0)[0], torch.max(target, dim=0)[0]) * self.orig_loss
         # self.set_msg(a, idtime)
         # self.set_msg(qa, idtime)
-        self.set_msg(torch.nn.Sigmoid()(a), idtime, mask)
+        self.set_msg(nn.Sigmoid()(a), idtime, mask)
 
         if self.training:
             if self.adjustment:
@@ -135,7 +128,7 @@ class AsyncTFCriterion(DefaultCriterion, MessagePassing):
         if not synchronous or niter > self.msg_n:
             out = qa.clone()
             if synchronous:
-                out = winsmooth(out, kernelsize=self.winsmooth)
+                out = winsmooth(out, kernelsize=self.win_smooth)
             return out, loss, target
         else:
-            return self.forward(a, aa, target, id_time, niter=niter + 1, synchronous=synchronous)
+            return self.forward(a, aa, target, meta, niter=niter + 1, synchronous=synchronous)

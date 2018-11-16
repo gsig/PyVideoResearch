@@ -7,9 +7,9 @@ class TestMyDataParallel(unittest.TestCase):
     def test_scatter_tensors(self):
         if torch.cuda.is_available():
             data = torch.Tensor(10, 2, 3)
-            #my_data_parallel = MyDataParallel(torch.nn.Module())
-            my_data_parallel = torch.nn.DataParallel(torch.nn.Module())
+            my_data_parallel = MyDataParallel(torch.nn.Module())
             out, _ = my_data_parallel.scatter((data, ), {}, [0, 1])
+            # out is #gpu x #args # tensor_dims
             self.assertEqual(len(out), 2)
             import pdb
             pdb.set_trace()

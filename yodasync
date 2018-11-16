@@ -2,9 +2,7 @@
 
 folderpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo $folderpath > /dev/null
-rsync -a $folderpath gsigurds@yoda.graphics.cs.cmu.edu:~/PyVideoResearch > /dev/null && \
-echo '     >>>>   Upload successful.   <<<<     ' &&
-rsync -a --include='*model*.txt' --include='*/' --exclude='*' yoda:/nfs.yoda/gsigurds/caches/ $folderpath/results/ > /dev/null\
+rsync -a --include='*model*.txt' --include='*/' --exclude='*' yoda:/nfs.yoda/gsigurds/caches/ $folderpath/../results/ > /dev/null\
 && echo '     >>>>    Sync successful.    <<<<     ' &
 
 

@@ -9,7 +9,7 @@ class TestMyDataParallel(unittest.TestCase):
             data = torch.Tensor(10, 2, 3)
             #my_data_parallel = MyDataParallel(torch.nn.Module())
             my_data_parallel = torch.nn.DataParallel(torch.nn.Module())
-            out = my_data_parallel.scatter(data, {}, [0, 1])
+            out = my_data_parallel.scatter((data, ), {}, [0, 1])
             self.assertEqual(len(out), 2)
             self.assertSequenceEqual(out[0].shape, (5, 2, 3))
 

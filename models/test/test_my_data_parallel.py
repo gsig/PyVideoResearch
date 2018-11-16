@@ -9,4 +9,6 @@ class TestMyDataParallel(unittest.TestCase):
             data = torch.Tensor(10, 2, 3)
             my_data_parallel = MyDataParallel(torch.nn.Module())
             out = my_data_parallel.scatter(data, {}, [0, 1])
+            import pdb
+            pdb.set_trace()
             self.assertSequenceEqual(out[0].shape, (5, 2, 3))

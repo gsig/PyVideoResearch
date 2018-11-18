@@ -76,6 +76,11 @@ def parse():
     parser.add_argument('--originalloss-weight', default=1, type=float)
     parser.add_argument('--window-smooth', default=3, type=int)
     parser.add_argument('--videoloss', dest='videoloss', action='store_true')
+
+    # AVA FRCNN Parameters
+    parser.add_argument('--freeze-head', action='store_true')
+    parser.add_argument('--freeze-base', action='store_true')
+
     args = parser.parse_args()
     args.distributed = args.world_size > 1
     args.cache = args.cache_dir + args.name + '/'

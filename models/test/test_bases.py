@@ -28,8 +28,6 @@ def test_model_updates(inputs, model, target):
             assert not torch.equal(p0, p1)
         except AssertionError:
             print(name)
-            import pdb
-            pdb.set_trace()
             raise
 
 

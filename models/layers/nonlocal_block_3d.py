@@ -111,8 +111,6 @@ class _NonLocalBlockND(nn.Module):
         batch_size = x.size(0)
 
         # g=>(b, c, t, h, w)->(b, 0.5c, t, h, w)->(b, thw, 0.5c)
-        import pdb
-        pdb.set_trace()
         g_x = self.g(x).view(batch_size, self.inter_channels, -1)
         g_x = g_x.permute(0, 2, 1)
 

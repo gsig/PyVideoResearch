@@ -131,6 +131,8 @@ class FRCNNWrapper3(Wrapper):
         self.n_class = args.nclass
         self.sigmoid = True
         self.input_size = args.input_size
+        self.freeze_base = args.freeze_base
+        self.freeze_head = args.freeze_head
         for i, end_point in enumerate(self.basenet.VALID_ENDPOINTS):
             if end_point == 'Mixed_4f':  # first half should include Mixed_4f
                 self.first_layers = self.basenet.VALID_ENDPOINTS[:i+1]
@@ -191,7 +193,7 @@ class FRCNNWrapper3(Wrapper):
         # model expects b x c x n x h x w
         x = im.permute(0, 4, 1, 2, 3)
         img_size = x.shape[3:]
-        with torch.no_grad():
+        with torch.set_grad_enabled(not self.freeze_base):
             x = self.baseforward(x, 'first')
 
         # slice feature map to get center frame
@@ -231,7 +233,8 @@ class FRCNNWrapper3(Wrapper):
         del pools
 
         # pass through rest of the network
-        x = self.baseforward(x, 'last')
+        with torch.set_grad_enabled(not self.freeze_head):
+            x = self.baseforward(x, 'last')
         x = F.avg_pool3d(x, kernel_size=x.size()[2:])  # global avg pool
 
         # compute scores and locations

@@ -44,6 +44,6 @@ except BdbQuit:
     sys.exit(1)
 except Exception:
     traceback.print_exc()
-    print ''
+    print('')
     pdb.post_mortem()
     sys.exit(1)

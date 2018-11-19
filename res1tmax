@@ -1,0 +1,7 @@
+for ((i=1; i<=$#; i++)); do
+    echo ${!i};
+    {
+       cat ${!i}/checkpoints/model_???.txt 2>/dev/null || 
+       cat ${!i}/model_???.txt 2>/dev/null 
+    } | grep top1train | sort -k2 -n | tail -n 1
+done

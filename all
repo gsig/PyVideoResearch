@@ -1,0 +1,1 @@
+cat ../results/$1/model_???.txt | less

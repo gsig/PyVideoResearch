@@ -50,7 +50,8 @@ def meta_to_entry(meta, nclasses, inputsize):
 
 class FRCNNWrapper3(Wrapper):
     def init_detectron(self, args):
-        del sys.modules['datasets']
+        if 'datasets' in sys.modules:
+            del sys.modules['datasets']
         this_dir = os.path.dirname(__file__)
         lib_path = os.path.join(this_dir, '../../external/Detectron.pytorch/lib')
         sys.path.insert(0, lib_path)

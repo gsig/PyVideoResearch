@@ -1,6 +1,5 @@
 import unittest
 import torch
-from models.criteria import default_criterion, frcnn_criterion
 
 
 class Args():
@@ -31,6 +30,7 @@ class TestBases(unittest.TestCase):
         torch.manual_seed(12345)
         from models.bases import resnet50_3d
         from models.wrappers import default_wrapper
+        from models.criteria import default_criterion
         args = Args()
         args.pretrained = False
         args.freeze_batchnorm = False
@@ -49,6 +49,7 @@ class TestBases(unittest.TestCase):
             torch.manual_seed(12345)
             from models.bases import aj_i3d
             from models.wrappers import frcnn_wrapper3
+            from models.criteria import frcnn_criterion3
             args = Args()
             args.nclass = 81
             args.input_size = 224
@@ -67,5 +68,5 @@ class TestBases(unittest.TestCase):
             target = None
             args.balanceloss = False
             args.window_smooth = 0
-            criterion = frcnn_criterion.FRCNNCriterion(args)
+            criterion = frcnn_criterion3.FRCNNCriterion(args)
             test_model_updates(inputs, model, target, criterion, meta)

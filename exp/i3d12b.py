@@ -22,7 +22,7 @@ args = [
     '--lr-decay-rate', '15,40',
     '--epochs', '50',
     '--batch-size', '5',
-    '--video-batch-size', '10',
+    '--video-batch-size', '5',
     '--train-size', '1.0',
     '--weight-decay', '0.0000001',
     '--window-smooth', '0',

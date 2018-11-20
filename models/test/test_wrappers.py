@@ -58,8 +58,9 @@ class TestBases(unittest.TestCase):
             args.freeze_batchnorm = False
             model = aj_i3d.AJ_I3D.get(args)
             model = frcnn_wrapper3.FRCNNWrapper3(model, args)
+            model = model.cuda()
             b, f, d = 2, 64, 224
-            inputs = torch.randn(b, f, d, d, 3)
+            inputs = torch.randn(b, f, d, d, 3).cuda()
             meta = [{
                 'boxes': torch.Tensor([[.25, .25, .75, .75]]),
                 'labels': torch.Tensor([1]).long(),
@@ -69,4 +70,5 @@ class TestBases(unittest.TestCase):
             args.balanceloss = False
             args.window_smooth = 0
             criterion = frcnn_criterion3.FRCNNCriterion3(args)
+            criterion = criterion.cuda()
             test_model_updates(inputs, model, target, criterion, meta)

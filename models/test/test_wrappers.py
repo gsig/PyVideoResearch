@@ -11,6 +11,8 @@ def test_model_updates(inputs, model, target, criterion, meta={}):
     optimizer.zero_grad()
     params = [np for np in model.named_parameters()]
     initial_params = [(name, p.norm()) for (name, p) in params]
+    import pdb
+    pdb.set_trace()
     output = model(inputs, meta)
     if type(output) is not tuple:
         output = (output, )

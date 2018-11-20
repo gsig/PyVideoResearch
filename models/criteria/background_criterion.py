@@ -10,7 +10,10 @@ class BackgroundCriterion(DefaultCriterion):
         super(BackgroundCriterion, self).__init__(args)
 
     def forward(self, a, target, meta, synchronous=False):
-        target = torch.cat([torch.zeros(target.shape[0]), target], dim=1)
+        if len(target.shape) == 3:
+            target = torch.cat([torch.zeros(target.shape[0], target.shape[1], 1).int().cuda(), target], dim=2)
+        else:
+            target = torch.cat([torch.zeros(target.shape[0], 1).int().cuda(), target], dim=1)
         target[target.sum(1) == 0, 0] = 1
         a, target, meta = self.process_tensors(a, target, meta, self.balance_loss)
         loss = self.loss(nn.Sigmoid()(a), target)

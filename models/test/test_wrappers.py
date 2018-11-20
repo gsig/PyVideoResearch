@@ -59,13 +59,13 @@ class TestBases(unittest.TestCase):
             model = aj_i3d.AJ_I3D.get(args)
             model = frcnn_wrapper3.FRCNNWrapper3(model, args)
             model = model.cuda()
-            b, f, d = 2, 64, 224
+            b, f, d = 1, 64, 224
             inputs = torch.randn(b, f, d, d, 3).cuda()
             meta = [{
                 'boxes': torch.Tensor([[.25, .25, .75, .75]]),
                 'labels': torch.Tensor([1]).long(),
                 'id': 'asdf',
-            }] * 2
+            }]
             target = None
             args.balanceloss = False
             args.window_smooth = 0

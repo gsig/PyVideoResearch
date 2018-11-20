@@ -54,6 +54,7 @@ class TestBases(unittest.TestCase):
             args.input_size = 224
             args.freeze_base = False
             args.freeze_head = False
+            args.freeze_batchnorm = False
             model = aj_i3d.AJ_I3D.get(args)
             model = frcnn_wrapper3.FRCNNWrapper3(model, args)
             b, f, d = 2, 64, 224

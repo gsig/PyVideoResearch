@@ -68,5 +68,5 @@ class TestBases(unittest.TestCase):
             target = None
             args.balanceloss = False
             args.window_smooth = 0
-            criterion = frcnn_criterion3.FRCNNCriterion(args)
+            criterion = frcnn_criterion3.FRCNNCriterion3(args)
             test_model_updates(inputs, model, target, criterion, meta)

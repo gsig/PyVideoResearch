@@ -10,9 +10,9 @@ class BackgroundCriterion(DefaultCriterion):
         super(BackgroundCriterion, self).__init__(args)
 
     def forward(self, a, target, meta, synchronous=False):
-        a, target, meta = self.process_tensors(a, target, meta, self.balance_loss)
-        target = torch.cat([torch.zeros(target.shape[0]), target])
+        target = torch.cat([torch.zeros(target.shape[0]), target], axis=1)
         target[target.sum(1) == 0, 0] = 1
+        a, target, meta = self.process_tensors(a, target, meta, self.balance_loss)
         loss = self.loss(nn.Sigmoid()(a), target)
         print('losses class: {}'.format(loss.item()))
 

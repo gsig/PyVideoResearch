@@ -37,7 +37,9 @@ class TestBases(unittest.TestCase):
         from models.bases import aj_i3d
         b, f, d = 2, 32, 224
         inputs = torch.randn(b, f, d, d, 3)
-        model = aj_i3d.AJ_I3D.get(None)
+        args = Args()
+        args.nclass = 157
+        model = aj_i3d.AJ_I3D.get(args)
         target = torch.zeros(2, 32, 157)
         test_model_updates(inputs, model, target)
 

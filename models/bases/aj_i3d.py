@@ -311,9 +311,7 @@ class InceptionI3d(nn.Module):
 
         logits = self.logits(self.dropout(self.avg_pool(x)))
         if self._spatial_squeeze:
-            #logits = x.squeeze(3).squeeze(3)
             logits = logits.mean(3).mean(3)
-        #logits = logits.permute(2, 1, 0).squeeze(2)
         # model returns batch x classes x time
         logits = logits.permute(0, 2, 1)
         # logits is batch X time X classes
@@ -329,7 +327,6 @@ class InceptionI3d(nn.Module):
 class AJ_I3D(Base):
     @classmethod
     def get(cls, args):
-        #model = InceptionI3d(400, in_channels=3)
-        model = InceptionI3d(157, in_channels=3)
+        model = InceptionI3d(args.nclass, in_channels=3)
         model.in_features = 1024
         return model

@@ -62,7 +62,7 @@ class TestBases(unittest.TestCase):
             inputs = torch.randn(b, f, d, d, 3)
             meta = [{
                 'boxes': torch.Tensor([[.25, .25, .75, .75]]),
-                'labels': torch.Tensor([1]),
+                'labels': torch.Tensor([1]).long(),
                 'id': 'asdf',
             }] * 2
             target = None

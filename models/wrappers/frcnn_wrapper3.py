@@ -236,11 +236,11 @@ class FRCNNWrapper3(Wrapper):
         # pass through rest of the network
         with torch.set_grad_enabled(not self.freeze_head):
             x = self.baseforward(x, 'last')
-        x = F.avg_pool3d(x, kernel_size=x.size()[2:])  # global avg pool
+            x = F.avg_pool3d(x, kernel_size=x.size()[2:])  # global avg pool
 
-        # compute scores and locations
-        x_drop = self.basenet.dropout(x)
-        roi_score = self.basenet.logits(x_drop).squeeze().view(x.shape[0], -1)
+            # compute scores and locations
+            x_drop = self.basenet.dropout(x)
+            roi_score = self.basenet.logits(x_drop).squeeze().view(x.shape[0], -1)
         roi_cls_loc = self.cls_loc(x_drop).squeeze().view(x.shape[0], -1)
 
         # get bounding boxes for prediction

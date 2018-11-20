@@ -10,7 +10,7 @@ def test_model_updates(inputs, model, target, criterion, meta={}):
     optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
     optimizer.zero_grad()
     params = [np for np in model.named_parameters()]
-    initial_params = [(name, p.norm()) for (name, p) in params]
+    initial_params = [(name, p) for (name, p) in params]
     output = model(inputs, meta)
     if type(output) is not tuple:
         output = (output, )
@@ -19,7 +19,7 @@ def test_model_updates(inputs, model, target, criterion, meta={}):
     optimizer.step()
     for (_, p0), (name, p1) in zip(initial_params, params):
         try:
-            assert not torch.equal(p0, p1.norm())
+            assert not torch.equal(p0, p1)
         except AssertionError:
             print(name)
             raise

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-git --paginate diff && \
+git diff && \
 git add -A && \
 git commit -m "$1" && \
 git push origin dev

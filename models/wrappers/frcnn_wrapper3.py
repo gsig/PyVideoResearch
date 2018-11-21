@@ -255,6 +255,7 @@ class FRCNNWrapper3(Wrapper):
         pred_boxes = self.box_utils.clip_tiled_boxes(pred_boxes, (self.input_size, self.input_size))
         if self.cfg.MODEL.CLS_AGNOSTIC_BBOX_REG:
             pred_boxes = np.tile(pred_boxes, (1, roi_score.shape[1]))
+        pred_boxes = np.tile(boxes, (1, roi_score.shape[1]))  # no regression, DEBUG TODO
         if self.sigmoid:
             box_scores = F.sigmoid(roi_score.detach()).cpu().numpy()
         else:
@@ -285,7 +286,7 @@ class FRCNNWrapper3(Wrapper):
         tensorize(rpn_kwargs)
 
         # visual debugging
-        if True:
+        if False:
             # visualize gt
             # fake_scores = np.zeros((len(roidb[-1]['gt_classes']), 81))
             # fake_boxes = np.tile(roidb[-1]['boxes'], (1, roi_score.shape[1]))
@@ -294,10 +295,10 @@ class FRCNNWrapper3(Wrapper):
             # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             # visualize rpn
-            fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
-            fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
-            fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
-            scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
+            # fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
+            # fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
+            # fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
+            # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             import types
             dataset = types.SimpleNamespace()

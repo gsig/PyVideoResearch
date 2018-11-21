@@ -14,7 +14,7 @@ import checkpoints
 from opts import parse
 from misc_utils import tee
 from misc_utils.utils import seed
-from misc_utils.experiments import get_script_dir_commit_hash, experiment_checksums, experiment_folder
+from misc_utils.experiments import get_script_dir_commit_hash, experiment_folder
 from metrics.get import get_metrics
 
 # pytorch bugfixes
@@ -42,7 +42,6 @@ def main():
     print(vars(args))
     print('experiment folder: {}'.format(experiment_folder()))
     print('git hash: {}'.format(get_script_dir_commit_hash()))
-    print('checksums:\n{}'.format(experiment_checksums()))
     seed(args.manual_seed)
     cudnn.benchmark = not args.disable_cudnn_benchmark
     cudnn.enabled = not args.disable_cudnn

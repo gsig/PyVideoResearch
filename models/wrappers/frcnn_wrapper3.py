@@ -285,7 +285,7 @@ class FRCNNWrapper3(Wrapper):
         tensorize(rpn_kwargs)
 
         # visual debugging
-        if False:
+        if True:
             # visualize gt
             # fake_scores = np.zeros((len(roidb[-1]['gt_classes']), 81))
             # fake_boxes = np.tile(roidb[-1]['boxes'], (1, roi_score.shape[1]))

@@ -37,7 +37,7 @@ args = [
     #'--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
     #'--evaluate',
     '--workers', '4',
-    '--freeze-batch-norm',
+    '--freeze-batchnorm',
 ]
 sys.argv.extend(args)
 try:

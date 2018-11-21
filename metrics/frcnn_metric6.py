@@ -55,13 +55,11 @@ class FRCNNMetric6(Metric):
                         self.sf.DetectionResultFields.detection_scores:
                             np.array(p['scores'], dtype=float)
                     })
-            #import pdb
-            #pdb.set_trace()
         except Exception as e:
             print(e)
 
-    def __repr__(self):
-        return '{}: {:.3f}'.format(*self.compute())
+    #def __repr__(self):
+    #    return '{}: {:.3f}'.format(*self.compute())
 
     def compute(self):
         metrics = self.evaluator.evaluate()

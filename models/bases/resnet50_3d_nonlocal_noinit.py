@@ -49,7 +49,7 @@ if __name__ == "__main__":
     input_var = torch.randn(batch_size, num_frames, img_feature_dim, img_feature_dim, 3).cuda()
     args = {}
     setattr(args, 'pretrained', True)
-    model = ResNet503DNonLocal.get(args)
+    model = ResNet503DNonLocalNoInit.get(args)
     model = model.cuda()
     output = model(input_var)
     print(output.shape)

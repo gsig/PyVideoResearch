@@ -1,6 +1,6 @@
 from models.bases.base import Base
 from models.bases.resnet50_3d import Bottleneck3D, ResNet3D
-from models.layers.nonlocal_block_3d_no_init import NONLocalBlock3DNoInit as NONLocalBlock3DNoInit
+from models.layers.nonlocal_block_3d_no_init import NONLocalBlock3DNoInit as NONLocalBlock3D
 import torch.nn as nn
 
 

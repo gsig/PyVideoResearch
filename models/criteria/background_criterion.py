@@ -12,7 +12,7 @@ class BackgroundCriterion(DefaultCriterion):
     def forward(self, a, target, meta, synchronous=False):
         if len(target.shape) == 3:
             target = torch.cat([torch.zeros(target.shape[0], target.shape[1], 1).int().cuda(), target], dim=2)
-            target[target.sum(1).sum(2) == 0, :, 0] = 1
+            target[target.sum(2).sum(1) == 0, :, 0] = 1
         else:
             target = torch.cat([torch.zeros(target.shape[0], 1).int().cuda(), target], dim=1)
             target[target.sum(1) == 0, 0] = 1

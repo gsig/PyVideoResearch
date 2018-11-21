@@ -55,7 +55,7 @@ class ResNet3D(nn.Module):
 
     def __init__(self, block, layers, num_classes=400):
         super(ResNet3D, self).__init__()
-        self.global_pooling = True
+        self.global_pooling = False
         self.inplanes = 64
         self.conv1 = nn.Conv3d(3, 64, kernel_size=(5, 7, 7), stride=2,
                                padding=(2, 3, 3), bias=False)

@@ -3,7 +3,7 @@
 # pairs well with:
 # git config core.pager 'less -+$LESS -RSc'
 
-git show && \
 git add -A && \
+git diff --cached && \
 git commit -m "$1" && \
 git push origin dev

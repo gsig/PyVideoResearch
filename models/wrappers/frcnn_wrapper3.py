@@ -307,7 +307,7 @@ class FRCNNWrapper3(Wrapper):
                 'visual',
                 './',
                 cls_boxes,
-                thresh=.10,
+                thresh=.05,
                 box_alpha=0.8,
                 dataset=dataset,
                 show_class=True

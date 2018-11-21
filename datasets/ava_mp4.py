@@ -60,10 +60,10 @@ class AVAmp4(Kineticsmp4, Dataset):
             meta['boxes'] = torch.Tensor(label['boxes'])
             meta['labels'] = torch.Tensor(label['labels']).long()
             #meta['pids'] = label['pids']
-            # data augmentation, hflip
             if self.split == 'train' and np.random.rand() > .5:
+                # data augmentation, hflip
                 img = np.ascontiguousarray(img[::-1, :, :])
-                meta['boxes'][:, [0, 2]] = 1 - meta['boxes'][:, [2, 0]]
+                meta['boxes'][:, [1, 3]] = 1 - meta['boxes'][:, [3, 1]]
             return img, target, meta
 
     def _process_stack(self, video, shift, data):

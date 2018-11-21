@@ -21,7 +21,7 @@ args = [
     '--wrapper', 'default_wrapper',
     '--lr-decay-rate', '15,40',
     '--epochs', '50',
-    '--batch-size', '5',
+    '--batch-size', '2',
     '--video-batch-size', '5',
     '--train-size', '1.0',
     '--weight-decay', '0.0000001',

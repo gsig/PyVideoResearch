@@ -2,6 +2,7 @@ import unittest
 from models.criteria import default_criterion
 import torch
 import torch.optim
+import numpy as np
 import torch.testing
 
 
@@ -9,14 +10,14 @@ class Args():
     pass
 
 
-def test_model_updates(inputs, model, target):
+def test_model_updates(inputs, model, target, whitelist=[]):
     args = Args()
     args.balanceloss = False
     args.window_smooth = 0
     criterion = default_criterion.DefaultCriterion(args)
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
+    optimizer = torch.optim.SGD(model.parameters(), lr=1.)
     optimizer.zero_grad()
-    params = [np for np in model.named_parameters()]
+    params = list(model.named_parameters())
     initial_params = [(name, p.clone()) for (name, p) in params]
     output = model(inputs)
     meta = {}
@@ -24,10 +25,22 @@ def test_model_updates(inputs, model, target):
     loss.backward()
     optimizer.step()
     for (_, p0), (name, p1) in zip(initial_params, params):
+        if name in whitelist:
+            continue
         try:
-            assert not torch.equal(p0, p1)
+            np.testing.assert_raises(AssertionError, torch.testing.assert_allclose, p0, p1)
         except AssertionError:
-            print(name)
+            if 'bias' in name:
+                print('Warning: {} not updating'.format(name))
+                continue
+            if p1.grad.norm() > 1e-6:
+                print('Warning: {} not significantly updating'.format(name))
+                continue
+            print('{} not updating'.format(name))
+            for (nn1, pp1) in params:
+                print('{} grad: {}'.format(nn1, pp1.grad.norm().item()))
+            import pdb
+            pdb.set_trace()
             raise
 
 

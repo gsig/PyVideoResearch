@@ -6,7 +6,7 @@ import torch.nn.functional as F
 class _NonLocalBlockND(nn.Module):
     # @AlexHex7
     def __init__(self, in_channels, inter_channels=None, dimension=3, mode='embedded_gaussian',
-                 sub_sample=True, bn_layer=True, group_size=None):
+                 sub_sample=True, bn_layer=True, group_size=None, zero_init_conv=False):
         super(_NonLocalBlockND, self).__init__()
 
         assert dimension in [1, 2, 3]
@@ -40,6 +40,8 @@ class _NonLocalBlockND(nn.Module):
 
         self.g = conv_nd(in_channels=self.in_channels, out_channels=self.inter_channels,
                          kernel_size=1, stride=1, padding=0)
+        nn.init.normal_(self.g.weight, std=0.01)
+        nn.init.constant_(self.g.bias, 0)
 
         if bn_layer:
             self.W = nn.Sequential(
@@ -47,13 +49,19 @@ class _NonLocalBlockND(nn.Module):
                         kernel_size=1, stride=1, padding=0),
                 bn(self.in_channels)
             )
-            nn.init.constant(self.W[1].weight, 0)
-            nn.init.constant(self.W[1].bias, 0)
+            if zero_init_conv:
+                nn.init.constant_(self.W[1].weight, 0)
+            else:
+                nn.init.normal_(self.W[1].weight, std=0.01)
+            nn.init.constant_(self.W[1].bias, 0)
         else:
             self.W = conv_nd(in_channels=self.inter_channels, out_channels=self.in_channels,
                              kernel_size=1, stride=1, padding=0)
-            nn.init.constant(self.W.weight, 0)
-            nn.init.constant(self.W.bias, 0)
+            if zero_init_conv:
+                nn.init.constant_(self.W.weight, 0)
+            else:
+                nn.init.normal_(self.W.weight, std=0.01)
+            nn.init.constant_(self.W.bias, 0)
 
         self.theta = None
         self.phi = None
@@ -64,6 +72,10 @@ class _NonLocalBlockND(nn.Module):
                                  kernel_size=1, stride=1, padding=0)
             self.phi = conv_nd(in_channels=self.in_channels, out_channels=self.inter_channels,
                                kernel_size=1, stride=1, padding=0)
+            nn.init.normal_(self.theta.weight, std=0.01)
+            nn.init.constant_(self.theta.bias, 0)
+            nn.init.normal_(self.phi.weight, std=0.01)
+            nn.init.constant_(self.phi.bias, 0)
 
             if mode == 'concatenation':
                 self.concat_project = nn.Sequential(

@@ -226,7 +226,7 @@ class NONLocalBlock2D(_NonLocalBlockND):
 
 class NONLocalBlock3DNoInit(_NonLocalBlockND):
     def __init__(self, in_channels, inter_channels=None, mode='embedded_gaussian', sub_sample=True, bn_layer=True, group_size=None):
-        super(NONLocalBlock3D, self).__init__(in_channels,
+        super(NONLocalBlock3DNoInit, self).__init__(in_channels,
                                               inter_channels=inter_channels,
                                               dimension=3, mode=mode,
                                               sub_sample=sub_sample,

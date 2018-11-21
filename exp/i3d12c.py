@@ -38,6 +38,7 @@ args = [
     #'--evaluate',
     '--workers', '4',
     '--disable-cudnn-benchmark',
+    '--disable-cudnn',
 ]
 sys.argv.extend(args)
 try:

@@ -62,7 +62,7 @@ class AVAmp4(Kineticsmp4, Dataset):
             #meta['pids'] = label['pids']
             # data augmentation, hflip
             if self.split == 'train' and np.random.rand() > .5:
-                img = np.ascontiguousarray(img[:, ::-1, :])
+                img = np.ascontiguousarray(img[::-1, :, :])
                 meta['boxes'][:, [0, 2]] = 1 - meta['boxes'][:, [2, 0]]
             return img, target, meta
 

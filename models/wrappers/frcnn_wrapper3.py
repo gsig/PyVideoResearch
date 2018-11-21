@@ -70,7 +70,7 @@ class FRCNNWrapper3(Wrapper):
         cfg.MODEL.TYPE = "generalized_rcnn"
 
         cfg.RPN.CLS_ACTIVATION = 'sigmoid'
-        cfg.RPN.SIZES = (16, 32, 64, 128, 256, 512)
+        cfg.RPN.SIZES = (32, 64, 128, 256, 512)
         cfg.RPN.STRIDE = 16
         cfg.FPN.COARSEST_STRIDE = 16  # bugfix, anchor stride depends on FPN parameters
 

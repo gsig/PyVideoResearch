@@ -38,6 +38,8 @@ args = [
     #'--evaluate',
     '--workers', '4',
     '--freeze-batchnorm',
+    '--disable-cudnn-benchmark',
+    '--disable-cudnn',
 ]
 sys.argv.extend(args)
 try:

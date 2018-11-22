@@ -36,7 +36,7 @@ args = [
     '--start-epoch', '1',
     #'--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
     #'--evaluate',
-    '--workers', '4',
+    '--workers', '2',
     '--disable-cudnn-benchmark',
     '--disable-cudnn',
 ]

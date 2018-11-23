@@ -34,7 +34,7 @@ args = [
     '--nclass', '81',
     '--originalloss-weight', '1',
     '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar' +
-                ';/nfs.yoda/gsigurds/ai2/caches/avacls2b/model.pth.tar',
+                ';/nfs.yoda/gsigurds/caches/avacls2b/model.pth.tar',
     '--workers', '4',
     '--no-val-video',
     '--metric', 'AVA6val',

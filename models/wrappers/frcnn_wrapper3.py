@@ -285,11 +285,8 @@ class FRCNNWrapper3(Wrapper):
         rpn_kwargs = {k: v for k, v in rpn_kwargs.items()}
         tensorize(rpn_kwargs)
 
-        import pdb
-        pdb.set_trace()
-
         # visual debugging
-        if True:
+        if False:
             # visualize gt
             # fake_scores = np.zeros((len(roidb[-1]['gt_classes']), 81))
             # fake_boxes = np.tile(roidb[-1]['boxes'], (1, roi_score.shape[1]))

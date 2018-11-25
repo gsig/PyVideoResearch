@@ -201,11 +201,6 @@ class FRCNNWrapper3(Wrapper):
         t = x.shape[2]
         x_slice = x[:, :, t//2, :, :]
 
-        # TODO Add support for multilabel boxes
-        for m in meta:
-            s = 0.001*np.random.rand(*m['boxes'].shape)
-            m['boxes'] = m['boxes'] + torch.Tensor(s)
-
         # pass through region proposal network
         roidb = [meta_to_entry(m, self.n_class, self.input_size) for m in meta]
         im_info = torch.ones(x_slice.shape[0], 3)
@@ -285,11 +280,8 @@ class FRCNNWrapper3(Wrapper):
         rpn_kwargs = {k: v for k, v in rpn_kwargs.items()}
         tensorize(rpn_kwargs)
 
-        import pdb
-        pdb.set_trace()
-
         # visual debugging
-        if True:
+        if False:
             # visualize gt
             # fake_scores = np.zeros((len(roidb[-1]['gt_classes']), 81))
             # fake_boxes = np.tile(roidb[-1]['boxes'], (1, roi_score.shape[1]))
@@ -298,10 +290,10 @@ class FRCNNWrapper3(Wrapper):
             # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             # visualize rpn
-            fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
-            fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
-            fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
-            scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
+            # fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
+            # fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
+            # fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
+            # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             import types
             dataset = types.SimpleNamespace()

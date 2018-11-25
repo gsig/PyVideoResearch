@@ -295,10 +295,10 @@ class FRCNNWrapper3(Wrapper):
             # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             # visualize rpn
-            # fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
-            # fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
-            # fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
-            # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
+            fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
+            fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
+            fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
+            scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             import types
             dataset = types.SimpleNamespace()

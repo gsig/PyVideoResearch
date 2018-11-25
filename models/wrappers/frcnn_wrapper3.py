@@ -280,6 +280,9 @@ class FRCNNWrapper3(Wrapper):
         rpn_kwargs = {k: v for k, v in rpn_kwargs.items()}
         tensorize(rpn_kwargs)
 
+        import pdb
+        pdb.set_trace()
+
         # visual debugging
         if True:
             # visualize gt

@@ -4,3 +4,6 @@
 [submodule "external/ActivityNet"]
 	path = external/ActivityNet
 	url = git://github.com/gsig/ActivityNet.git
+[submodule "external/maskrcnn-benchmark"]
+	path = external/maskrcnn-benchmark
+	url = https://github.com/facebookresearch/maskrcnn-benchmark.git

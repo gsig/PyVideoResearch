@@ -5,14 +5,13 @@ import torch
 import sys
 import os.path
 import os
-import scipy
+#import scipy
 import numpy as np
 from argparse import Namespace
 #from models.bases.aj_i3d import Unit3D
 #from collections import defaultdict
 #import torch.nn.functional as F
 #import torch.nn.init as init
-
 
 
 def str2torch(str_array):
@@ -113,11 +112,11 @@ class MaskRCNNWrapper(Wrapper):
             except Exception:
                 scores = pred_boxlist.get_field("labels")
             score_prediction = {'do_not_collate': True,
-                                'vid': str2torch(m['id']).cuda(),
-                                'start': torch.Tensor([(m['start'])]).cuda(),
-                                'boxes': pred_boxlist.bbox.cuda() / img_size[0],
-                                'labels': pred_boxlist.get_field("labels").cuda(),
-                                'scores':  scores.cuda()}
+                                'vid': str2torch(m['id']),
+                                'start': torch.Tensor([(m['start'])]),
+                                'boxes': pred_boxlist.bbox / img_size[0],
+                                'labels': pred_boxlist.get_field("labels"),
+                                'scores': scores}
             score_predictions.append(score_prediction)
 
         return score_predictions, proposal_losses, detector_losses

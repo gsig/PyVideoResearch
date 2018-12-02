@@ -115,7 +115,7 @@ class MaskRCNNWrapper(Wrapper):
                                 'vid': str2torch(m['id']),
                                 'start': torch.Tensor([(m['start'])]),
                                 'boxes': pred_boxlist.bbox.cpu() / img_size[0],
-                                'labels': pred_boxlist.get_field("labels").cpu(),
+                                'labels': pred_boxlist.get_field("labels").cpu() - 1,  # 0 is bg class
                                 'scores': scores.cpu()}
             score_predictions.append(score_prediction)
 

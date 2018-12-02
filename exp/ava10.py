@@ -42,6 +42,7 @@ args = [
     '--disable-cudnn-benchmark',
     '--freeze-batchnorm',
     '--freeze-base',
+    '--evaluate',
     #'--freeze-head',
 ]
 sys.argv.extend(args)

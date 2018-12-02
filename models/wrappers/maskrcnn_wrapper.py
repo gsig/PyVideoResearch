@@ -114,9 +114,9 @@ class MaskRCNNWrapper(Wrapper):
             score_prediction = {'do_not_collate': True,
                                 'vid': str2torch(m['id']),
                                 'start': torch.Tensor([(m['start'])]),
-                                'boxes': pred_boxlist.bbox / img_size[0],
-                                'labels': pred_boxlist.get_field("labels"),
-                                'scores': scores}
+                                'boxes': pred_boxlist.bbox.cpu() / img_size[0],
+                                'labels': pred_boxlist.get_field("labels").cpu(),
+                                'scores': scores.cpu()}
             score_predictions.append(score_prediction)
 
         return score_predictions, proposal_losses, detector_losses

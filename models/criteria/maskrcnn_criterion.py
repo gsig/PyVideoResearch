@@ -22,12 +22,15 @@ class MaskRCNNCriterion(DefaultCriterion):
     def forward(self, score_predictions, proposal_losses, detector_losses,
                 target, meta, synchronous=False):
 
-        losses = [proposal_losses['loss_objectness'],
-                  proposal_losses['loss_rpn_box_reg'],
-                  detector_losses['loss_classifier'],
-                  detector_losses['loss_box_reg'],
-                 ]
-        print('losses {} {} {} {}'.format(*losses))
+        if self.training:
+            losses = [proposal_losses['loss_objectness'],
+                      proposal_losses['loss_rpn_box_reg'],
+                      detector_losses['loss_classifier'],
+                      detector_losses['loss_box_reg'],
+                      ]
+            print('losses {} {} {} {}'.format(*losses))
+        else:
+            losses = [0]
 
         score_targets = []
         for m in meta:

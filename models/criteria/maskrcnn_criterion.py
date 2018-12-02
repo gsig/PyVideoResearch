@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 import sys
 import os.path
+import torch
 from models.criteria.default_criterion import DefaultCriterion
 
 
@@ -30,7 +31,7 @@ class MaskRCNNCriterion(DefaultCriterion):
                       ]
             print('losses {} {} {} {}'.format(*losses))
         else:
-            losses = [0]
+            losses = [torch.zeros(1)]
 
         score_targets = []
         for m in meta:

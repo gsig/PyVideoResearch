@@ -24,10 +24,10 @@ class MaskRCNNCriterion(DefaultCriterion):
                 target, meta, synchronous=False):
 
         if self.training:
-            losses = [proposal_losses['loss_objectness'],
-                      proposal_losses['loss_rpn_box_reg'],
-                      detector_losses['loss_classifier'],
-                      detector_losses['loss_box_reg'],
+            losses = [sum(proposal_losses['loss_objectness']),
+                      sum(proposal_losses['loss_rpn_box_reg']),
+                      sum(detector_losses['loss_classifier']),
+                      sum(detector_losses['loss_box_reg']),
                       ]
             print('losses {} {} {} {}'.format(*losses))
         else:

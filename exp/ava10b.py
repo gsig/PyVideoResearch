@@ -36,7 +36,7 @@ args = [
     '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
     #'--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar' +
     #            ';/nfs.yoda/gsigurds/caches/avacls2b/model.pth.tar',
-    '--workers', '4',
+    '--workers', '16',
     '--no-val-video',
     '--metric', 'AVA6val',
     '--disable-cudnn-benchmark',

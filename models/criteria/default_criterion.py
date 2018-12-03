@@ -41,4 +41,4 @@ class DefaultCriterion(Criterion):
 
         if synchronous:
             a = winsmooth(a, kernelsize=self.win_smooth)
-        return a, loss, target
+        return a.cpu(), loss, target.cpu()

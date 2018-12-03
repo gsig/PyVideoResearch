@@ -6,4 +6,4 @@
 git add -A && \
 git diff --cached && \
 git commit -m "$1" && \
-git push origin dev
+git push origin HEAD

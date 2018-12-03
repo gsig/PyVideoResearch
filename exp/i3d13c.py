@@ -16,7 +16,7 @@ args = [
     '--print-freq', '1',
     '--dataset', 'charades_video',
     '--arch', 'resnet50_3d_nonlocal',
-    '--lr', '.375',
+    '--lr', '.0375',
     '--criterion', 'default_criterion',
     '--wrapper', 'default_wrapper',
     '--lr-decay-rate', '15,40',

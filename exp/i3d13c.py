@@ -39,7 +39,7 @@ args = [
     '--workers', '4',
     '--freeze-batchnorm',
     '--disable-cudnn-benchmark',
-    '--disable-cudnn',
+    #'--disable-cudnn',
 ]
 sys.argv.extend(args)
 try:

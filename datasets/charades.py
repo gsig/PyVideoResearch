@@ -106,13 +106,13 @@ class Charades(Dataset):
         return len(self.data['image_paths'])
 
     @classmethod
-    def get(cls, args):
+    def get(cls, args, scale=(0.08, 1.0)):
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
         train_dataset = cls(
             args, args.data, 'train', args.train_file, args.cache,
             transform=transforms.Compose([
-                transforms.RandomResizedCrop(args.input_size),
+                transforms.RandomResizedCrop(args.input_size, scale),
                 transforms.ColorJitter(
                     brightness=0.4, contrast=0.4, saturation=0.4),
                 transforms.RandomHorizontalFlip(),

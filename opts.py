@@ -81,6 +81,9 @@ def parse():
     parser.add_argument('--freeze-head', action='store_true')
     parser.add_argument('--freeze-base', action='store_true')
 
+    # Actor Observer Parameters
+    parser.add_argument('--decay', default=0.9, type=float)
+
     args = parser.parse_args()
     args.distributed = args.world_size > 1
     args.cache = args.cache_dir + args.name + '/'

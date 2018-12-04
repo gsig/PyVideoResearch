@@ -24,7 +24,7 @@ class CharadesEgo(Charades):
         super(CharadesEgo, self).__init__(*args, **kwargs)
         self.deltaneg = 10 * self.fps
 
-    def prepare(self, path, labels, split):
+    def _prepare(self, path, labels, split):
         datadir = path
         image_paths, targets, ids, meta = [], [], [], []
 
@@ -90,4 +90,4 @@ class CharadesEgo(Charades):
 
     @classmethod
     def get(cls, args):
-        return super(CharadesEgo).get(cls, args, (0.8, 1.0))
+        return super(CharadesEgo, cls).get(args, scale=(0.8, 1.0))

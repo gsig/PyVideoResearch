@@ -54,9 +54,9 @@ class ActorObserverCriterion(Criterion):
         n = (w.sum() + 0.00001) / w.shape[0]
         final = ((loss - k) * (w / n)).sum()
 
-        print('loss before {}', loss.sum())
-        print('loss after {}', (loss * w / n).sum())
-        print('weight median: {}, var: {}', w.median(), w.var())
+        print('loss before {}', loss.sum().item())
+        print('loss after {}', (loss * w / n).sum().item())
+        print('weight median: {}, var: {}', w.median().item(), w.var().item())
 
         pred = {'prediction': [(a, b) for a, b in zip(dist_a.detach().cpu(), dist_b.detach().cpu())],
                 'weights': w.detach().cpu()}

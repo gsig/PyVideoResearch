@@ -61,7 +61,7 @@ class Trainer(object):
             if type(output) != tuple:
                 output = (output,)
             scores, loss, score_target = criterion(*(output + (target, meta)))
-            losses.update(loss.item(), input.size(0))
+            losses.update(loss.item())
             with torch.no_grad():
                 for m in metrics:
                     m.update(scores, score_target)

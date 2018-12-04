@@ -90,4 +90,4 @@ class CharadesEgo(Charades):
 
     @classmethod
     def get(cls, args):
-        return super(CharadesEgo, cls).get(args, scale=(0.8, 1.0))
+        return Charades.get(cls, args, scale=(0.8, 1.0))

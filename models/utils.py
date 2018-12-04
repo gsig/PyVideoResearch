@@ -33,7 +33,9 @@ class MyDataParallel(nn.DataParallel):
         # only scatter inputs that don't have the do_not_collate flag
         inputss = []
         for inp in inputs:
-            if isinstance(inp[0], collections.Mapping) and 'do_not_collate' in inp[0]:
+            if (isinstance(inp, collections.Sequence) and
+               isinstance(inp[0], collections.Mapping) and
+               'do_not_collate' in inp[0]):
                 inp = split_list(inp, len(device_ids))
             else:
                 inp, kwargs = super(MyDataParallel, self).scatter((inp, ), kwargs, device_ids)

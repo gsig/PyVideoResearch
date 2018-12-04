@@ -34,10 +34,10 @@ class VideoSoftmax(nn.Module):
     def update_constants(self, input, ids):
         for x, vid in zip(input, ids):
             if vid not in self.storage:
-                self.storage[vid] = x.data[0]
+                self.storage[vid] = x.item()
             else:
                 a = math.log(self.decay) + self.storage[vid]
-                b = math.log(1 - self.decay) + x.data[0]
+                b = math.log(1 - self.decay) + x.item()
                 self.storage[vid] = lsetwo(a, b)
 
     def forward(self, input, ids):

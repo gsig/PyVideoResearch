@@ -12,7 +12,7 @@ from main import main
 name = __file__.split('/')[-1].split('.')[0]  # name is filename
 
 args = [
-    '--name', name, 
+    '--name', name,
     '--dataset', 'charades_ego',
     '--print-freq', '1',
     '--arch', 'resnet152',
@@ -24,7 +24,7 @@ args = [
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
     '--pretrained',
     '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +
-                ';/nfs.yoda/gsigurds/charades_pretrained/resnet_rgb.pth.tar',
+                ';/nfs.yoda/gsigurds/charades_pretrained/resnet_rgb_python3.pth.tar',
     '--decay', '0.95',
     '--lr', '3e-5',
     '--lr-decay-rate', '15',

@@ -25,7 +25,7 @@ class ActorObserverCriterion(Criterion):
 
     def update_constants(self, input, weights, ids):
         for x, w, vid in zip(input, weights, ids):
-            x, w = x.data[0], w.data[0]
+            x, w = x.item(), w.item()
             if vid not in self.storage:
                 self.storage[vid] = [x, w]
             else:
@@ -54,9 +54,9 @@ class ActorObserverCriterion(Criterion):
         n = (w.sum() + 0.00001) / w.shape[0]
         final = ((loss - k) * (w / n)).sum()
 
-        print('loss before {}', loss.data.sum())
-        print('loss after {}', (loss.data * w.data / n.data).sum())
-        print('weight median: {}, var: {}', w.data.median(), w.data.var())
+        print('loss before {}', loss.sum())
+        print('loss after {}', (loss * w / n).sum())
+        print('weight median: {}, var: {}', w.median(), w.var())
 
         pred = {'prediction': [(a, b) for a, b in zip(dist_a.detach().cpu(), dist_b.detach().cpu())],
                 'weights': w.detach().cpu()}

@@ -21,6 +21,7 @@ def get_neg_time(egoii, n_ego, d):
 
 class CharadesEgo(Charades):
     def __init__(self, *args, **kwargs):
+        self.fps = 24
         self.deltaneg = 10 * self.fps
         super(CharadesEgo, self).__init__(*args, **kwargs)
 

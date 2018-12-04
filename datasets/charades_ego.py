@@ -21,8 +21,8 @@ def get_neg_time(egoii, n_ego, d):
 
 class CharadesEgo(Charades):
     def __init__(self, *args, **kwargs):
-        super(CharadesEgo, self).__init__(*args, **kwargs)
         self.deltaneg = 10 * self.fps
+        super(CharadesEgo, self).__init__(*args, **kwargs)
 
     def _prepare(self, path, labels, split):
         datadir = path

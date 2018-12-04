@@ -37,7 +37,8 @@ class ActorObserverWrapper(DefaultWrapper):
               math.exp(self.third_scale.data[0]),
               math.exp(self.firstneg_scale.data[0]))
 
-    def forward(self, x, y, z):
+    def forward(self, inputs, meta):
+        x, y, z = inputs
         """ assuming:
             x: first person positive
             y: third person

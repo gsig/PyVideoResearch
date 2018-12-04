@@ -38,8 +38,9 @@ class ActorObserverCriterion(Criterion):
                 if new_weight < 0.0001:
                     print('MILC new_weight is effectively 0')
 
-    def forward(self, dist_a, dist_b, x, y, z, target, ids, synchronous=False):
+    def forward(self, dist_a, dist_b, x, y, z, target, meta, synchronous=False):
         # Normalize and combine weights
+        ids = meta['id']
         x = self.xmax(x, ids)
         y = self.ymax(y, ids)
         z = self.zmax(z, ids)

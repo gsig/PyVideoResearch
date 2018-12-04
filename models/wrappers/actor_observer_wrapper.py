@@ -27,12 +27,12 @@ class ActorObserverWrapper(DefaultWrapper):
         base_z = self.basenet(z)
         dist_a = F.pairwise_distance(base_x, base_y, 2).view(-1)
         dist_b = F.pairwise_distance(base_y, base_z, 2).view(-1)
-        print('fc7 norms: {} \t {} \t {}', base_x.norm().item(), base_y.norm().item(), base_z.norm().item())
-        print('pairwise dist means: {} \t {}', dist_a.mean().item(), dist_b.mean().item())
+        print('fc7 norms:', base_x.norm().item(), base_y.norm().item(), base_z.norm().item())
+        print('pairwise dist means:', dist_a.mean().item(), dist_b.mean().item())
         return base_x, base_y, base_z, dist_a, dist_b
 
     def verbose(self):
-        print('scales:{}\t{}\t{}',
+        print('scales:',
               math.exp(self.firstpos_scale.item()),
               math.exp(self.third_scale.item()),
               math.exp(self.firstneg_scale.item()))

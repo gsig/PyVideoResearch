@@ -82,11 +82,11 @@ def generic_load(arch, pretrained, weights, args):
 
 
 def replace_last_layer(model, args):
-    if hasattr(model, 'classifier'):
+    if hasattr(model, 'replace_logits'):
+        model.replace_logits(args.nclass)
+    elif hasattr(model, 'classifier'):
         newcls = list(model.classifier.children())
         model.classifier = nn.Sequential(*newcls[:-1])
-    elif hasattr(model, 'replace_logits'):
-        model.replace_logits(args.nclass)
     elif hasattr(model, 'fc'):
         model.fc = nn.Linear(model.fc.in_features, args.nclass)
         if hasattr(model, 'AuxLogits'):
@@ -95,6 +95,20 @@ def replace_last_layer(model, args):
         newcls = list(model.children())[:-1]
         model = nn.Sequential(*newcls)
     return model
+
+
+def remove_last_layer(model):
+    if hasattr(model, 'classifier'):
+        newcls = list(model.classifier.children())
+        model.in_features = newcls[-1].in_features
+        model.classifier = nn.Sequential(*newcls[:-1])
+    elif hasattr(model, 'fc'):
+        model.in_features = model.fc.in_features
+        model.fc = lambda x: x
+    else:
+        newcls = list(model.children())[:-1]
+        model.in_features = list(model.children())[-1].in_features
+        model = nn.Sequential(*newcls[:-1])
 
 
 def set_distributed_backend(model, args):

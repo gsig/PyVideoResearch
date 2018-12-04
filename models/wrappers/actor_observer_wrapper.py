@@ -6,12 +6,14 @@ import torch.nn as nn
 import math
 import torch.nn.functional as F
 from models.wrappers.default_wrapper import DefaultWrapper
+from models.utils import remove_last_layer
 
 
 class ActorObserverWrapper(DefaultWrapper):
     def __init__(self, basenet, opts, *args, **kwargs):
         super(ActorObserverWrapper, self).__init__(basenet, opts, *args, **kwargs)
-        dim = basenet.outdim
+        self.basenet = remove_last_layer(self.basenet)
+        dim = basenet.in_features
         self.firstpos_fc = nn.Sequential(nn.Linear(dim, 1), nn.Tanh())
         self.third_fc = nn.Sequential(nn.Linear(dim, 1), nn.Tanh())
         self.firstneg_fc = self.firstpos_fc

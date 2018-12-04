@@ -41,6 +41,9 @@ class MyDataParallel(nn.DataParallel):
                     inp = [x[0] for x in inp]  # de-tuple
             else:
                 inp, kwargs = super(MyDataParallel, self).scatter(inp, kwargs, device_ids)
+                import pdb
+                pdb.set_trace()
+                print('asdf')
             inputss.append(inp)
         return tuple(zip(*inputss)), kwargs
 

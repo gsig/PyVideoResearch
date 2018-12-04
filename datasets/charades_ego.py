@@ -71,7 +71,6 @@ class CharadesEgo(Charades):
         impaths = self.data['image_paths'][index]
         target = self.data['targets'][index]
         meta = self.data['meta'][index]
-        meta['do_not_collate'] = True
         meta['id'] = self.data['ids'][index]
         try:
             ims = [default_loader(im) for im in impaths]

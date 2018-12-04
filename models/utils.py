@@ -114,6 +114,7 @@ def remove_last_layer(model):
         newcls = list(model.children())[:-1]
         model.in_features = list(model.children())[-1].in_features
         model = nn.Sequential(*newcls[:-1])
+    return model
 
 
 def set_distributed_backend(model, args):

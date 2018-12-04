@@ -6,6 +6,11 @@ import torch.distributed as dist
 import collections
 
 
+class IdentityModule(nn.Module):
+    def forward(self, inputs):
+        return inputs
+
+
 def split_list(lst, chunk_num):
     n = len(lst)
     chunk_size = max(1, n // chunk_num)
@@ -104,7 +109,7 @@ def remove_last_layer(model):
         model.classifier = nn.Sequential(*newcls[:-1])
     elif hasattr(model, 'fc'):
         model.in_features = model.fc.in_features
-        model.fc = lambda x: x
+        model.fc = IdentityModule()
     else:
         newcls = list(model.children())[:-1]
         model.in_features = list(model.children())[-1].in_features

@@ -84,6 +84,7 @@ def parse():
     # Actor Observer Parameters
     parser.add_argument('--decay', default=0.9, type=float)
     parser.add_argument('--finaldecay', default=0.9, type=float)
+    parser.add_argument('--margin', default=0.0, type=float)
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

@@ -38,7 +38,7 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
         # Classification loss
         if len(inds2) > 0:
             cls2, target2 = var_subset([cls, -target.long()], inds2)
-            clsloss = self.clsloss(nn.Sigmoid()(cls2), target2)
+            clsloss = self.clsloss(nn.Sigmoid()(cls2), target2.float())
             f = self.clsweight * clsloss.sum()
             final.append(f)
         else:

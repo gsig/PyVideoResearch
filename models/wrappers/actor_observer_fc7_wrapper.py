@@ -10,7 +10,7 @@ class ActorObserverFC7Wrapper(ActorObserverWrapper):
         if 'DataParallel' in basenet.__class__.__name__:
             basenet = basenet.module
         print('Initializing FC7 extractor with AOB instance')
-        self.__dict__ = opts.__dict__
+        self.__dict__ = basenet.__dict__
 
     def forward(self, x, y, z):
         """ assuming:

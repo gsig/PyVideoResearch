@@ -62,6 +62,6 @@ class CharadesEgoPlusCharades(CharadesMeta):
         train_dataset.target_transform = transforms.Lambda(lambda x: -x)
         val_dataset.target_transform = transforms.Lambda(lambda x: -x)
 
-        train_dataset = ConcatDataset([train_dataset] + [train_datasetego] * 6)  # magic number to balance
-        val_dataset = ConcatDataset([val_dataset] + [val_datasetego] * 6)
+        train_dataset = ConcatDataset([train_dataset] + [train_datasetego] * 3)  # magic number to balance
+        val_dataset = ConcatDataset([val_dataset] + [val_datasetego] * 3)
         return train_dataset, val_dataset, valvideo_dataset

@@ -27,11 +27,14 @@ rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
 resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
 
 
-def validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, epoch=-1):
+def validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, tasks, epoch=-1):
     scores = {}
     if not args.no_val_video:
         scores.update(trainer.validate_video(valvideo_loader, model, criterion, epoch, videometrics, args))
     scores.update(trainer.validate(val_loader, model, criterion, epoch, metrics, args))
+    for task in tasks:
+        with torch.no_grad():
+            scores.update(task.run(model, epoch, args))
     return scores
 
 
@@ -62,7 +65,7 @@ def main():
     train_loader, val_loader, valvideo_loader = get_dataset(args)
 
     if args.evaluate:
-        validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, -1)
+        validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, tasks, -1)
         return
 
     if args.warmups > 0:
@@ -74,10 +77,7 @@ def main():
             trainer.train_sampler.set_epoch(epoch)
         scores = {}
         scores.update(trainer.train(train_loader, model, criterion, optimizer, epoch, metrics, args))
-        scores.update(validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, epoch))
-        for task in tasks:
-            with torch.no_grad():
-                scores.update(task.run(model, epoch, args))
+        scores.update(validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, tasks, epoch))
         is_best = scores[args.metric] > best_score
         best_score = max(scores[args.metric], best_score)
         checkpoints.save(epoch, args, model, optimizer, is_best, scores, args.metric)

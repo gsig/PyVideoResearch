@@ -41,6 +41,7 @@ class CharadesEgoVideoAlignment(CharadesEgoVideo):
                 data['id'] = vid
                 data['shift'] = ii
                 datas.append(data)
+        return {'datas': datas, 'split': split}
 
     @classmethod
     def get(cls, args):

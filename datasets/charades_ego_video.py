@@ -55,7 +55,6 @@ class CharadesEgoVideo(CharadesVideo):
             data['labels'] = label
             data['id'] = vid
             datas.append(data)
-
         return {'datas': datas, 'split': split}
 
     def _process_stack(self, base, shift, data):

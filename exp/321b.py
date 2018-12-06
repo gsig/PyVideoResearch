@@ -33,7 +33,7 @@ args = [
     '--lr-decay-rate', '15',
     '--batch-size', '4',
     '--train-size', '2.0',
-    #'--val-size', '0.5',
+    #'--val-size', '1.0',
     '--val-size', '0.05',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',

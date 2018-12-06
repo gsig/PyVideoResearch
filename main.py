@@ -16,6 +16,7 @@ from misc_utils import tee
 from misc_utils.utils import seed
 from misc_utils.experiments import get_script_dir_commit_hash, experiment_folder
 from metrics.get import get_metrics
+from tasks.get import get_tasks
 
 # pytorch bugfixes
 import cv2
@@ -48,6 +49,7 @@ def main():
 
     metrics = get_metrics(args.metrics)
     videometrics = get_metrics(args.videometrics)
+    tasks = get_tasks(args.tasks)
     model, criterion = get_model(args)
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
@@ -73,6 +75,9 @@ def main():
         scores = {}
         scores.update(trainer.train(train_loader, model, criterion, optimizer, epoch, metrics, args))
         scores.update(validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, epoch))
+        for task in tasks:
+            with torch.no_grad():
+                scores.update(task.run(model, epoch, args))
         is_best = scores[args.metric] > best_score
         best_score = max(scores[args.metric], best_score)
         checkpoints.save(epoch, args, model, optimizer, is_best, scores, args.metric)

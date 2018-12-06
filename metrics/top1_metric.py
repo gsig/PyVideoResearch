@@ -7,8 +7,13 @@ class Top1Metric(Metric):
         self.am = AverageMeter()
 
     def update(self, prediction, target):
-        prec1, = accuracy(prediction, target, topk=(1,))
-        self.am.update(prec1.item())
+        if isinstance(prediction, dict):
+            prediction = prediction['class_prediction']
+        if isinstance(target, dict):
+            target = target['class_target']
+        if len(target) > 0:
+            prec1, = accuracy(prediction, target, topk=(1,))
+            self.am.update(prec1.item())
 
     def __repr__(self):
         return 'Prec@1 {am.val:.3f} ({am.avg:.3f})'.format(am=self.am)

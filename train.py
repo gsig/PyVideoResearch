@@ -3,6 +3,7 @@
 import torch
 import itertools
 from misc_utils.utils import AverageMeter, submission_file, Timer
+from torch.nn.parallel.scatter_gather import gather
 
 
 def adjust_learning_rate(startlr, decay_rate, optimizer, epoch):
@@ -119,10 +120,11 @@ class Trainer(object):
                     output_chunks = []
                     for chunk in input.split(args.video_batch_size):
                         output_chunks.append(model(chunk, meta))
-                    if type(output_chunks[0]) == tuple:
-                        output = tuple(torch.cat(x) for x in zip(*output_chunks))
-                    else:
-                        output = torch.cat(output_chunks)
+                    #if type(output_chunks[0]) == tuple:
+                    #    output = tuple(torch.cat(x) for x in zip(*output_chunks))
+                    #else:
+                    #    output = torch.cat(output_chunks)
+                    output = gather(output_chunks)
 
                 if type(output) != tuple:
                     output = (output,)

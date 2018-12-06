@@ -29,7 +29,7 @@ class VideoSoftmax(nn.Module):
     def get_constants(self, ids):
         out = [self.storage[x] for x in ids]
         # out = [math.exp(-x) for x in ids]
-        return torch.autograd.Variable(torch.Tensor(out).cuda())
+        return torch.Tensor(out)
 
     def update_constants(self, input, ids):
         for x, vid in zip(input, ids):
@@ -42,6 +42,6 @@ class VideoSoftmax(nn.Module):
 
     def forward(self, input, ids):
         self.update_constants(input, ids)
-        constants = self.get_constants(ids)
+        constants = self.get_constants(ids).to(input.device)
         x = (input - constants).exp()
         return x

@@ -3,13 +3,18 @@ from metrics.metric import Metric
 import numpy as np
 
 
-class TripletAccuracy(Metric):
+class TripletAccuracyMetric(Metric):
     def __init__(self):
         self.am = AverageMeter()
 
     def update(self, prediction, target):
-        prec1 = self.triplet_accuracy(prediction['prediction'], target)
-        self.am.update(prec1.item())
+        if isinstance(prediction, dict):
+            prediction = prediction['triplet_prediction']
+        if isinstance(target, dict):
+            target = target['triplet_target']
+        if len(target) > 0:
+            prec1 = self.triplet_accuracy(prediction, target)
+            self.am.update(prec1.item())
 
     def __repr__(self):
         return 'TripletAccuracy {am.val:.3f} ({am.avg:.3f})'.format(am=self.am)

@@ -21,7 +21,7 @@ class ActorObserverCriterion(Criterion):
 
     def get_constants(self, ids):
         out = [self.storage[x][0] for x in ids]
-        return torch.Tensor(out).cuda()
+        return torch.Tensor(out)
 
     def update_constants(self, input, weights, ids):
         for x, w, vid in zip(input, weights, ids):
@@ -50,7 +50,7 @@ class ActorObserverCriterion(Criterion):
         # update L
         loss = self.loss.apply(dist_a, dist_b, target, self.margin)
         self.update_constants(loss, w, ids)
-        k = self.get_constants(ids)
+        k = self.get_constants(ids).to(dist_a.device)
         n = (w.sum() + 0.00001) / w.shape[0]
         final = ((loss - k) * (w / n)).sum()
 
@@ -58,6 +58,7 @@ class ActorObserverCriterion(Criterion):
         print('loss after', (loss * w / n).sum().item())
         print('weight median: {}, var: {}'.format(w.median().item(), w.var().item()))
 
-        pred = {'prediction': [(a, b) for a, b in zip(dist_a.detach().cpu(), dist_b.detach().cpu())],
+        pred = {'triplet_prediction': [(a, b) for a, b in zip(dist_a.detach().cpu(), dist_b.detach().cpu())],
                 'weights': w.detach().cpu()}
-        return pred, final, target.cpu()
+        targ = {'triplet_target': target.cpu()}
+        return pred, final, targ

@@ -24,7 +24,7 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
 
         # ActorObserverLoss
         if len(inds1) > 0:
-            vars1 = var_subset([dist_a, dist_b, x, y, z, target], inds1)
+            vars1 = var_subset([dist_a, dist_b, x, y, z, target[:, 0]], inds1)
             vars1 += [{'id': [ids[i] for i in inds1]}]
             pred, f, targ = super(ActorObserverWithClassifierCriterion, self).forward(*vars1)
             final.append(f)

@@ -59,7 +59,7 @@ class AlignmentTask(Task):
         abssec = MedianMeter()
         abssec0 = MedianMeter()
         randsec = MedianMeter()
-        model = ActorObserverFC7Wrapper(model)
+        model = ActorObserverFC7Wrapper(model, args)
 
         # switch to evaluate mode
         model.eval()

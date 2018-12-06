@@ -39,7 +39,7 @@ class CharadesEgoMeta(CharadesEgo):
         return ims, newtarget, meta
 
 
-class CharadesEgoPlusCharades(Charades):
+class CharadesEgoPlusCharades(CharadesMeta):
     @classmethod
     def get(cls, args):
         newargs = copy.deepcopy(args)
@@ -54,6 +54,10 @@ class CharadesEgoPlusCharades(Charades):
 
         train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(args)
         train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades, cls).get(newargs)
+
+        #train_dataset.transform.transforms.append(transforms.Lambda(lambda x: [x, x, x]))
+        #val_dataset.transform.transforms.append(transforms.Lambda(lambda x: [x, x, x]))
+        #valvideo_dataset.transform.transforms.append(transforms.Lambda(lambda x: [x, x, x]))
 
         train_dataset.target_transform = transforms.Lambda(lambda x: -x)
         val_dataset.target_transform = transforms.Lambda(lambda x: -x)

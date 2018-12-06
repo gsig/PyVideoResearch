@@ -36,7 +36,8 @@ args = [
     '--val-size', '0.5',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
-    '--workers', '4',
+    #'--workers', '4',
+    '--workers', '0',
     '--no-val-video',
     #'--evaluate',
 ]

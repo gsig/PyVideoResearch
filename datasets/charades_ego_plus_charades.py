@@ -28,13 +28,12 @@ class CharadesMeta(Charades):
 
 
 class CharadesEgoMeta(CharadesEgo):
-    def __init__(self, opts, *args, **kwargs):
-        super(CharadesEgoMeta, self).__init__(opts, *args, **kwargs)
-        self.nclass = opts.nclass
+    def __init__(self, *args, **kwargs):
+        super(CharadesEgoMeta, self).__init__(*args, **kwargs)
 
     def __getitem__(self, index):
         ims, target, meta = super(CharadesEgoMeta, self).__getitem__(index)
-        newtarget = torch.zeros(self.nclass)
+        newtarget = torch.IntTensor(self.num_classes).zero_()
         newtarget[0] = target
         return ims, newtarget, meta
 

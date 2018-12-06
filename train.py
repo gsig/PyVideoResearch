@@ -57,7 +57,8 @@ class Trainer(object):
                 assert meta['id'][0] == meta['id'][1], "dataset not synced"
             data_time.update(timer.thetime() - timer.end)
 
-            target = target.cuda(async=True)
+            if not args.cpu:
+                target = target.cuda(async=True)
             output = model(input, meta)
             if type(output) != tuple:
                 output = (output,)
@@ -111,7 +112,8 @@ class Trainer(object):
             criterion.eval()
 
             for i, (input, target, meta) in enumerate(loader):
-                target = target.cuda(async=True)
+                if not args.cpu:
+                    target = target.cuda(async=True)
 
                 # split batch into smaller chunks
                 if args.video_batch_size == -1:

@@ -71,7 +71,7 @@ def pil_loader(path):
             print(e)
             print('waiting 5 sec and trying again')
             time.sleep(5)
-    raise
+    raise IOError
 
 
 def pil_loader2(path):

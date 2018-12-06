@@ -8,6 +8,7 @@ from misc_utils.utils import MedianMeter, Timer
 from models.wrappers.actor_observer_fc7_wrapper import ActorObserverFC7Wrapper
 from tasks.task import Task
 from datasets.charades_ego_alignment import CharadesEgoAlignment
+from models.utils import set_distributed_backend
 
 
 def fc7list2mat(grp, dist=lambda x, y: np.linalg.norm(x - y)):
@@ -59,12 +60,15 @@ class AlignmentTask(Task):
         abssec0 = MedianMeter()
         randsec = MedianMeter()
         model = ActorObserverFC7Wrapper(model, args)
+        model = set_distributed_backend(model, args)
 
         # switch to evaluate mode
         model.eval()
 
         def fc7_generator():
             for i, (inputs, target, meta) in enumerate(loader):
+                if not args.cpu:
+                    target = target.cuda(async=True)
                 first_fc7, third_fc7, w_x, w_y = model(*inputs)
                 timer.tic()
                 if i % args.print_freq == 0:

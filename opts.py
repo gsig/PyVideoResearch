@@ -47,6 +47,7 @@ def parse():
     parser.add_argument('--no-logger', dest='no_logger', action='store_true')
     parser.add_argument('--disable-cudnn-benchmark', action='store_true', help='in case it is causing problems')
     parser.add_argument('--disable-cudnn', action='store_true', help='in case it is causing problems')
+    parser.add_argument('--cpu', action='store_true', help='run on cpu only')
 
     # Training parameters
     parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')

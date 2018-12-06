@@ -11,7 +11,7 @@ class CharadesEgoAlignment(CharadesEgo):
         val_dataset = cls(
             args, args.data, 'val', args.val_file, args.cache,
             transform=transforms.Compose([
-                transforms.Resize(int(256. / 224 * args.inputsize)),
+                transforms.Resize(int(256. / 224 * args.input_size)),
                 transforms.CenterCrop(args.inputsize),
                 transforms.ToTensor(),
                 normalize,

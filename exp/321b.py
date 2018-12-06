@@ -31,14 +31,14 @@ args = [
     '--decay', '0.95',
     '--lr', '3e-5',
     '--lr-decay-rate', '15',
-    '--batch-size', '2',
+    '--batch-size', '4',
     '--train-size', '2.0',
     '--val-size', '0.5',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
     '--workers', '4',
     '--no-val-video',
-    #'--evaluate',
+    '--evaluate',
 ]
 sys.argv.extend(args)
 try:

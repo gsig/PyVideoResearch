@@ -4,7 +4,7 @@ from models.criteria.actor_observer_criterion import ActorObserverCriterion
 
 
 def var_subset(var, inds):
-    inds = torch.LongTensor(inds, device=var[0].device)
+    inds = torch.LongTensor(inds).to(var[0].device)
     out = [x.index_select(0, inds) for x in var]
     return out
 

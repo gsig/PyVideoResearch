@@ -36,7 +36,7 @@ class CharadesEgoPlusCharades(CharadesMeta):
             'data': args.data.split(';')[-1]})
         vars(args).update({
             'train_file': args.train_file.split(';')[0],
-            'val_file': args.test_file.split(';')[0],
+            'val_file': args.val_file.split(';')[0],
             'data': args.data.split(';')[0]})
 
         train_datasetego, val_datasetego, _ = CharadesEgo.get(args)

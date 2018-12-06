@@ -18,6 +18,7 @@ args = [
     '--arch', 'resnet152',
     '--wrapper', 'actor_observer_wrapper',
     '--metrics', 'triplet_accuracy;triplet_top5;triplet_top10;triplet_top50',
+    '--metric', 'TripletTop10val',
     '--criterion', 'actor_observer_criterion',
     '--train-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_train.csv',
     '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_test.csv',

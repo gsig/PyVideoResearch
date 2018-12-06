@@ -35,6 +35,7 @@ class CharadesEgoMeta(CharadesEgo):
         ims, target, meta = super(CharadesEgoMeta, self).__getitem__(index)
         newtarget = torch.IntTensor(self.num_classes).zero_()
         newtarget[0] = target
+        meta['time'] = 0
         return ims, newtarget, meta
 
 

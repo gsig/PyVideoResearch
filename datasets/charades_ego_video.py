@@ -101,7 +101,10 @@ class CharadesEgoVideo(CharadesVideo):
         n = data['n']
         n_ego = data['n_ego']
         if shift is None:
-            shift = np.random.randint(n-self.train_gap-2)
+            if 'shift' in data:
+                shift = data['shift']
+            else:
+                shift = np.random.randint(n-self.train_gap-2)
         else:
             shift = int(shift * (n-self.train_gap-2))
         scale = (n_ego - 1) / float(n - 1)

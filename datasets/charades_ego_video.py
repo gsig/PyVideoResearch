@@ -76,8 +76,6 @@ class CharadesEgoVideo(CharadesVideo):
             except Exception as e:
                 print('failed to load image {}'.format(path))
                 print(e)
-                import pdb
-                pdb.set_trace()
                 raise
             img = resize(img)
             img = transforms.ToTensor()(img)
@@ -108,7 +106,7 @@ class CharadesEgoVideo(CharadesVideo):
             shift = int(shift * (n-self.train_gap-2))
         scale = (n_ego - 1) / float(n - 1)
         shift_ego = to_ego_time(shift, scale)
-        shift_ego_neg = get_neg_time(shift_ego, n_ego, self.deltaneg)
+        shift_ego_neg = get_neg_time(shift_ego, n_ego-self.train_gap-2, self.deltaneg)
         if shift_ego_neg is None:
             print('deltaneg too small for video')
             raise Exception('deltaneg too small for video')

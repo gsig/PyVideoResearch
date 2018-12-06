@@ -108,8 +108,7 @@ class CharadesEgoVideo(CharadesVideo):
         shift_ego = to_ego_time(shift, scale)
         shift_ego_neg = get_neg_time(shift_ego, n_ego-self.train_gap-2, self.deltaneg)
         if shift_ego_neg is None:
-            print('deltaneg too small for video')
-            raise Exception('deltaneg too small for video')
+            raise Exception('deltaneg too big for video')
         img, _, _ = self._process_stack(data['base'], shift, data)
         img_pos, _, _ = self._process_stack(data['base_ego'], shift_ego, data)
         img_neg, _, _ = self._process_stack(data['base_ego'], shift_ego_neg, data)

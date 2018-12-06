@@ -32,6 +32,7 @@ args = [
     '--lr', '3e-5',
     '--lr-decay-rate', '15',
     '--batch-size', '4',
+    '--video-batch-size', '16',
     '--train-size', '2.0',
     #'--val-size', '1.0',
     '--val-size', '0.05',

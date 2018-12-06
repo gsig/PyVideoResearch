@@ -5,7 +5,7 @@ import torch
 import datasets.video_transforms as videotransforms
 
 
-class CharadesEgoAlignment(CharadesEgoVideo):
+class CharadesEgoVideoAlignment(CharadesEgoVideo):
     @classmethod
     def get(cls, args):
         val_dataset = cls(

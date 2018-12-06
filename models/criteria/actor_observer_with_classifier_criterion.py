@@ -12,7 +12,7 @@ def var_subset(var, inds):
 class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
     def __init__(self, args):
         super(ActorObserverWithClassifierCriterion, self).__init__(args)
-        self.clsloss = nn.CrossEntropyLoss(reduce=False)
+        self.clsloss = nn.BCELoss(reduce=False)
         self.clsweight = args.classifier_weight
 
     def forward(self, dist_a, dist_b, x, y, z, cls, target, meta):
@@ -38,7 +38,7 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
         # Classification loss
         if len(inds2) > 0:
             cls2, target2 = var_subset([cls, -target.long()], inds2)
-            clsloss = self.clsloss(cls2, target2)
+            clsloss = self.clsloss(nn.Sigmoid()(cls2), target2)
             f = self.clsweight * clsloss.sum()
             final.append(f)
         else:

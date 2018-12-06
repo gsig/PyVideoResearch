@@ -51,10 +51,7 @@ class AlignmentTask(Task):
     @classmethod
     def run(cls, model, epoch, args):
         task = cls(model, epoch, args)
-        dataset = CharadesEgoAlignment(args)
-        loader = torch.utils.data.DataLoader(
-            dataset, batch_size=args.batch_size, collate_fn=None, drop_last=True,
-            shuffle=False, num_workers=args.workers, pin_memory=False)
+        loader = CharadesEgoAlignment.get(args)
         return task.alignment(loader, model, epoch, args)
 
     def alignment(self, loader, model, epoch, args, task=best_one_sec_moment):

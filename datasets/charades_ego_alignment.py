@@ -8,9 +8,8 @@ class CharadesEgoAlignment(CharadesEgo):
     def get(cls, args):
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
-        val_file = args.val_file
         val_dataset = cls(
-            args, args.data, 'val', val_file, args.cache,
+            args, args.data, 'val', args.val_file, args.cache,
             transform=transforms.Compose([
                 transforms.Resize(int(256. / 224 * args.inputsize)),
                 transforms.CenterCrop(args.inputsize),

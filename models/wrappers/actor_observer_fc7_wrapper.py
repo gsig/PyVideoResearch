@@ -7,10 +7,7 @@ from models.wrappers.actor_observer_wrapper import ActorObserverWrapper
 
 class ActorObserverFC7Wrapper(ActorObserverWrapper):
     def __init__(self, basenet, opts, *args, **kwargs):
-        if not isinstance(basenet, ActorObserverWrapper):
-            super(ActorObserverFC7Wrapper, self).__init__(basenet, opts, *args, **kwargs)
-            basenet = self
-        if 'DataParallel' in opts.__class__.__name__:
+        if 'DataParallel' in basenet.__class__.__name__:
             basenet = basenet.module
         print('Initializing FC7 extractor with AOB instance')
         self.__dict__ = opts.__dict__

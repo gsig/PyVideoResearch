@@ -112,8 +112,13 @@ def remove_last_layer(model):
         model.in_features = newcls[-1].in_features
         model.classifier = nn.Sequential(*newcls[:-1])
     elif hasattr(model, 'fc'):
-        model.in_features = model.fc.in_features
-        model.fc = IdentityModule()
+        if isinstance(model.fc, nn.Conv3d):
+            model.in_features = model.fc.in_channels
+            model.fc = IdentityModule()
+            model.global_pooling = True
+        else:
+            model.in_features = model.fc.in_features
+            model.fc = IdentityModule()
     else:
         newcls = list(model.children())[:-1]
         model.in_features = list(model.children())[-1].in_features

@@ -47,9 +47,39 @@ class TestActorObserver(unittest.TestCase):
                 'firsttime_neg': torch.zeros(b),
                 'n': torch.zeros(b),
                 'n_ego': torch.zeros(b),
-                'id': ['asdf'] * 10,
+                'id': ['asdf'] * b,
                 }
-        target = torch.ones(2)
+        target = torch.ones(b)
+        args.balanceloss = False
+        args.window_smooth = 0
+        criterion = ActorObserverWithClassifierCriterion(args)
+        test_model_updates(inputs, model, target, criterion, meta)
+
+    def test_actor_observer_with_classifier_3d_updates(self):
+        torch.manual_seed(12345)
+        from models.bases.resnet50_3d import ResNet503D
+        from models.wrappers.actor_observer_with_classifier_wrapper import ActorObserverWithClassifierWrapper
+        from models.criteria.actor_observer_with_classifier_criterion import ActorObserverWithClassifierCriterion
+        args = Args()
+        args.nclass = 157
+        args.pretrained = False
+        args.freeze_batchnorm = False
+        args.finaldecay = 0.9
+        args.decay = 0.9
+        args.margin = 0.0
+        args.classifier_weight = 1.0
+        model = ResNet503D.get(args)
+        model = ActorObserverWithClassifierWrapper(model, args)
+        b, f, d = 2, 16, 224
+        inputs = [torch.randn(b, f, d, d, 3)] * 3
+        meta = {'thirdtime': torch.zeros(b),
+                'firsttime_pos': torch.zeros(b),
+                'firsttime_neg': torch.zeros(b),
+                'n': torch.zeros(b),
+                'n_ego': torch.zeros(b),
+                'id': ['asdf'] * b,
+                }
+        target = torch.ones(b,args.nclass)
         args.balanceloss = False
         args.window_smooth = 0
         criterion = ActorObserverWithClassifierCriterion(args)

@@ -16,9 +16,12 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
         self.clsweight = args.classifier_weight
 
     def forward(self, dist_a, dist_b, x, y, z, cls, target, meta):
+        # target is a batch x n_class tensor
+        # where the rows for ego triplets are one, padded by zeros
+        # and class labels are negative
         ids = meta['id']
-        inds1 = [i for i, t in enumerate(target) if t.item() > 0]
-        inds2 = [i for i, t in enumerate(target) if not t.item() > 0]
+        inds1 = [i for i, t in enumerate(target) if t[0].item() > 0]
+        inds2 = [i for i, t in enumerate(target) if t[0].item() <= 0]
         print('#triplets: {} \t #class: {}'.format(len(inds1), len(inds2)))
         final = []
 

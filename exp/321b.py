@@ -19,7 +19,7 @@ args = [
     '--wrapper', 'actor_observer_wrapper',
     '--metrics', 'triplet_accuracy_metric;triplet_top5_metric;triplet_top10_metric;triplet_top50_metric',
     '--metric', 'TripletTop10Metricval',
-    '--tasks', 'alignment_task',
+    '--tasks', 'alignment_3d_task',
     '--criterion', 'actor_observer_criterion',
     '--train-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_train.csv',
     '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_test.csv',

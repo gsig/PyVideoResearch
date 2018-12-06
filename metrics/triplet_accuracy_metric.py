@@ -28,7 +28,7 @@ class TripletAccuracyMetric(Metric):
            optional weighted average
         """
         if type(output) is not list:
-            output = [(x.data[0], y.data[0]) for x, y in zip(*output)]
+            output = [(x.item(), y.item()) for x, y in zip(*output)]
         correct = [x < y if t > 0 else y < x for (x, y), t in zip(output, target)]
         if weights is None:
             return np.mean(correct)

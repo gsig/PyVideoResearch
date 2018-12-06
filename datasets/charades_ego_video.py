@@ -121,7 +121,7 @@ class CharadesEgoVideo(CharadesVideo):
                 'firsttime_neg': shift_ego_neg,
                 'n': n,
                 'n_ego': n_ego}
-        target = torch.ones(self.train_gap)
+        target = torch.ones(1)
         return [img_pos, img, img_neg], target, meta
 
     def __len__(self):

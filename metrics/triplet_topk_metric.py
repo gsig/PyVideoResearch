@@ -8,12 +8,10 @@ class TripletTopkMetric(TripletAccuracyMetric):
         self.k = None
 
     def update(self, prediction, target):
-        if isinstance(prediction, dict):
-            prediction = prediction['triplet_prediction']
         if isinstance(target, dict):
             target = target['triplet_target']
         if len(target) > 0:
-            prec1 = self.triplet_topk(prediction, target, prediction['weights'], topk=self.k)
+            prec1 = self.triplet_topk(prediction['triplet_prediction'], target, prediction['weights'], topk=self.k)
             self.am.update(prec1.item())
 
     def __repr__(self):

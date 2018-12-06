@@ -31,7 +31,7 @@ class CharadesEgoVideoAlignment(CharadesEgoVideo):
                 continue
             spacing = range(0, n-1, gap)
             for loc in spacing:
-                ii = np.floor(loc)
+                ii = int(np.floor(loc))
                 data = {}
                 data['base'] = '{}/{}-'.format(iddir, vid)
                 data['base_ego'] = '{}EGO/{}EGO-'.format(iddir, vid)

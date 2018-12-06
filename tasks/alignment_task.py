@@ -1,7 +1,6 @@
 """
     Defines tasks for evaluation
 """
-import torch
 import numpy as np
 import random
 from itertools import groupby
@@ -66,17 +65,14 @@ class AlignmentTask(Task):
 
         def fc7_generator():
             for i, (inputs, target, meta) in enumerate(loader):
-                target = target.long().cuda(async=True)
-                input_vars = [torch.autograd.Variable(inp.cuda(), volatile=True)
-                              for inp in inputs]
-                first_fc7, third_fc7, w_x, w_y = model(*input_vars)
+                first_fc7, third_fc7, w_x, w_y = model(*inputs)
                 timer.tic()
                 if i % args.print_freq == 0:
                     print('Alignment: [{0}/{1}]\t'
                           'Time {timer.val:.3f} ({timer.avg:.3f})'.format(
                               i, len(loader), timer=timer))
                 for vid, o1, o2 in zip(meta['id'], first_fc7, third_fc7):
-                    yield vid, (o1.data.cpu().numpy(), o2.data.cpu().numpy())
+                    yield vid, (o1.cpu().numpy(), o2.cpu().numpy())
 
         for key, grp in groupby(fc7_generator(), key=lambda x: x[0]):
             print('processing id: {}'.format(key))

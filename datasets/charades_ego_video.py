@@ -108,7 +108,7 @@ class CharadesEgoVideo(CharadesVideo):
                 shift = np.random.randint(n-self.train_gap-2)
         else:
             shift = int(shift * (n-self.train_gap-2))
-        scale = (n_ego - 1) / float(n - 1)
+        scale = (n_ego-self.train_gap-2) / float(n-self.train_gap-2)
         shift_ego = to_ego_time(shift, scale)
         shift_ego_neg = get_neg_time(shift_ego, n_ego-self.train_gap-2, self.deltaneg)
         if shift_ego_neg is None:

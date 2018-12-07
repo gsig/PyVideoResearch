@@ -15,7 +15,7 @@ args = [
     '--name', name,
     '--dataset', 'charades_ego_video_plus_charades',
     '--print-freq', '1',
-    '--arch', 'resnet152',
+    '--arch', 'resnet50_3d',
     '--wrapper', 'actor_observer_with_classifier_wrapper',
     '--metrics', 'triplet_accuracy_metric;triplet_top5_metric;triplet_top10_metric;triplet_top50_metric;top1_metric',
     '--tasks', 'alignment_3d_task',

@@ -75,6 +75,8 @@ class CharadesEgoVideo(CharadesVideo):
             except Exception as e:
                 print('failed to load image {}'.format(path))
                 print(e)
+                import pdb
+                pdb.set_trace()
                 raise
             img = resize(img)
             img = transforms.ToTensor()(img)

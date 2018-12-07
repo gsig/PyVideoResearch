@@ -31,7 +31,7 @@ args = [
     '--decay', '0.95',
     '--lr', '3e-5',
     '--lr-decay-rate', '15',
-    '--batch-size', '4',
+    '--batch-size', '3',
     '--video-batch-size', '16',
     '--train-size', '2.0',
     '--val-size', '1.0',

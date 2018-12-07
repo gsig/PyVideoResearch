@@ -33,6 +33,8 @@ class CharadesEgoVideoMeta(CharadesEgoVideo):
 
     def __getitem__(self, index):
         ims, target, meta = super(CharadesEgoVideoMeta, self).__getitem__(index)
+        import pdb
+        pdb.set_trace()
         newtarget = torch.IntTensor(self.num_classes).zero_()
         newtarget[0] = target
         meta['time'] = 0

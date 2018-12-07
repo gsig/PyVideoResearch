@@ -41,7 +41,7 @@ class CharadesEgoMeta(CharadesEgo):
 
 class CharadesEgoPlusCharades(CharadesMeta):
     @classmethod
-    def get(cls, args):
+    def get(cls, args, splits=('train', 'val', 'val_video')):
         newargs = copy.deepcopy(args)
         vars(newargs).update({
             'train_file': args.train_file.split(';')[1],
@@ -52,16 +52,13 @@ class CharadesEgoPlusCharades(CharadesMeta):
             'val_file': args.val_file.split(';')[0],
             'data': args.data.split(';')[0]})
 
-        train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(args)
-        train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades, cls).get(newargs)
+        train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(args, splits=splits)
+        train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades, cls).get(newargs, splits=splits)
 
-        #train_dataset.transform.transforms.append(transforms.Lambda(lambda x: [x, x, x]))
-        #val_dataset.transform.transforms.append(transforms.Lambda(lambda x: [x, x, x]))
-        #valvideo_dataset.transform.transforms.append(transforms.Lambda(lambda x: [x, x, x]))
-
-        train_dataset.target_transform = transforms.Lambda(lambda x: -x)
-        val_dataset.target_transform = transforms.Lambda(lambda x: -x)
-
-        train_dataset = ConcatDataset([train_dataset] + [train_datasetego] * 3)  # magic number to balance
-        val_dataset = ConcatDataset([val_dataset] + [val_datasetego] * 3)
+        if 'train' in splits:
+            train_dataset.target_transform = transforms.Lambda(lambda x: -x)
+            train_dataset = ConcatDataset([train_dataset] + [train_datasetego] * 3)  # magic number to balance
+        if 'val' in splits:
+            val_dataset.target_transform = transforms.Lambda(lambda x: -x)
+            val_dataset = ConcatDataset([val_dataset] + [val_datasetego] * 3)
         return train_dataset, val_dataset, valvideo_dataset

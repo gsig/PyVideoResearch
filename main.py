@@ -27,14 +27,12 @@ rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
 resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
 
 
-def validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, tasks, epoch=-1):
+def validate(trainer, val_loader, model, criterion, args, metrics, tasks, epoch=-1):
     scores = {}
-    if not args.no_val_video:
-        scores.update(trainer.validate_video(valvideo_loader, model, criterion, epoch, videometrics, args))
     scores.update(trainer.validate(val_loader, model, criterion, epoch, metrics, args))
     for task in tasks:
         with torch.no_grad():
-            scores.update(task.run(model, epoch, args))
+            scores.update(task.run(model, criterion, epoch, args))
     return scores
 
 
@@ -51,7 +49,6 @@ def main():
     cudnn.enabled = not args.disable_cudnn
 
     metrics = get_metrics(args.metrics)
-    videometrics = get_metrics(args.videometrics)
     tasks = get_tasks(args.tasks)
     model, criterion = get_model(args)
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
@@ -62,10 +59,11 @@ def main():
         best_score = checkpoints.load(args, model, optimizer)
     print(model)
     trainer = train.Trainer()
-    train_loader, val_loader, valvideo_loader = get_dataset(args)
+    train_loader, val_loader = get_dataset(args)
 
     if args.evaluate:
-        validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, tasks, -1)
+        scores = validate(trainer, val_loader, model, criterion, args, metrics, tasks, -1)
+        print(scores)
         return
 
     if args.warmups > 0:
@@ -77,7 +75,7 @@ def main():
             trainer.train_sampler.set_epoch(epoch)
         scores = {}
         scores.update(trainer.train(train_loader, model, criterion, optimizer, epoch, metrics, args))
-        scores.update(validate(trainer, val_loader, valvideo_loader, model, criterion, args, metrics, videometrics, tasks, epoch))
+        scores.update(validate(trainer, val_loader, model, criterion, args, metrics, tasks, epoch))
         is_best = scores[args.metric] > best_score
         best_score = max(scores[args.metric], best_score)
         checkpoints.save(epoch, args, model, optimizer, is_best, scores, args.metric)

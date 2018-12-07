@@ -89,8 +89,8 @@ class Trainer(object):
             del loss, output, target  # make sure we don't hold on to the graph
 
         metrics = dict(m.compute() for m in metrics)
-        metrics.update({'loss_': losses.avg})
-        metrics = dict((k+'val', v) if validate else (k+'train', v) for k, v in metrics.items())
+        metrics.update({'loss': losses.avg})
+        metrics = dict(('val_'+k, v) if validate else ('train_'+k, v) for k, v in metrics.items())
         return metrics
 
     def validate(self, loader, model, criterion, epoch, metrics, args):
@@ -99,54 +99,3 @@ class Trainer(object):
         """
         with torch.no_grad():
             return self.train(loader, model, criterion, None, epoch, metrics, args, validate=True)
-
-    def validate_video(self, loader, model, criterion, epoch, metrics, args):
-        """ Run video-level validation on the test set """
-        with torch.no_grad():
-            timer = Timer()
-            ids, outputs = [], []
-            metrics = [m() for m in metrics]
-
-            # switch to evaluate mode
-            model.eval()
-            criterion.eval()
-
-            for i, (input, target, meta) in enumerate(loader):
-                if not args.cpu:
-                    target = target.cuda(async=True)
-
-                # split batch into smaller chunks
-                if args.video_batch_size == -1:
-                    output = model(input, meta)
-                else:
-                    output_chunks = []
-                    for chunk in input.split(args.video_batch_size):
-                        output_chunks.append(model(chunk, meta))
-                    #if type(output_chunks[0]) == tuple:
-                    #    output = tuple(torch.cat(x) for x in zip(*output_chunks))
-                    #else:
-                    #    output = torch.cat(output_chunks)
-                    output = gather(output_chunks)
-
-                if type(output) != tuple:
-                    output = (output,)
-                scores, loss, score_target = criterion(*(output + (target, meta)), synchronous=True)
-                for m in metrics:
-                    m.update(scores, score_target)
-
-                # store predictions
-                scores_video = scores.max(dim=0)[0]
-                outputs.append(scores_video.cpu())
-                timer.tic()
-                if i % args.print_freq == 0:
-                    print('[{name}] ValidateVideo: [{0}/{1}]\t'
-                          'Time {timer.val:.3f} ({timer.avg:.3f})\t'
-                          '{metrics}'.format(
-                              i, len(loader), timer=timer, name=args.name,
-                              metrics=' \t'.join(str(m) for m in metrics)))
-            submission_file(
-                ids, outputs, '{}/epoch_{:03d}.txt'.format(args.cache, epoch+1))
-            metrics = dict(m.compute() for m in metrics)
-            metrics = dict((k+'valvideo', v) for k, v in metrics.items())
-            print(metrics)
-            return metrics

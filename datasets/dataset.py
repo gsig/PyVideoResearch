@@ -47,9 +47,12 @@ class Dataset(data.Dataset):
             else:
                 return self.get_item(index, shift=None)
         except Exception as e:
-            print('error getting item {}, moving on to next item'.format(index))
-            print(e)
-            return self.__getitem__(index + 1)
+            if 'deltaneg too big for video' in e:
+                print('error getting item {}, moving on to next item'.format(index))
+                print(e)
+                return self.__getitem__(index + 1)
+            else:
+                raise
 
     def get_item(self, index, shift=None, video=None):
         """

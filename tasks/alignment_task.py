@@ -49,7 +49,7 @@ class AlignmentTask(Task):
         self.name = __file__.split('/')[-1].split('.')[0]
 
     @classmethod
-    def run(cls, model, epoch, args):
+    def run(cls, model, criterion, epoch, args):
         task = cls(model, epoch, args)
         loader = CharadesEgoAlignment.get(args)
         return task.alignment(loader, model, epoch, args)

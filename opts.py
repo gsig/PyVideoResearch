@@ -14,8 +14,6 @@ def parse():
     parser.add_argument('--cache-dir', default='./cache/')
     parser.add_argument('--metric', default='CharadesmAPvalvideo', help='metric to find best model')
     parser.add_argument('--metrics', default='top1_metric;top5_metric', help='metrics during training and validation')
-    parser.add_argument('--videometrics', default='charades_map_metric;videotop1_metric;videotop5_metric')
-    parser.add_argument('--tasks', default='', help='tasks to run every epoch')
 
     # Data parameters
     parser.add_argument('--data', default='/scratch/gsigurds/Charades_v1_rgb/', help='path to dataset')
@@ -89,6 +87,10 @@ def parse():
     parser.add_argument('--margin', default=0.0, type=float)
     parser.add_argument('--alignment', action='store_true')
     parser.add_argument('--classifier_weight', default=1.0, type=float)
+
+    # Task parameters
+    parser.add_argument('--tasks', default='', help='tasks to run every epoch')
+    parser.add_argument('--videometrics', default='charades_map_metric;videotop1_metric;videotop5_metric', help='for video_task')
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

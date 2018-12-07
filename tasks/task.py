@@ -6,5 +6,5 @@ class Task(object):
         pass
 
     @classmethod
-    def run(cls, model, epoch, args):
+    def run(cls, model, criterion, epoch, args):
         raise NotImplementedError

@@ -11,7 +11,7 @@ class Alignment3dTask(AlignmentTask):
         super(Alignment3dTask, self).__init__(*args, **kwargs)
 
     @classmethod
-    def run(cls, model, epoch, args):
+    def run(cls, model, criterion, epoch, args):
         task = cls(model, epoch, args)
         loader = CharadesEgoVideoAlignment.get(args)
         return task.alignment(loader, model, epoch, args)

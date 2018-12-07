@@ -41,7 +41,7 @@ args = [
     '--workers', '6',
     #'--workers', '0',
     '--no-val-video',
-    '--evaluate',
+    #'--evaluate',
 ]
 sys.argv.extend(args)
 try:

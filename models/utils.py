@@ -24,7 +24,7 @@ def split_list(lst, chunk_num):
 
 class MyDataParallel(nn.DataParallel):
     # Overloads nn.DataParallel to provide the ability to skip
-    # scatter/gather functionality for a simple unmotified
+    # scatter/gather functionality for a simple unmodified
     # list of dictionaries
     def __init__(self, *args, **kwargs):
         super(MyDataParallel, self).__init__(*args, **kwargs)
@@ -40,7 +40,8 @@ class MyDataParallel(nn.DataParallel):
                     inp, kwargs = super(MyDataParallel, self).scatter((inp, ), kwargs, device_ids)
                     inp = [x[0] for x in inp]  # de-tuple
             else:
-                inp, kwargs = super(MyDataParallel, self).scatter(inp, kwargs, device_ids)
+                inp, kwargs = super(MyDataParallel, self).scatter((inp, ), kwargs, device_ids)
+                inp = [x[0] for x in inp]  # de-tuple
                 kwargs = [x[0] for x in kwargs]  # de-tuple
             inputss.append(inp)
         return tuple(zip(*inputss)), kwargs

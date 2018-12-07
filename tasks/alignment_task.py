@@ -46,7 +46,7 @@ def best_one_sec_moment(mat, winsize=6):
 
 class AlignmentTask(Task):
     def __init__(self, model, epoch, args):
-        pass
+        self.name = __file__.split('/')[-1].split('.')[0]
 
     @classmethod
     def run(cls, model, epoch, args):
@@ -87,13 +87,13 @@ class AlignmentTask(Task):
             abssec.update(abs(j - gt))
             abssec0.update(abs(j0 - gt0))
             randsec.update(abs(jr - gtr))
-            print(__file__)
+            print(self.name)
             print('  abs3: {abs3.val:.3f} ({abs3.avg:.3f}) [{abs3.med:.3f}]'
                   '  abs0: {abs0.val:.3f} ({abs0.avg:.3f}) [{abs0.med:.3f}]'
                   '\n'
                   '  absr: {absr.val:.3f} ({absr.avg:.3f}) [{absr.med:.3f}]'.format(
                       abs3=abssec, abs0=abssec0, absr=randsec))
-        scores = {__file__ + '_1sec': abssec0.med,
-                  __file__ + '_1sec_smooth': abssec.med,
-                  __file__ + '_1sec_random': randsec.med}
+        scores = {self.name + '_1sec': abssec0.med,
+                  self.name + '_1sec_smooth': abssec.med,
+                  self.name + '_1sec_random': randsec.med}
         return scores

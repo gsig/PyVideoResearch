@@ -34,14 +34,14 @@ args = [
     '--batch-size', '3',
     '--video-batch-size', '16',
     '--train-size', '2.0',
-    '--val-size', '1.0',
-    #'--val-size', '0.05',
+    #'--val-size', '1.0',
+    '--val-size', '0.05',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
     '--workers', '6',
     #'--workers', '0',
     '--no-val-video',
-    #'--evaluate',
+    '--evaluate',
 ]
 sys.argv.extend(args)
 try:

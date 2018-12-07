@@ -16,8 +16,8 @@ class CharadesVideoMeta(CharadesVideo):
     def __init__(self, *args, **kwargs):
         super(CharadesVideoMeta, self).__init__(*args, **kwargs)
 
-    def __getitem__(self, index):
-        ims, target, meta = super(CharadesVideoMeta, self).__getitem__(index)
+    def get_item(self, index, shift=None):
+        ims, target, meta = super(CharadesVideoMeta, self).get_item(index, shift)
         meta.update({'thirdtime': 0,
                      'firsttime_pos': 0,
                      'firsttime_neg': 0,
@@ -31,10 +31,8 @@ class CharadesEgoVideoMeta(CharadesEgoVideo):
     def __init__(self, *args, **kwargs):
         super(CharadesEgoVideoMeta, self).__init__(*args, **kwargs)
 
-    def __getitem__(self, index):
-        ims, target, meta = super(CharadesEgoVideoMeta, self).__getitem__(index)
-        import pdb
-        pdb.set_trace()
+    def get_item(self, index, shift=None):
+        ims, target, meta = super(CharadesEgoVideoMeta, self).get_item(index, shift)
         newtarget = torch.IntTensor(self.num_classes).zero_()
         newtarget[0] = target
         meta['time'] = 0

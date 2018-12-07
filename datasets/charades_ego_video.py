@@ -121,6 +121,8 @@ class CharadesEgoVideo(CharadesVideo):
                 'n': n,
                 'n_ego': n_ego}
         target = torch.ones(1)
+        import pdb
+        pdb.set_trace()
         return [img_pos, img, img_neg], target, meta
 
     def __len__(self):

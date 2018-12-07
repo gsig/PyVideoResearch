@@ -29,7 +29,7 @@ class CharadesEgoVideoAlignment(CharadesEgoVideo):
             if n_ego <= self.train_gap + 1:
                 print('small ego: {}'.format(iddir))
                 continue
-            spacing = range(0, n-1, gap)
+            spacing = range(0, n-self.train_gap-1, gap)
             for loc in spacing:
                 ii = int(np.floor(loc))
                 data = {}

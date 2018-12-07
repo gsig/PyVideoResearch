@@ -18,6 +18,7 @@ class CharadesVideoMeta(CharadesVideo):
 
     def get_item(self, index, shift=None):
         ims, target, meta = super(CharadesVideoMeta, self).get_item(index, shift)
+        del meta['do_not_collate']
         meta.update({'thirdtime': 0,
                      'firsttime_pos': 0,
                      'firsttime_neg': 0,

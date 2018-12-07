@@ -24,7 +24,7 @@ class CharadesVideoMeta(CharadesVideo):
                      'n': 0,
                      'n_ego': 0,
                      })
-        return [ims, ims, ims], target, meta
+        return [ims, ims, ims], target[0], meta
 
 
 class CharadesEgoVideoMeta(CharadesEgoVideo):

@@ -90,7 +90,7 @@ def parse():
 
     # Task parameters
     parser.add_argument('--tasks', default='', help='tasks to run every epoch')
-    parser.add_argument('--videometrics', default='charades_map_metric;videotop1_metric;videotop5_metric', help='for video_task')
+    parser.add_argument('--video-metrics', default='charades_map_metric;videotop1_metric;videotop5_metric', help='for video_task')
     parser.add_argument('--actor-observer-classification-task-dataset', default='charades_ego_only_first')
 
     args = parser.parse_args()

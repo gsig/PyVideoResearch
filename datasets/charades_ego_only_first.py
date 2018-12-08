@@ -21,4 +21,4 @@ class CharadesEgoOnlyFirst(Charades):
                 'train_file': args.train_file.split(';')[0],
                 'val_file': args.val_file.split(';')[0],
                 'data': args.data.split(';')[0]})
-        super(CharadesEgoOnlyFirst, cls).get(args, scale, splits)
+        return super(CharadesEgoOnlyFirst, cls).get(args, scale, splits)

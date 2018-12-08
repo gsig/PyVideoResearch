@@ -16,8 +16,8 @@ class CharadesMeta(Charades):
     def __init__(self, *args, **kwargs):
         super(CharadesMeta, self).__init__(*args, **kwargs)
 
-    def get_item(self, index):
-        ims, target, meta = super(CharadesMeta, self).__getitem__(index)
+    def get_item(self, index, shift=None):
+        ims, target, meta = super(CharadesMeta, self).get_item(index, shift=shift)
         meta.update({'thirdtime': 0,
                      'firsttime_pos': 0,
                      'firsttime_neg': 0,
@@ -34,8 +34,8 @@ class CharadesEgoMeta(CharadesEgo):
     def __init__(self, *args, **kwargs):
         super(CharadesEgoMeta, self).__init__(*args, **kwargs)
 
-    def get_item(self, index):
-        ims, target, meta = super(CharadesEgoMeta, self).__getitem__(index)
+    def get_item(self, index, shift=None):
+        ims, target, meta = super(CharadesEgoMeta, self).__getitem__(index, shift=shift)
         newtarget = torch.IntTensor(self.num_classes).zero_()
         newtarget[0] = target
         meta['time'] = 0

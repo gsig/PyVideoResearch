@@ -2,6 +2,7 @@ from datasets.get import get_dataset
 from tasks.video_task import VideoTask
 from models.wrappers.actor_observer_classifier_wrapper import ActorObserverClassifierWrapper
 from models.utils import set_distributed_backend
+import torch.nn as nn
 
 
 class ActorObserverClassificationTask(VideoTask):

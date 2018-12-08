@@ -2,11 +2,13 @@
 from datasets.charades import Charades
 from datasets.utils import default_loader
 from glob import glob
-import random
 from random import choice
+import numpy as np
+import torch
 
 
-def to_ego_time(thirdtime, egoscale):
+def to_ego_time(thirdtime, n, n_ego):
+    egoscale = (n_ego - 1) / float(n - 1)
     return int(round(thirdtime * egoscale))
 
 
@@ -27,66 +29,76 @@ class CharadesEgo(Charades):
 
     def _prepare(self, path, labels, split):
         datadir = path
-        image_paths, targets, ids, meta = [], [], [], []
+        image_paths, targets, ids, meta, outlabels = [], [], [], [], []
 
         for i, (vid, label) in enumerate(labels.items()):
             gap = 4
             iddir = datadir + '/' + vid
             n = len(glob(iddir + '/*.jpg'))
             n_ego = len(glob(iddir + 'EGO/*.jpg'))
-            scale = (n_ego - 1) / float(n - 1)
             if i % 100 == 0:
                 print("{} {}".format(i, iddir))
             if n == 0 or n_ego == 0:
                 continue
             if split == 'val_video':
-                pass
+                spacing = [0]
             else:
-                for ii in range(0, n, gap):
-                    impath = '{}/{}-{:06d}.jpg'.format(iddir, vid, ii + 1)
-                    egoii = to_ego_time(ii, scale)
-                    impathego = '{}EGO/{}EGO-{:06d}.jpg'.format(iddir, vid, egoii + 1)
-                    negii = get_neg_time(egoii, n_ego, self.deltaneg)
-                    if negii is None:
-                        continue
-                    impathegoneg = '{}EGO/{}EGO-{:06d}.jpg'.format(iddir, vid, negii + 1)
-                    image_paths.append((impathego, impath, impathegoneg))
-                    targets.append(1)
-                    ids.append(vid)
-                    meta.append({'thirdtime': ii,
-                                 'firsttime_pos': egoii,
-                                 'firsttime_neg': negii,
-                                 'n': n,
-                                 'n_ego': n_ego})
-        return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'meta': meta}
+                spacing = range(0, n-1, gap)
+            for loc in spacing:
+                ii = np.floor(loc)
+                imbase = '{}/{}-'.format(iddir, vid)
+                egobase = '{}EGO/{}EGO-'.format(iddir, vid)
+                image_paths.append((imbase, egobase))
+                targets.append(1)
+                ids.append(vid)
+                outlabels.append(label)
+                meta.append({'thirdtime': ii,
+                             'n': n,
+                             'n_ego': n_ego})
+        return {'image_paths': image_paths,
+                'targets': targets,
+                'ids': ids,
+                'meta': meta,
+                'labels': outlabels,
+                'split': split}
 
-    def __getitem__(self, index, shift=None):
-        """
-        Args:
-            index (int): Index
-        Returns:
-            tuple: (image, target) where target is class_index of the target class.
-        """
-        assert shift is None, "not implemented yet"
-        impaths = self.data['image_paths'][index]
-        target = self.data['targets'][index]
+    def get_item(self, index, shift=None):
         meta = self.data['meta'][index]
+        if shift is None:
+            shift = meta['thirdtime']
+        n = meta['n']
+        n_ego = meta['n_ego']
+        shift = int(shift * (n-1))
+        imbase, egobase = self.data['image_paths'][index]
+        egoii = to_ego_time(shift, n, n_ego)
+        negii = get_neg_time(egoii, n_ego, self.deltaneg)
+        if negii is None:
+            raise Exception('deltaneg too big for video')
+        meta['firsttime_pos'] = egoii
+        meta['thirdtime'] = shift
+        meta['firsttime_neg'] = negii
+        egopath_pos = '{}{:06d}.jpg'.format(egobase, egoii+1)
+        impath = '{}{:06d}.jpg'.format(imbase, shift+1)
+        egopath_neg = '{}{:06d}.jpg'.format(egobase, negii+1)
+        impaths = (egopath_pos, impath, egopath_neg)
+
+        target = self.data['targets'][index]
+        classtarget = torch.IntTensor(self.num_classes).zero_()
+        for x in self.data['labels'][index]:
+            if x['start'] < shift/float(self.fps) < x['end']:
+                classtarget[self.cls2int(x['class'])] = 1
+        meta['class_target'] = classtarget
+
         meta['id'] = self.data['ids'][index]
-        try:
-            ims = [default_loader(im) for im in impaths]
-            if self.transform is not None:
-                ims = [self.transform(im) for im in ims]
-            # if random.random() > 0.5:
-            #     ims[2], ims[0] = ims[0], ims[2]
-            #     target = -1
-            if self.target_transform is not None:
-                target = self.target_transform(target)
-            return ims, target, meta
-        except Exception:
-            for path in impaths:
-                print('failed loading item: {}'.format(path))
-            print('fetching another random item instead')
-            return self[random.randrange(len(self))]
+        ims = [default_loader(im) for im in impaths]
+        if self.transform is not None:
+            ims = [self.transform(im) for im in ims]
+        # if random.random() > 0.5:
+        #     ims[2], ims[0] = ims[0], ims[2]
+        #     target = -1
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return ims, target, meta
 
     @classmethod
     def get(cls, args):

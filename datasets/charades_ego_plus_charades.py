@@ -24,7 +24,10 @@ class CharadesMeta(Charades):
                      'n': 0,
                      'n_ego': 0,
                      })
-        return [ims, ims, ims], target, meta
+        if self.split == 'val_video':
+            return ims, target, meta
+        else:
+            return [ims, ims, ims], target, meta
 
 
 class CharadesEgoMeta(CharadesEgo):
@@ -52,7 +55,10 @@ class CharadesEgoPlusCharades(CharadesMeta):
             'val_file': args.val_file.split(';')[0],
             'data': args.data.split(';')[0]})
 
-        train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(args, splits=splits)
+        if 'train' in splits or 'val' in splits:
+            train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(args, splits=splits)
+        else:
+            train_datasetego, val_datasetego = None, None
         train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades, cls).get(newargs, splits=splits)
 
         if 'train' in splits:

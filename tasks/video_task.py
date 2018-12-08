@@ -1,4 +1,3 @@
-import torch
 from misc_utils.utils import submission_file, Timer
 from torch.nn.parallel.scatter_gather import gather
 from metrics.get import get_metrics
@@ -7,7 +6,8 @@ from tasks.task import Task
 
 
 class VideoTask(Task):
-    def __init__(self, model, criterion, epoch, args):
+    def __init__(self, model, epoch, args):
+        super(VideoTask, self).__init__()
         self.metrics = get_metrics(args.videometrics)
 
     @classmethod
@@ -50,7 +50,7 @@ class VideoTask(Task):
             outputs.append(scores_video.cpu())
             timer.tic()
             if i % args.print_freq == 0:
-                print('[{name}] Video_T: [{0}/{1}]\t'
+                print('[{name}] Video_Task: [{0}/{1}]\t'
                       'Time {timer.val:.3f} ({timer.avg:.3f})\t'
                       '{metrics}'.format(
                           i, len(loader), timer=timer, name=args.name,
@@ -58,6 +58,6 @@ class VideoTask(Task):
         submission_file(
             ids, outputs, '{}/epoch_{:03d}.txt'.format(args.cache, epoch+1))
         metrics = dict(m.compute() for m in metrics)
-        metrics = dict(('video_task_'+k, v) for k, v in metrics.items())
+        metrics = dict((self.name+'_'+k, v) for k, v in metrics.items())
         print(metrics)
         return metrics

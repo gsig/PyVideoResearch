@@ -30,7 +30,7 @@ class Charades(Dataset):
     def _prepare(self, path, labels, split):
         fps, gap = self.fps, self.train_gap
         datadir = path
-        image_paths, targets, ids, times, ns = [], [], [], [], []
+        image_paths, ids, times, ns, labels = [], [], [], [], []
 
         for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
@@ -46,20 +46,14 @@ class Charades(Dataset):
                 spacing = range(0, n-1, gap)
             for loc in spacing:
                 ii = np.floor(loc)
-                target = torch.IntTensor(self.num_classes).zero_()
-                for x in label:
-                    if split == 'val_video':
-                        target[self.cls2int(x['class'])] = 1
-                    elif x['start'] < ii/float(fps) < x['end']:
-                        target[self.cls2int(x['class'])] = 1
                 impath = '{}/{}-{:06d}.jpg'.format(
                     iddir, vid, int(np.floor(loc))+1)
                 image_paths.append(impath)
-                targets.append(target)
                 ids.append(vid)
                 times.append(int(np.floor(loc))+1)
                 ns.append(n)
-        return {'image_paths': image_paths, 'targets': targets, 'ids': ids, 'times': times, 'ns': ns}
+                labels.append(label)
+        return {'image_paths': image_paths, 'ids': ids, 'times': times, 'ns': ns, 'labels': labels, 'split': split}
 
     def get_item(self, index, shift=None):
         meta = {}
@@ -72,7 +66,10 @@ class Charades(Dataset):
             base = self.data['image_paths'][index][:-10]
             path = '{}{:06d}.jpg'.format(base, shift+1)
             meta['time'] = shift
-        target = self.data['targets'][index]
+        target = torch.IntTensor(self.num_classes).zero_()
+        for x in self.data['labels'][index]:
+            if x['start'] < shift/float(self.fps) < x['end']:
+                target[self.cls2int(x['class'])] = 1
         meta['id'] = self.data['ids'][index]
         img = default_loader(path)
         if self.transform is not None:

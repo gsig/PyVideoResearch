@@ -46,7 +46,7 @@ def best_one_sec_moment(mat, winsize=6):
 
 class AlignmentTask(Task):
     def __init__(self, model, epoch, args):
-        self.name = __file__.split('/')[-1].split('.')[0]
+        super(AlignmentTask, self).__init__()
 
     @classmethod
     def run(cls, model, criterion, epoch, args):

@@ -42,7 +42,7 @@ class CharadesEgoVideoMeta(CharadesEgoVideo):
 
 class CharadesEgoVideoPlusCharades(CharadesVideoMeta):
     @classmethod
-    def get(cls, args):
+    def get(cls, args, splits=('train', 'val', 'val_video')):
         newargs = copy.deepcopy(args)
         vars(newargs).update({
             'train_file': args.train_file.split(';')[1],
@@ -53,9 +53,11 @@ class CharadesEgoVideoPlusCharades(CharadesVideoMeta):
             'val_file': args.val_file.split(';')[0],
             'data': args.data.split(';')[0]})
 
-        train_datasetego, val_datasetego, _ = CharadesEgoVideoMeta.get(args, splits=splits)
+        if 'train' in splits or 'val' in splits:
+            train_datasetego, val_datasetego, _ = CharadesEgoVideoMeta.get(args, splits=splits)
+        else:
+            train_datasetego, val_datasetego = None, None
         train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoVideoPlusCharades, cls).get(newargs, splits=splits)
-
 
         if 'train' in splits:
             train_dataset.target_transform = transforms.Lambda(lambda x: -x)

@@ -35,8 +35,10 @@ def cat_collate(batch):
 
 def get_dataset(args, splits=('train', 'val'), dataset=None):
     if dataset is None:
-        obj = importlib.import_module('.' + args.dataset, package='datasets')
-        dataset = case_getattr(obj, args.dataset)
+        dataset = args.dataset
+    if isinstance(dataset, str):
+        obj = importlib.import_module('.' + dataset, package='datasets')
+        dataset = case_getattr(obj, dataset)
     train_dataset, val_dataset, valvideo_dataset = dataset.get(args)
     print(train_dataset)
     print(val_dataset)

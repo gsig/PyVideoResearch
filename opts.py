@@ -86,11 +86,12 @@ def parse():
     parser.add_argument('--finaldecay', default=0.9, type=float)
     parser.add_argument('--margin', default=0.0, type=float)
     parser.add_argument('--alignment', action='store_true')
-    parser.add_argument('--classifier_weight', default=1.0, type=float)
+    parser.add_argument('--classifier-weight', default=1.0, type=float)
 
     # Task parameters
     parser.add_argument('--tasks', default='', help='tasks to run every epoch')
     parser.add_argument('--videometrics', default='charades_map_metric;videotop1_metric;videotop5_metric', help='for video_task')
+    parser.add_argument('--actor-observer-classification-task-dataset', default='charades_ego')
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

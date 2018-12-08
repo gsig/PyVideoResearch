@@ -33,13 +33,14 @@ args = [
     '--classifier-weight', '2.0',
     '--lr-decay-rate', '8',
     '--batch-size', '3',
-    '--train-size', '2.0',
-    '--val-size', '1.0',
+    '--train-size', '1.0',
+    #'--val-size', '1.0',
+    '--val-size', '0.05',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
     '--workers', '4',
     '--no-val-video',
-    #'--evaluate',
+    '--evaluate',
 ]
 sys.argv.extend(args)
 try:

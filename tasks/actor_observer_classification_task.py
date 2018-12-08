@@ -12,6 +12,7 @@ class ActorObserverClassificationTask(VideoTask):
     def run(cls, model, criterion, epoch, args):
         model = ActorObserverClassifierWrapper(model, args)
         model = set_distributed_backend(model, args)
+        criterion = nn.BCELoss()
         task = cls(model, epoch, args)
         loader, = get_dataset(args, splits=('val_video', ), dataset=args.actor_observer_classification_task_dataset)
         return task.validate_video(loader, model, criterion, epoch, args)

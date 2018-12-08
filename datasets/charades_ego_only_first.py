@@ -7,13 +7,11 @@ class CharadesEgoOnlyFirst(Charades):
     def __init__(self, *args, **kwargs):
         super(CharadesEgoOnlyFirst, self).__init__(*args, **kwargs)
 
-    @staticmethod
-    def parse_charades_csv(filename):
-        labels = Charades.parse_charades_csv(filename)
-        labels = dict((k, v) for k, v in labels.items() if 'EGO' in k)
-        import pdb
-        pdb.set_trace()
-        return labels
+    #@staticmethod
+    #def parse_charades_csv(filename):
+    #    labels = Charades.parse_charades_csv(filename)
+    #    labels = dict((k, v) for k, v in labels.items() if 'EGO' in k)
+    #    return labels
 
     @classmethod
     def get(cls, args, scale=(0.08, 1.0), splits=('train', 'val', 'val_video')):

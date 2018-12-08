@@ -18,7 +18,8 @@ args = [
     '--arch', 'resnet152',
     '--wrapper', 'actor_observer_with_classifier_wrapper',
     '--metrics', 'triplet_accuracy_metric;triplet_top5_metric;triplet_top10_metric;triplet_top50_metric;top1_metric',
-    '--metric', 'alignment_task_1sec',
+    '--video-metrics', 'top1_metric;charades_map_metric',
+    '--metric', 'actor_observer_classification_task_charades_map_metric',
     '--tasks', 'alignment_task;actor_observer_classification_task',
     '--actor-observer-classification-task-dataset', 'charades_ego_only_first',
     '--criterion', 'actor_observer_with_classifier_criterion',
@@ -34,11 +35,11 @@ args = [
     '--lr-decay-rate', '8',
     '--batch-size', '15',
     '--train-size', str(0.2 / 6),
-    '--val-size', '0.0001',
+    '--val-size', '0.1',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
     '--workers', '4',
-    '--evaluate',
+    #'--evaluate',
 ]
 sys.argv.extend(args)
 try:

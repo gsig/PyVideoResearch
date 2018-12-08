@@ -38,7 +38,7 @@ args = [
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
     '--workers', '4',
-    #'--evaluate',
+    '--evaluate',
 ]
 sys.argv.extend(args)
 try:

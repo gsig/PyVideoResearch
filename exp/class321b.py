@@ -35,7 +35,7 @@ args = [
     '--batch-size', '3',
     '--train-size', '1.0',
     #'--val-size', '1.0',
-    '--val-size', '0.05',
+    '--val-size', '0.01',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
     '--workers', '4',

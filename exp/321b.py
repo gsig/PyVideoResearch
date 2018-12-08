@@ -18,7 +18,7 @@ args = [
     '--arch', 'resnet50_3d',
     '--wrapper', 'actor_observer_wrapper',
     '--metrics', 'triplet_accuracy_metric;triplet_top5_metric;triplet_top10_metric;triplet_top50_metric',
-    '--metric', 'TripletTop10Metricval',
+    '--metric', 'val_TripletTop10Metric',
     #'--tasks', 'alignment_3d_task',
     '--criterion', 'actor_observer_criterion',
     '--train-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_train.csv',
@@ -38,9 +38,7 @@ args = [
     #'--val-size', '0.05',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',
-    #'--workers', '6',
-    '--workers', '0',
-    '--no-val-video',
+    '--workers', '6',
     #'--evaluate',
 ]
 sys.argv.extend(args)

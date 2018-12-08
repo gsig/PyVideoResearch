@@ -62,7 +62,6 @@ def parse():
     parser.add_argument('--val-size', default=1.0, type=float)
     parser.add_argument('--accum-grad', default=1, type=int)
     parser.add_argument('--warmups', default=0, type=int)
-    parser.add_argument('--no-val-video', dest='no_val_video', action='store_true')
     parser.add_argument('--synchronous', dest='synchronous', action='store_true')
 
     # Asynchronous Temporal Fields Parameters

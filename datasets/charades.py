@@ -59,13 +59,12 @@ class Charades(Dataset):
         meta = {}
         if shift is None:
             path = self.data['image_paths'][index]
-            meta['time'] = self.data['times'][index]
+            shift = meta['time'] = self.data['times'][index]
         else:
             n = self.data['ns'][index]
-            shift = int(shift * (n-1))
+            shift = meta['time'] = int(shift * (n-1))
             base = self.data['image_paths'][index][:-10]
             path = '{}{:06d}.jpg'.format(base, shift+1)
-            meta['time'] = shift
         target = torch.IntTensor(self.num_classes).zero_()
         for x in self.data['labels'][index]:
             if x['start'] < shift/float(self.fps) < x['end']:

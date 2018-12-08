@@ -10,5 +10,5 @@ class CharadesEgoOnlyThird(CharadesEgoOnlyFirst, Charades):
     @staticmethod
     def parse_charades_csv(filename):
         labels = Charades.parse_charades_csv(filename)
-        labels = dict([(k, v) for k, v in labels.items() if 'EGO' in v['id']])
+        labels = dict([(k, v) for k, v in labels.items() if 'EGO' in k['id']])
         return labels

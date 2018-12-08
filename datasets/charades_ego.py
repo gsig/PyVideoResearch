@@ -45,7 +45,7 @@ class CharadesEgo(Charades):
             else:
                 spacing = range(0, n-1, gap)
             for loc in spacing:
-                ii = np.floor(loc)
+                ii = int(np.floor(loc))
                 imbase = '{}/{}-'.format(iddir, vid)
                 egobase = '{}EGO/{}EGO-'.format(iddir, vid)
                 image_paths.append((imbase, egobase))

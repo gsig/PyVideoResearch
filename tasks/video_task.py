@@ -8,7 +8,7 @@ from tasks.task import Task
 class VideoTask(Task):
     def __init__(self, model, epoch, args):
         super(VideoTask, self).__init__()
-        self.metrics = get_metrics(args.videometrics)
+        self.metrics = get_metrics(args.video_metrics)
 
     @classmethod
     def run(cls, model, criterion, epoch, args):

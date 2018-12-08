@@ -64,11 +64,12 @@ class CharadesEgo(Charades):
 
     def get_item(self, index, shift=None):
         meta = self.data['meta'][index]
-        if shift is None:
-            shift = meta['thirdtime']
         n = meta['n']
         n_ego = meta['n_ego']
-        shift = int(shift * (n-1))
+        if shift is None:
+            shift = meta['thirdtime']
+        else:
+            shift = int(shift * (n-1))
         imbase, egobase = self.data['image_paths'][index]
         egoii = to_ego_time(shift, n, n_ego)
         negii = get_neg_time(egoii, n_ego, self.deltaneg)

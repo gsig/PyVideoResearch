@@ -39,7 +39,7 @@ def get_dataset(args, splits=('train', 'val'), dataset=None):
     if isinstance(dataset, str):
         obj = importlib.import_module('.' + dataset, package='datasets')
         dataset = case_getattr(obj, dataset)
-    train_dataset, val_dataset, valvideo_dataset = dataset.get(args)
+    train_dataset, val_dataset, valvideo_dataset = dataset.get(args, splits=splits)
     print(train_dataset)
     print(val_dataset)
     print(valvideo_dataset)

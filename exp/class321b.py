@@ -30,7 +30,7 @@ args = [
                 ';/nfs.yoda/gsigurds/ai2/caches/i3d12b2/model_best.pth.tar',
     '--decay', '0.95',
     '--lr', '1e-5',
-    '--classifier_weight', '2.0',
+    '--classifier-weight', '2.0',
     '--lr-decay-rate', '8',
     '--batch-size', '3',
     '--train-size', 2.0,

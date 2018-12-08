@@ -30,7 +30,7 @@ class Charades(Dataset):
     def _prepare(self, path, labels, split):
         fps, gap = self.fps, self.train_gap
         datadir = path
-        image_paths, ids, times, ns, labels = [], [], [], [], []
+        image_paths, ids, times, ns, alllabels = [], [], [], [], []
 
         for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
@@ -52,8 +52,8 @@ class Charades(Dataset):
                 ids.append(vid)
                 times.append(int(np.floor(loc))+1)
                 ns.append(n)
-                labels.append(label)
-        return {'image_paths': image_paths, 'ids': ids, 'times': times, 'ns': ns, 'labels': labels, 'split': split}
+                alllabels.append(label)
+        return {'image_paths': image_paths, 'ids': ids, 'times': times, 'ns': ns, 'labels': alllabels, 'split': split}
 
     def get_item(self, index, shift=None):
         meta = {}

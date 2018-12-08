@@ -5,7 +5,7 @@ from models.wrappers.actor_observer_classifier_wrapper import ActorObserverClass
 
 class ActorObserverClassificationTask(VideoTask):
     def __init__(self, model, epoch, args):
-        super(ActorObserverClassificationTask, self).__init__()
+        super(ActorObserverClassificationTask, self).__init__(model, epoch, args)
 
     @classmethod
     def run(cls, model, criterion, epoch, args):

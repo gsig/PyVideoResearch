@@ -10,7 +10,7 @@ class CharadesEgoOnlyFirst(Charades):
     @staticmethod
     def parse_charades_csv(filename):
         labels = Charades.parse_charades_csv(filename)
-        labels = [x for x in labels if 'EGO' in x['id']]
+        labels = dict([(k, v) for k, v in labels.items() if 'EGO' in v['id']])
         return labels
 
     @classmethod

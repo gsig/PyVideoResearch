@@ -23,6 +23,7 @@ class CharadesMeta(Charades):
                      'firsttime_neg': 0,
                      'n': 0,
                      'n_ego': 0,
+                     'class_target': torch.zeros(157),
                      })
         if self.split == 'val_video':
             return ims, target, meta

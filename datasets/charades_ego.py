@@ -101,5 +101,5 @@ class CharadesEgo(Charades):
         return ims, target, meta
 
     @classmethod
-    def get(cls, args):
-        return super(CharadesEgo, cls).get(args, scale=(0.8, 1.0))
+    def get(cls, args, splits):
+        return super(CharadesEgo, cls).get(args, splits=splits, scale=(0.8, 1.0))

@@ -15,7 +15,7 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
         self.clsloss = nn.BCELoss(reduce=False)
         self.clsweight = args.classifier_weight
 
-    def forward(self, dist_a, dist_b, x, y, z, cls, target, meta):
+    def forward(self, dist_a, dist_b, x, y, z, cls, target, meta, synchronous=False):
         # target is a batch x n_class tensor
         # where the rows for ego triplets are one, padded by zeros
         # and class labels are negative

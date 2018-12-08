@@ -12,7 +12,7 @@ class ActorObserverWithClassifierWrapper(ActorObserverWrapper):
         dim = basenet.in_features
         self.classifier = nn.Linear(dim, opts.nclass)
 
-    def forward(self, inputs, meta, synchronous=False):
+    def forward(self, inputs, meta):
         x, y, z = inputs
         """ assuming:
             x: first person positive

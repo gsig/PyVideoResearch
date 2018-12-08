@@ -50,10 +50,10 @@ class VideoTask(Task):
             outputs.append(scores_video.cpu())
             timer.tic()
             if i % args.print_freq == 0:
-                print('[{name}] Video_Task: [{0}/{1}]\t'
+                print('[{name}] {task}: [{0}/{1}]\t'
                       'Time {timer.val:.3f} ({timer.avg:.3f})\t'
                       '{metrics}'.format(
-                          i, len(loader), timer=timer, name=args.name,
+                          i, len(loader), timer=timer, name=args.name, task=self.name,
                           metrics=' \t'.join(str(m) for m in metrics)))
         submission_file(
             ids, outputs, '{}/epoch_{:03d}.txt'.format(args.cache, epoch+1))

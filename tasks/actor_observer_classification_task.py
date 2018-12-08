@@ -11,5 +11,5 @@ class ActorObserverClassificationTask(VideoTask):
     def run(cls, model, criterion, epoch, args):
         model = ActorObserverClassifierWrapper(model, args)
         task = cls(model, epoch, args)
-        loader, = get_dataset(args, splits=('val_video'), dataset=args.actor_observer_classification_task_dataset)
+        loader, = get_dataset(args, splits=('val_video', ), dataset=args.actor_observer_classification_task_dataset)
         return task.validate_video(loader, model, criterion, epoch, args)

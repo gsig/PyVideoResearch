@@ -50,7 +50,7 @@ class Dataset(data.Dataset):
             if 'deltaneg too big for video' in str(e):
                 print('error getting item {}, moving on to next item'.format(index))
                 print(e)
-                return self.__getitem__(index + 1)
+                return self.__getitem__((index + 1) % len(self))
             else:
                 raise
 

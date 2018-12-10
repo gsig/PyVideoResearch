@@ -55,10 +55,10 @@ class MaskRCNNWrapper(Wrapper):
         self.input_size = args.input_size
         self.freeze_base = args.freeze_base
         self.freeze_head = args.freeze_head
-        for i, end_point in enumerate(self.basenet.VALID_ENDPOINTS):
-            if end_point == 'Mixed_4f':  # first half should include Mixed_4f
-                self.first_layers = self.basenet.VALID_ENDPOINTS[:i+1]
-                self.last_layers = self.basenet.VALID_ENDPOINTS[i+1:]
+        #for i, end_point in enumerate(self.basenet.VALID_ENDPOINTS):
+        #    if end_point == 'Mixed_4f':  # first half should include Mixed_4f
+        #        self.first_layers = self.basenet.VALID_ENDPOINTS[:i+1]
+        #        self.last_layers = self.basenet.VALID_ENDPOINTS[i+1:]
 
     def baseforward(self, x, part):
         layers = self.first_layers if part == 'first' else self.last_layers

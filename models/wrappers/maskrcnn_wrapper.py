@@ -27,9 +27,6 @@ class MaskRCNNWrapper(Wrapper):
         sys.path.insert(0, lib_path)
 
         # config
-        self.spatial_scale = 1. / 16
-        self.dim_out = 832
-
         from maskrcnn_benchmark.utils.env import setup_environment  # noqa F401 isort:skip
         from maskrcnn_benchmark.config import cfg
         self.cfg = cfg
@@ -41,7 +38,9 @@ class MaskRCNNWrapper(Wrapper):
         from maskrcnn_benchmark.modeling.roi_heads.roi_heads import build_roi_heads
         from maskrcnn_benchmark.structures.image_list import to_image_list
         from maskrcnn_benchmark.structures.bounding_box import BoxList
+        from maskrcnn_benchmark.modeling.backbone import build_backbone
 
+        self.basenet = build_backbone(cfg)
         self.rpn = build_rpn(cfg)
         self.roi_heads = build_roi_heads(cfg)
         self.to_image_list = to_image_list
@@ -49,11 +48,10 @@ class MaskRCNNWrapper(Wrapper):
 
     def __init__(self, basenet, args):
         super(MaskRCNNWrapper, self).__init__(basenet, args)
-        self.basenet = basenet
+        #self.basenet = basenet
         self.init_maskrcnn_benchmark(args)
         self.freeze_batchnorm = args.freeze_batchnorm
         self.n_class = args.nclass
-        self.sigmoid = True
         self.input_size = args.input_size
         self.freeze_base = args.freeze_base
         self.freeze_head = args.freeze_head
@@ -81,15 +79,22 @@ class MaskRCNNWrapper(Wrapper):
 
         # x is of the form b x n x h x w x c
         # model expects b x c x n x h x w
+        #x = im.permute(0, 4, 1, 2, 3)
+        #img_size = x.shape[3:]
+        #with torch.set_grad_enabled(not self.freeze_base):
+        #    x = self.baseforward(x, 'first')
+
+        ## slice feature map to get center frame
+        #t = x.shape[2]
+        #x_slice = x[:, :, t//2, :, :]
+        #features = [x_slice]
+
         x = im.permute(0, 4, 1, 2, 3)
         img_size = x.shape[3:]
-        with torch.set_grad_enabled(not self.freeze_base):
-            x = self.baseforward(x, 'first')
-
-        # slice feature map to get center frame
         t = x.shape[2]
         x_slice = x[:, :, t//2, :, :]
-        features = [x_slice]
+        images = self.to_image_list(x_slice)
+        features = self.basenet(images.tensors)
 
         # pass through region proposal network
         images = Namespace(image_sizes=[(self.input_size, self.input_size)] * x.shape[0])

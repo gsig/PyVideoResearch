@@ -19,7 +19,7 @@ args = [
     '--wrapper', 'actor_observer_with_classifier_wrapper',
     '--metrics', 'triplet_accuracy_metric;triplet_top5_metric;triplet_top10_metric;triplet_top50_metric;top1_metric',
     '--video-metrics', 'top1_metric;charades_map_metric',
-    '--metric', 'actor_observer_classification_task_charades_map_metric',
+    '--metric', 'actor_observer_classification_task_CharadesmAP',
     '--tasks', 'alignment_task;actor_observer_classification_task',
     '--actor-observer-classification-task-dataset', 'charades_ego_only_first',
     '--criterion', 'actor_observer_with_classifier_criterion',

@@ -136,12 +136,12 @@ class MaskRCNNWrapper(Wrapper):
 
         if True:
             cls_boxes = [[] for _ in range(81)]
-            score_prediction = score_predictions[0]
+            score_prediction = score_predictions[-1]
             boxes = score_prediction['boxes']
             labels = score_prediction['labels']
             scores = score_prediction['scores']
             for box, label, score in zip(boxes, labels, scores):
-                cls_boxes[label].append(torch.cat((box, score.view(-1).float())))
+                cls_boxes[label].append(torch.cat((box*img_size[0], score.view(-1).float())))
             cls_boxes = [[] if x == [] else torch.stack(x).numpy() for x in cls_boxes]
             import types
             dataset = types.SimpleNamespace()
@@ -151,7 +151,7 @@ class MaskRCNNWrapper(Wrapper):
                 'visual',
                 './',
                 cls_boxes,
-                thresh=.1,
+                thresh=.05,
                 box_alpha=0.8,
                 dataset=dataset,
                 show_class=True

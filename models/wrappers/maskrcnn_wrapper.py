@@ -55,6 +55,13 @@ class MaskRCNNWrapper(Wrapper):
         self.input_size = args.input_size
         self.freeze_base = args.freeze_base
         self.freeze_head = args.freeze_head
+        
+        # for visualizing bounding boxes
+        lib_path = os.path.join(this_dir, '../../external/Detectron.pytorch/lib')
+        sys.path.insert(0, lib_path)
+        import utils.vis as vis_utils
+        self.vis_utils = vis_utils
+        sys.path.pop(0)
         #for i, end_point in enumerate(self.basenet.VALID_ENDPOINTS):
         #    if end_point == 'Mixed_4f':  # first half should include Mixed_4f
         #        self.first_layers = self.basenet.VALID_ENDPOINTS[:i+1]
@@ -123,5 +130,31 @@ class MaskRCNNWrapper(Wrapper):
                                 'labels': pred_boxlist.get_field("labels").cpu() - 1,  # 0 is bg class
                                 'scores': scores.cpu()}
             score_predictions.append(score_prediction)
+
+        # visualization
+
+        if True:
+            cls_boxes = [[] for _ in range(81)]
+            score_prediction = score_predictions[0]
+            boxes = score_prediction['boxes']
+            labels = score_prediction['labels']
+            scores = score_prediction['scores']
+            for box, label, score in zip(boxes, labels, scores):
+                import pdb
+                pdb.set_trace()
+                cls_boxes[label].append(torch.cat(box, scores))
+            import types
+            dataset = types.SimpleNamespace()
+            setattr(dataset, 'classes', [str(cls) for cls in range(81)])
+            self.vis_utils.vis_one_image(
+                im[-1, im.shape[1]//2, :, :].cpu().numpy()/2 + 1/2,
+                'visual',
+                './',
+                cls_boxes,
+                thresh=.1,
+                box_alpha=0.8,
+                dataset=dataset,
+                show_class=True
+            )
 
         return score_predictions, proposal_losses, detector_losses

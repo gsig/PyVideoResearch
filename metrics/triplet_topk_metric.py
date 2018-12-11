@@ -15,10 +15,10 @@ class TripletTopkMetric(TripletAccuracyMetric):
             self.am.update(prec1.item())
 
     def __repr__(self):
-        return 'TripletTop{}Metric {am.val:.3f} ({am.avg:.3f})'.format(self.k, am=self.am)
+        return 'triplet_top{}_metric {am.val:.3f} ({am.avg:.3f})'.format(self.k, am=self.am)
 
     def compute(self):
-        return ('TripletTop{}Metric'.format(self.k), self.am.avg)
+        return ('triplet_top{}_metric'.format(self.k), self.am.avg)
 
     def triplet_topk(self, output, target, weights, topk=5):
         weights = np.array(weights)

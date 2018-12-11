@@ -15,11 +15,15 @@ class ActorObserverWrapper(DefaultWrapper):
         remove_last_layer(self.basenet)
         dim = basenet.in_features
         self.firstpos_fc = nn.Sequential(nn.Linear(dim, 1), nn.Tanh())
-        self.third_fc = nn.Sequential(nn.Linear(dim, 1), nn.Tanh())
-        self.firstneg_fc = self.firstpos_fc
         self.firstpos_scale = nn.Parameter(torch.Tensor([math.log(.5)]))
+        self.third_fc = nn.Sequential(nn.Linear(dim, 1), nn.Tanh())
         self.third_scale = nn.Parameter(torch.Tensor([math.log(.5)]))
-        self.firstneg_scale = nn.Parameter(torch.Tensor([math.log(.5)]))
+        if opts.share_selector:
+            self.firstneg_fc = self.firstpos_fc
+            self.firstneg_scale = self.firstpos_scale
+        else:
+            self.firstneg_fc = nn.Sequential(nn.Linear(dim, 1), nn.Tanh())
+            self.firstneg_scale = nn.Parameter(torch.Tensor([math.log(.5)]))
 
     def base(self, x, y, z):
         base_x = self.basenet(x)

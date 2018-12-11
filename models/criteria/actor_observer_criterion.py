@@ -16,7 +16,10 @@ class ActorObserverCriterion(Criterion):
         self.decay = args.finaldecay
         self.xmax = VideoSoftmax(self.xstorage, args.decay)
         self.ymax = VideoSoftmax(self.ystorage, args.decay)
-        self.zmax = VideoSoftmax(self.zstorage, args.decay)
+        if args.share_selector:
+            self.zmax = self.xmax
+        else:
+            self.zmax = VideoSoftmax(self.zstorage, args.decay)
         self.margin = args.margin
 
     def get_constants(self, ids):
@@ -41,9 +44,13 @@ class ActorObserverCriterion(Criterion):
     def forward(self, dist_a, dist_b, x, y, z, target, meta, synchronous=False):
         # Normalize and combine weights
         ids = meta['id']
-        x = self.xmax(x, ids)
         y = self.ymax(y, ids)
-        z = self.zmax(z, ids)
+        # since xmax and zmax might be the same we want to first update constants
+        # and then apply the layer such that order does not matter
+        self.xmax(x, ids)
+        self.zmax(z, ids)
+        x = self.xmax(x, ids, update_constants=False)
+        z = self.zmax(z, ids, update_constants=False)
         dist_a, dist_b, x, y, z = EqualizeGradNorm.apply(dist_a, dist_b, x, y, z)
         w = x * y * z
 

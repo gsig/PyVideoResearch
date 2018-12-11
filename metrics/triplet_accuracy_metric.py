@@ -17,10 +17,10 @@ class TripletAccuracyMetric(Metric):
             self.am.update(prec1.item())
 
     def __repr__(self):
-        return 'TripletAccuracy {am.val:.3f} ({am.avg:.3f})'.format(am=self.am)
+        return 'triplet_accuracy_metric {am.val:.3f} ({am.avg:.3f})'.format(am=self.am)
 
     def compute(self):
-        return ('TripletAccuracy', self.am.avg)
+        return ('triplet_accuracy_metric', self.am.avg)
 
     def triplet_accuracy(self, output, target, weights=None):
         """

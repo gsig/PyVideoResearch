@@ -40,8 +40,9 @@ class VideoSoftmax(nn.Module):
                 b = math.log(1 - self.decay) + x.item()
                 self.storage[vid] = lsetwo(a, b)
 
-    def forward(self, input, ids):
-        self.update_constants(input, ids)
+    def forward(self, input, ids, update_constants=True):
+        if update_constants:
+            self.update_constants(input, ids)
         constants = self.get_constants(ids).to(input.device)
         x = (input - constants).exp()
         return x

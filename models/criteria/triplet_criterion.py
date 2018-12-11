@@ -4,7 +4,7 @@ from models.layers.dist_ratio import DistRatio
 
 class TripletCriterion(Criterion):
     def __init__(self, args):
-        super(ActorObserverCriterion, self).__init__(args)
+        super(TripletCriterion, self).__init__(args)
         self.loss = DistRatio()
         self.margin = args.margin
 

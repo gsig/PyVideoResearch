@@ -141,9 +141,7 @@ class MaskRCNNWrapper(Wrapper):
             labels = score_prediction['labels']
             scores = score_prediction['scores']
             for box, label, score in zip(boxes, labels, scores):
-                import pdb
-                pdb.set_trace()
-                cls_boxes[label].append(torch.cat(box, scores))
+                cls_boxes[label].append(torch.cat((box, score.view(-1).float())))
             import types
             dataset = types.SimpleNamespace()
             setattr(dataset, 'classes', [str(cls) for cls in range(81)])

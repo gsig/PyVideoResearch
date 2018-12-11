@@ -142,6 +142,7 @@ class MaskRCNNWrapper(Wrapper):
             scores = score_prediction['scores']
             for box, label, score in zip(boxes, labels, scores):
                 cls_boxes[label].append(torch.cat((box, score.view(-1).float())))
+            cls_boxes = [[] if x == [] else torch.stack(x).numpy() for x in cls_boxes]
             import types
             dataset = types.SimpleNamespace()
             setattr(dataset, 'classes', [str(cls) for cls in range(81)])

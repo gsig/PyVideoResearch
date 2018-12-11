@@ -2,7 +2,7 @@ from models.criteria.criterion import Criterion
 from models.layers.dist_ratio import DistRatio
 
 
-class ActorObserverCriterion(Criterion):
+class TripletCriterion(Criterion):
     def __init__(self, args):
         super(ActorObserverCriterion, self).__init__(args)
         self.loss = DistRatio()

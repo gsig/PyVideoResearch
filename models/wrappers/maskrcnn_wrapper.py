@@ -57,6 +57,7 @@ class MaskRCNNWrapper(Wrapper):
         self.freeze_head = args.freeze_head
         
         # for visualizing bounding boxes
+        this_dir = os.path.dirname(__file__)
         lib_path = os.path.join(this_dir, '../../external/Detectron.pytorch/lib')
         sys.path.insert(0, lib_path)
         import utils.vis as vis_utils

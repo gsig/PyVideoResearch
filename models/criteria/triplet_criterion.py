@@ -12,8 +12,6 @@ class TripletCriterion(Criterion):
         ids = meta['id']
         w = x * y * z
         loss = self.loss.apply(dist_a, dist_b, target, self.margin)
-        self.update_constants(loss, w, ids)
-
         print('loss before', loss.sum().item())
 
         pred = {'triplet_prediction': [(a, b) for a, b in zip(dist_a.detach().cpu(), dist_b.detach().cpu())],

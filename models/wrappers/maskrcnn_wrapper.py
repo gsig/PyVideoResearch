@@ -156,5 +156,7 @@ class MaskRCNNWrapper(Wrapper):
                 dataset=dataset,
                 show_class=True
             )
+            import pdb
+            pdb.set_trace()
 
         return score_predictions, proposal_losses, detector_losses

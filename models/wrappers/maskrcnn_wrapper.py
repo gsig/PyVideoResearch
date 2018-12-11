@@ -30,8 +30,10 @@ class MaskRCNNWrapper(Wrapper):
         from maskrcnn_benchmark.utils.env import setup_environment  # noqa F401 isort:skip
         from maskrcnn_benchmark.config import cfg
         self.cfg = cfg
-        cfg.MODEL.BACKBONE.OUT_CHANNELS = 832
-        cfg.MODEL.RESNETS.RES2_OUT_CHANNELS = 208
+        #cfg.MODEL.BACKBONE.OUT_CHANNELS = 832
+        #cfg.MODEL.RESNETS.RES2_OUT_CHANNELS = 208
+        cfg.RPN.PRE_NMS_TOP_N_TEST = 6000
+        cfg.RPN.POST_NMS_TOP_N_TEST = 1000
 
         # bind classes/methods from MaskRCNN-Benchmark
         from maskrcnn_benchmark.modeling.rpn.rpn import build_rpn
@@ -133,8 +135,7 @@ class MaskRCNNWrapper(Wrapper):
             score_predictions.append(score_prediction)
 
         # visualization
-
-        if True:
+        if False:
             cls_boxes = [[] for _ in range(81)]
             score_prediction = score_predictions[-1]
             boxes = score_prediction['boxes']

@@ -32,8 +32,8 @@ class MaskRCNNWrapper(Wrapper):
         self.cfg = cfg
         #cfg.MODEL.BACKBONE.OUT_CHANNELS = 832
         #cfg.MODEL.RESNETS.RES2_OUT_CHANNELS = 208
-        cfg.RPN.PRE_NMS_TOP_N_TEST = 6000
-        cfg.RPN.POST_NMS_TOP_N_TEST = 1000
+        cfg.MODEL.RPN.PRE_NMS_TOP_N_TEST = 6000
+        cfg.MODEL.RPN.POST_NMS_TOP_N_TEST = 1000
 
         # bind classes/methods from MaskRCNN-Benchmark
         from maskrcnn_benchmark.modeling.rpn.rpn import build_rpn

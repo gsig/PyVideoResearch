@@ -33,7 +33,7 @@ args = [
     '--val-file', '/home/gsigurds/ai2/twostream/Charades_v1_test.csv',
     '--pretrained',
     #'--resume', '/nfs.yoda/gsigurds/ai2/caches/i3d8l/model_best.pth.tar',
-    '--start-epoch', '1',
+    #'--start-epoch', '1',
     '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
     #'--evaluate',
     '--workers', '4',

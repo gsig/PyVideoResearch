@@ -65,8 +65,6 @@ class ActorObserverCriterion(Criterion):
         k = self.get_constants(ids).to(dist_a.device)
         n = (w.sum() + 0.00001) / w.shape[0]
         final = ((loss - k) * (w / n)).sum()
-        import pdb
-        pdb.set_trace()
 
         print('loss before', loss.sum().item())
         print('loss after', (loss * w / n).sum().item())

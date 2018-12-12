@@ -87,6 +87,7 @@ def parse():
     parser.add_argument('--alignment', action='store_true')
     parser.add_argument('--classifier-weight', default=1.0, type=float)
     parser.add_argument('--share-selector', default=True, type=bool)
+    parser.add_argument('--normalize-per-video', action='store_true')
 
     # Task parameters
     parser.add_argument('--tasks', default='', help='tasks to run every epoch')

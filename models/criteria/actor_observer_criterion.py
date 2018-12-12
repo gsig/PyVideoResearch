@@ -21,12 +21,17 @@ class ActorObserverCriterion(Criterion):
         else:
             self.zmax = VideoSoftmax(self.zstorage, args.decay)
         self.margin = args.margin
+        self.normalize_per_video = args.normalize_per_video
 
     def get_constants(self, ids):
+        if not self.normalize_per_video:
+            same = ['all' for x in ids]
         out = [self.storage[x][0] for x in ids]
         return torch.Tensor(out)
 
     def update_constants(self, input, weights, ids):
+        if not self.normalize_per_video:
+            same = ['all' for x in ids]
         for x, w, vid in zip(input, weights, ids):
             x, w = x.item(), w.item()
             if vid not in self.storage:

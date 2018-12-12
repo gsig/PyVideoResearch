@@ -11,7 +11,7 @@ def test_model_updates(inputs, model, target, criterion, meta={}):
     optimizer.zero_grad()
     params = [np for np in model.named_parameters()]
     initial_params = [(name, p.clone()) for (name, p) in params]
-    for _ in range(5):
+    for _ in range(2):
         output = model(inputs, meta)
         if type(output) is not tuple:
             output = (output, )
@@ -44,7 +44,7 @@ class TestActorObserver(unittest.TestCase):
         model = resnet50()
         model = ActorObserverWithClassifierWrapper(model, args)
         b, d = 10, 224
-        inputs = [torch.randn(b, 3, d, d)] * 3
+        inputs = [torch.randn(b, 3, d, d), torch.randn(b, 3, d, d), torch.randn(b, 3, d, d)]
         meta = {'thirdtime': torch.zeros(b),
                 'firsttime_pos': torch.zeros(b),
                 'firsttime_neg': torch.zeros(b),
@@ -72,10 +72,12 @@ class TestActorObserver(unittest.TestCase):
         args.decay = 0.9
         args.margin = 0.0
         args.classifier_weight = 1.0
+        args.share_selector = False
+        args.normalize_per_video = False
         model = ResNet503D.get(args)
         model = ActorObserverWithClassifierWrapper(model, args)
         b, f, d = 2, 16, 224
-        inputs = [torch.randn(b, f, d, d, 3)] * 3
+        inputs = [torch.randn(b, f, d, d, 3), torch.randn(b, f, d, d, 3), torch.randn(b, f, d, d, 3)]
         meta = {'thirdtime': torch.zeros(b),
                 'firsttime_pos': torch.zeros(b),
                 'firsttime_neg': torch.zeros(b),
@@ -83,7 +85,8 @@ class TestActorObserver(unittest.TestCase):
                 'n_ego': torch.zeros(b),
                 'id': ['asdf'] * b,
                 }
-        target = torch.ones(b,args.nclass)
+        target = torch.ones(b, args.nclass)
+        target[b//2:, 0] = -1
         args.balanceloss = False
         args.window_smooth = 0
         criterion = ActorObserverWithClassifierCriterion(args)

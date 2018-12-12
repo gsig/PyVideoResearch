@@ -22,7 +22,7 @@ args = [
     '--lr-decay-rate', '50',
     '--input-size', '400',
     '--epochs', '120',
-    '--batch-size', '12',
+    '--batch-size', '8',
     '--train-size', '1.0',
     '--weight-decay', '0.0001',
     '--val-size', '1.0',

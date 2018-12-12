@@ -22,7 +22,7 @@ args = [
     '--lr-decay-rate', '50',
     '--input-size', '400',
     '--epochs', '120',
-    '--batch-size', '6',
+    '--batch-size', '8',
     '--train-size', '1.0',
     '--weight-decay', '0.0001',
     '--val-size', '1.0',
@@ -36,7 +36,7 @@ args = [
     '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
     #'--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar' +
     #            ';/nfs.yoda/gsigurds/caches/avacls2b/model.pth.tar',
-    '--workers', '10',
+    '--workers', '16',
     '--no-val-video',
     '--metric', 'AVA6val',
     '--disable-cudnn-benchmark',

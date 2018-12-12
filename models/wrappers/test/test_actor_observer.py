@@ -11,12 +11,13 @@ def test_model_updates(inputs, model, target, criterion, meta={}):
     optimizer.zero_grad()
     params = [np for np in model.named_parameters()]
     initial_params = [(name, p.clone()) for (name, p) in params]
-    output = model(inputs, meta)
-    if type(output) is not tuple:
-        output = (output, )
-    _, loss, _ = criterion(*(output + (target, meta)))
-    loss.backward()
-    optimizer.step()
+    for _ in range(5):
+        output = model(inputs, meta)
+        if type(output) is not tuple:
+            output = (output, )
+        _, loss, _ = criterion(*(output + (target, meta)))
+        loss.backward()
+        optimizer.step()
     for (_, p0), (name, p1) in zip(initial_params, params):
         try:
             assert not torch.equal(p0, p1)
@@ -38,6 +39,8 @@ class TestActorObserver(unittest.TestCase):
         args.decay = 0.9
         args.margin = 0.0
         args.classifier_weight = 1.0
+        args.share_selector = False
+        args.normalize_per_video = False
         model = resnet50()
         model = ActorObserverWithClassifierWrapper(model, args)
         b, d = 10, 224
@@ -49,7 +52,8 @@ class TestActorObserver(unittest.TestCase):
                 'n_ego': torch.zeros(b),
                 'id': ['asdf'] * b,
                 }
-        target = torch.ones(b)
+        target = torch.ones(b, args.nclass)
+        target[b//2:, 0] = -1
         args.balanceloss = False
         args.window_smooth = 0
         criterion = ActorObserverWithClassifierCriterion(args)

@@ -25,13 +25,13 @@ class ActorObserverCriterion(Criterion):
 
     def get_constants(self, ids):
         if not self.normalize_per_video:
-            same = ['all' for x in ids]
+            ids = ['all' for x in ids]
         out = [self.storage[x][0] for x in ids]
         return torch.Tensor(out)
 
     def update_constants(self, input, weights, ids):
         if not self.normalize_per_video:
-            same = ['all' for x in ids]
+            ids = ['all' for x in ids]
         for x, w, vid in zip(input, weights, ids):
             x, w = x.item(), w.item()
             if vid not in self.storage:
@@ -65,6 +65,8 @@ class ActorObserverCriterion(Criterion):
         k = self.get_constants(ids).to(dist_a.device)
         n = (w.sum() + 0.00001) / w.shape[0]
         final = ((loss - k) * (w / n)).sum()
+        import pdb
+        pdb.set_trace()
 
         print('loss before', loss.sum().item())
         print('loss after', (loss * w / n).sum().item())

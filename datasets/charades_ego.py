@@ -94,9 +94,6 @@ class CharadesEgo(Charades):
         ims = [default_loader(im) for im in impaths]
         if self.transform is not None:
             ims = [self.transform(im) for im in ims]
-        # if random.random() > 0.5:
-        #     ims[2], ims[0] = ims[0], ims[2]
-        #     target = -1
         if self.target_transform is not None:
             target = self.target_transform(target)
         return ims, target, meta

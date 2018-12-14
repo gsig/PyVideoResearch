@@ -72,8 +72,9 @@ def pil_loader(path):
     #        print('waiting 5 sec and trying again')
     #        time.sleep(5)
     #raise IOError
-    img = Image.open(f)
-    return img.convert('RGB')
+        with open(path, 'rb') as f:
+            img = Image.open(f)
+            return img.convert('RGB')
 
 
 def pil_loader2(path):

@@ -20,7 +20,7 @@ args = [
     '--criterion', 'default_criterion',
     '--wrapper', 'default_wrapper',
     '--lr-decay-rate', '15,40',
-    '--epochs', '50',
+    '--epochs', '100',
     '--batch-size', '5',
     '--video-batch-size', '5',
     '--train-size', '1.0',

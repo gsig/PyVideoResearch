@@ -53,6 +53,4 @@ class ActorObserverWrapper(DefaultWrapper):
         w_y = self.third_fc(base_y).view(-1) * torch.exp(self.third_scale)
         w_z = self.firstneg_fc(base_z).view(-1) * torch.exp(self.firstneg_scale)
         self.verbose()
-        import pdb
-        pdb.set_trace()
         return dist_a, dist_b, w_x, w_y, w_z

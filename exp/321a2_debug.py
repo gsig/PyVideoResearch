@@ -22,7 +22,7 @@ args = [
     '--criterion', 'actor_observer_criterion',
     '--tasks', 'alignment_task',
     '--train-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_train.csv',
-    '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_test.csv',
+    '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_train.csv',
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
     '--pretrained',
     '--resume', '/nfs.yoda/gsigurds/caches/321a2/model_best.pth.tar',

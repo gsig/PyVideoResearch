@@ -45,15 +45,11 @@ class Dataset(data.Dataset):
                 return [self.get_item(index, shift=t)
                         for t in np.linspace(0, 1.0, self.test_gap)]
             else:
-                item = self.get_item(index, shift=None)
-                return item
+                return self.get_item(index, shift=None)
         except Exception as e:
-            if 'deltaneg too big for video' in str(e):
-                print('error getting item {}, moving on to next item'.format(index))
-                print(e)
-                return self.__getitem__((index + 1) % len(self))
-            else:
-                raise
+            print('error getting item {}, moving on to next item'.format(index))
+            print(e)
+            return self.__getitem__((index + 1) % len(self))
 
     def get_item(self, index, shift=None, video=None):
         """

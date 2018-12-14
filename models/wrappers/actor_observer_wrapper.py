@@ -33,8 +33,6 @@ class ActorObserverWrapper(DefaultWrapper):
         dist_b = F.pairwise_distance(base_y, base_z, 2).view(-1)
         print('fc7 norms:', base_x.norm().item(), base_y.norm().item(), base_z.norm().item())
         print('pairwise dist means:', dist_a.mean().item(), dist_b.mean().item())
-        import pdb
-        pdb.set_trace()
         return base_x, base_y, base_z, dist_a, dist_b
 
     def verbose(self):
@@ -55,4 +53,6 @@ class ActorObserverWrapper(DefaultWrapper):
         w_y = self.third_fc(base_y).view(-1) * torch.exp(self.third_scale)
         w_z = self.firstneg_fc(base_z).view(-1) * torch.exp(self.firstneg_scale)
         self.verbose()
+        import pdb
+        pdb.set_trace()
         return dist_a, dist_b, w_x, w_y, w_z

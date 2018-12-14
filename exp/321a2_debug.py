@@ -36,7 +36,7 @@ args = [
     '--epochs', '50',
     '--workers', '4',
     '--normalize-per-video',
-    #'--evaluate',
+    '--evaluate',
 ]
 sys.argv.extend(args)
 try:

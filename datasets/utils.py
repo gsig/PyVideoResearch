@@ -62,16 +62,19 @@ def ffmpeg_video_loader(path):
 
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
-    for _ in range(5):
-        try:
-            with open(path, 'rb') as f:
-                img = Image.open(f)
-                return img.convert('RGB')
-        except IOError as e:
-            print(e)
-            print('waiting 5 sec and trying again')
-            time.sleep(5)
-    raise IOError
+    #for _ in range(5):
+    #    try:
+    #        with open(path, 'rb') as f:
+    #            img = Image.open(f)
+    #            return img.convert('RGB')
+    #    except IOError as e:
+    #        print(e)
+    #        print('waiting 5 sec and trying again')
+    #        time.sleep(5)
+    #raise IOError
+    with open(path, 'rb') as f:
+        img = Image.open(f)
+        return img.convert('RGB')
 
     
 def pil_loader2(path):

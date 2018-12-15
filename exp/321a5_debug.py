@@ -25,7 +25,7 @@ args = [
     '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_test.csv',
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
     '--pretrained',
-    '--resume', '/nfs.yoda/gsigurds/caches/321a5_debug/model.pth.tar' +
+    '--resume', '/nfs.yoda/gsigurds/caches/321a5_debug/model.pth.tar',
     '--decay', '0.95',
     '--lr', '0e-5',
     '--weight-decay', '0',

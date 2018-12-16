@@ -70,8 +70,6 @@ class ActorObserverCriterion(Criterion):
         print('loss before', loss.sum().item())
         print('loss after', (loss * w / n).sum().item())
         print('weight median: {}, var: {}'.format(w.median().item(), w.var().item()))
-        import pdb
-        pdb.set_trace()
 
         pred = {'triplet_prediction': [(a, b) for a, b in zip(dist_a.detach().cpu(), dist_b.detach().cpu())],
                 'weights': w.detach().cpu()}

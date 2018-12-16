@@ -33,8 +33,6 @@ class ActorObserverWrapper(DefaultWrapper):
         dist_b = F.pairwise_distance(base_y, base_z, 2).view(-1)
         print('fc7 norms:', base_x.norm().item(), base_y.norm().item(), base_z.norm().item())
         print('pairwise dist means:', dist_a.mean().item(), dist_b.mean().item())
-        import pdb
-        pdb.set_trace()
         return base_x, base_y, base_z, dist_a, dist_b
 
     def verbose(self):
@@ -44,6 +42,14 @@ class ActorObserverWrapper(DefaultWrapper):
               math.exp(self.firstneg_scale.item()))
 
     def forward(self, inputs, meta):
+        if self.freeze_batchnorm:
+            for module in self.basenet.modules():
+                if isinstance(module, torch.nn.modules.BatchNorm1d):
+                    module.eval()
+                if isinstance(module, torch.nn.modules.BatchNorm2d):
+                    module.eval()
+                if isinstance(module, torch.nn.modules.BatchNorm3d):
+                    module.eval()
         x, y, z = inputs
         """ assuming:
             x: first person positive

@@ -97,11 +97,8 @@ class CharadesEgo(Charades):
         if self.target_transform is not None:
             target = self.target_transform(target)
         if random() > 0.5:  # TODO DEBUG
-            print('flipped')
             ims[2], ims[0] = ims[0], ims[2]
             target = -1
-        else:
-            print('not flipped')
         return ims, target, meta
 
     @classmethod

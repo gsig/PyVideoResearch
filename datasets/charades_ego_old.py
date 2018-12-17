@@ -28,7 +28,7 @@ class CharadesEgoOld(Charades):
         datadir = path
         image_paths, targets, ids, meta = [], [], [], []
 
-        for i, (vid, label) in enumerate(labels.iteritems()):
+        for i, (vid, label) in enumerate(labels.items()):
             gap = 4
             iddir = datadir + '/' + vid
             n = len(glob(iddir + '/*.jpg'))

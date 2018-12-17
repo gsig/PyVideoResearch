@@ -39,6 +39,7 @@ class DistRatio(Function):
         exp, log = torch.exp, torch.log
         ctx.margin = margin
         _output = input1.clone()
+        _output[y == -1] = input2[y == -1].clone()  # supporting switched samples
         _output.add_(log(exp(-input1) + exp(-input2)))
         output = _output
         ctx.save_for_backward(input1, input2, y)
@@ -68,7 +69,9 @@ class DistRatio(Function):
         grad_input1.div_(dist)
         grad_input2.div_(dist)
 
-        grad_input1.add_(1)
+        #grad_input1.add_(1)
+        grad_input1[y == 1].add_(1)  # supporting switched samples
+        grad_input2[y == -1].add_(1)  # supporting switched samples
 
         return grad_input1 * grad_output, grad_input2 * grad_output, None, None
 

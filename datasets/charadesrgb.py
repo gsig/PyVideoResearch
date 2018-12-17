@@ -7,7 +7,7 @@ import random
 import numpy as np
 from glob import glob
 import csv
-import cPickle as pickle
+import pickle
 import os
 
 

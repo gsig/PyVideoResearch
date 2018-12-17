@@ -18,11 +18,11 @@ def get_neg_time(egoii, n_ego, d):
         return choice(candidates)
 
 
-class CharadesEgo(Charades):
+class CharadesEgoOld(Charades):
     def __init__(self, *args, **kwargs):
         self.fps = 24
         self.deltaneg = 10 * self.fps
-        super(CharadesEgo, self).__init__(*args, **kwargs)
+        super(CharadesEgoOld, self).__init__(*args, **kwargs)
 
     def prepare(self, path, labels, split):
         datadir = path
@@ -88,4 +88,4 @@ class CharadesEgo(Charades):
 
     @classmethod
     def get(cls, args):
-        return super(CharadesEgo, cls).get(args, scale=(0.8, 1.0))
+        return super(CharadesEgoOld, cls).get(args, scale=(0.8, 1.0))

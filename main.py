@@ -74,8 +74,7 @@ def main():
         if args.distributed:
             trainer.train_sampler.set_epoch(epoch)
         scores = {}
-        #scores.update(trainer.train(train_loader, model, criterion, optimizer, epoch, metrics, args))
-        scores.update(trainer.train(val_loader, model, criterion, optimizer, epoch, metrics, args))  # TODO DEBUG
+        scores.update(trainer.train(train_loader, model, criterion, optimizer, epoch, metrics, args))
         scores.update(validate(trainer, val_loader, model, criterion, args, metrics, tasks, epoch))
         is_best = scores[args.metric] > best_score
         best_score = max(scores[args.metric], best_score)

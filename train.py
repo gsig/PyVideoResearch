@@ -39,10 +39,8 @@ class Trainer(object):
 
         if validate:
             # switch to evaluate mode
-            #model.eval()
-            #criterion.eval()
-            model.train()  # TODO DEBUG
-            criterion.eval()  # TODO DEBUG
+            model.eval()
+            criterion.eval()
             iter_size = args.val_size
             setting = 'Validate Epoch'
         else:

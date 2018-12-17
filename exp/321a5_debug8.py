@@ -13,7 +13,7 @@ name = __file__.split('/')[-1].split('.')[0]  # name is filename
 
 args = [
     '--name', name,
-    '--dataset', 'charades_ego2',
+    '--dataset', 'charades_ego',
     '--print-freq', '1',
     '--arch', 'resnet50',
     '--wrapper', 'actor_observer_wrapper',

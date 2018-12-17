@@ -96,9 +96,9 @@ class CharadesEgo(Charades):
             ims = [self.transform(im) for im in ims]
         if self.target_transform is not None:
             target = self.target_transform(target)
-        if random() > 0.5:  # TODO DEBUG
-            ims[2], ims[0] = ims[0], ims[2]
-            target = -1
+        #if random() > 0.5:  # TODO DEBUG
+        #    ims[2], ims[0] = ims[0], ims[2]
+        #    target = -1
         return ims, target, meta
 
     @classmethod

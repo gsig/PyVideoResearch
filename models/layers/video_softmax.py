@@ -1,18 +1,6 @@
 import torch
-from torch.autograd import Function
 from torch import nn
 import math
-
-
-class MulConstant(Function):
-    @staticmethod
-    def forward(ctx, tensor, constant):
-        ctx.constant = constant
-        return tensor * constant
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        return grad_output * ctx.constant, None
 
 
 def lsetwo(a, b):
@@ -28,7 +16,6 @@ class VideoSoftmax(nn.Module):
 
     def get_constants(self, ids):
         out = [self.storage[x] for x in ids]
-        # out = [math.exp(-x) for x in ids]
         return torch.Tensor(out)
 
     def update_constants(self, input, ids):

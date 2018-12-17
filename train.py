@@ -2,8 +2,7 @@
 """
 import torch
 import itertools
-from misc_utils.utils import AverageMeter, submission_file, Timer
-from torch.nn.parallel.scatter_gather import gather
+from misc_utils.utils import AverageMeter, Timer
 
 
 def adjust_learning_rate(startlr, decay_rate, optimizer, epoch):

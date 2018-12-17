@@ -87,5 +87,5 @@ class CharadesEgoOld(Charades):
             return self[random.randrange(len(self))]
 
     @classmethod
-    def get(cls, args):
+    def get(cls, args, split=None):
         return super(CharadesEgoOld, cls).get(args, scale=(0.8, 1.0))

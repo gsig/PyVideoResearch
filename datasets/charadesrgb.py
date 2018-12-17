@@ -160,7 +160,7 @@ class Charades(data.Dataset):
         return fmt_str
 
     @classmethod
-    def get(cls, args, scale=(0.08, 1.0)):
+    def get(cls, args, scale=(0.08, 1.0), splits=None):
         """ Entry point. Call this function to get all Charades dataloaders """
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])

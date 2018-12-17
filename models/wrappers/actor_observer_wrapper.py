@@ -7,6 +7,7 @@ import math
 import torch.nn.functional as F
 from models.wrappers.default_wrapper import DefaultWrapper
 from models.utils import remove_last_layer
+import random
 
 
 class ActorObserverWrapper(DefaultWrapper):
@@ -18,6 +19,7 @@ class ActorObserverWrapper(DefaultWrapper):
         self.firstpos_scale = nn.Parameter(torch.Tensor([math.log(.5)]))
         self.third_fc = nn.Sequential(nn.Linear(dim, 1), nn.Tanh())
         self.third_scale = nn.Parameter(torch.Tensor([math.log(.5)]))
+        self.distance = opts.distance
         if opts.share_selector:
             self.firstneg_fc = self.firstpos_fc
             self.firstneg_scale = self.firstpos_scale
@@ -26,11 +28,23 @@ class ActorObserverWrapper(DefaultWrapper):
             self.firstneg_scale = nn.Parameter(torch.Tensor([math.log(.5)]))
 
     def base(self, x, y, z):
-        base_x = self.basenet(x)
         base_y = self.basenet(y)
-        base_z = self.basenet(z)
-        dist_a = F.pairwise_distance(base_x, base_y, 2).view(-1)
-        dist_b = F.pairwise_distance(base_y, base_z, 2).view(-1)
+        if random.random() > .5:  # TODO Debug, make sure order doesn't matter
+            base_x = self.basenet(x)
+            base_z = self.basenet(z)
+        else:
+            base_z = self.basenet(z)
+            base_x = self.basenet(x)
+
+        if self.distance == 'cosine':
+            dist_a = .5 - .5 * F.cosine_similarity(base_x, base_y, 1, 1e-6).view(-1)
+            dist_b = .5 - .5 * F.cosine_similarity(base_y, base_z, 1, 1e-6).view(-1)
+        elif self.distance == 'l2':
+            dist_a = F.pairwise_distance(base_x, base_y, 2).view(-1)
+            dist_b = F.pairwise_distance(base_y, base_z, 2).view(-1)
+        else:
+            assert False, "Wrong args.distance"
+
         print('fc7 norms:', base_x.norm().item(), base_y.norm().item(), base_z.norm().item())
         print('pairwise dist means:', dist_a.mean().item(), dist_b.mean().item())
         return base_x, base_y, base_z, dist_a, dist_b

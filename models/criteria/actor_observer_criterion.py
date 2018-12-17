@@ -61,6 +61,7 @@ class ActorObserverCriterion(Criterion):
 
         # update L
         loss = self.loss.apply(dist_a, dist_b, target, self.margin)
+        loss = torch.max(torch.zeros(loss.shape).to(loss.device), loss)  # to avoid underflow TODO
         self.update_constants(loss, w, ids)
         k = self.get_constants(ids).to(dist_a.device)
         n = (w.sum() + 0.00001) / w.shape[0]

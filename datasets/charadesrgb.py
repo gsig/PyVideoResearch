@@ -169,7 +169,7 @@ class Charades(data.Dataset):
         train_dataset = cls(
             args.data, 'train', train_file, args.cache, True,
             transform=transforms.Compose([
-                transforms.RandomResizedCrop(args.inputsize, scale),
+                transforms.RandomResizedCrop(args.input_size, scale),
                 transforms.ColorJitter(
                     brightness=0.4, contrast=0.4, saturation=0.4),
                 transforms.RandomHorizontalFlip(),
@@ -179,16 +179,16 @@ class Charades(data.Dataset):
         val_dataset = cls(
             args.data, 'val', val_file, args.cache, True,
             transform=transforms.Compose([
-                transforms.Resize(int(256. / 224 * args.inputsize)),
-                transforms.CenterCrop(args.inputsize),
+                transforms.Resize(int(256. / 224 * args.input_size)),
+                transforms.CenterCrop(args.input_size),
                 transforms.ToTensor(),
                 normalize,
             ]))
         valvideo_dataset = cls(
             args.data, 'val_video', val_file, args.cache, True,
             transform=transforms.Compose([
-                transforms.Resize(int(256. / 224 * args.inputsize)),
-                transforms.CenterCrop(args.inputsize),
+                transforms.Resize(int(256. / 224 * args.input_size)),
+                transforms.CenterCrop(args.input_size),
                 transforms.ToTensor(),
                 normalize,
             ]))

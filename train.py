@@ -98,5 +98,4 @@ class Trainer(object):
             Validate in the same approach as training
         """
         with torch.no_grad():
-            #return self.train(loader, model, criterion, None, epoch, metrics, args, validate=True)
-            return self.train(loader, model, criterion, None, epoch, metrics, args)  # TODO DEBUG
+            return self.train(loader, model, criterion, None, epoch, metrics, args, validate=True)

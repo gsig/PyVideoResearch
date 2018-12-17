@@ -62,7 +62,7 @@ def main():
     train_loader, val_loader = get_dataset(args)
 
     if args.evaluate:
-        scores = validate(trainer, val_loader, model, criterion, args, metrics, tasks, -1)
+        scores = validate(trainer, train_loader, model, criterion, args, metrics, tasks, -1)
         print(scores)
         return
 

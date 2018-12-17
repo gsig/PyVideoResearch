@@ -38,7 +38,7 @@ args = [
     '--workers', '4',
     '--share-selector', 'False',
     '--finaldecay', '0.9',
-    '--evaluate',
+    #'--evaluate',
 ]
 sys.argv.extend(args)
 try:

@@ -18,7 +18,7 @@ class CharadesEgo2(CharadesEgo):
                     transforms.RandomResizedCrop(args.input_size, scale),
                     transforms.ColorJitter(
                         brightness=0.4, contrast=0.4, saturation=0.4),
-                    transforms.RandomHorizontalFlip(),
+                    #transforms.RandomHorizontalFlip(),
                     transforms.ToTensor(),  # missing PCA lighting jitter
                     normalize,
                 ]))

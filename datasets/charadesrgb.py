@@ -167,7 +167,7 @@ class Charades(data.Dataset):
         train_file = args.train_file
         val_file = args.val_file
         train_dataset = cls(
-            args.data, 'train', train_file, args.cache, args.cache_buster,
+            args.data, 'train', train_file, args.cache, True,
             transform=transforms.Compose([
                 transforms.RandomResizedCrop(args.inputsize, scale),
                 transforms.ColorJitter(
@@ -177,7 +177,7 @@ class Charades(data.Dataset):
                 normalize,
             ]))
         val_dataset = cls(
-            args.data, 'val', val_file, args.cache, args.cache_buster,
+            args.data, 'val', val_file, args.cache, True,
             transform=transforms.Compose([
                 transforms.Resize(int(256. / 224 * args.inputsize)),
                 transforms.CenterCrop(args.inputsize),
@@ -185,7 +185,7 @@ class Charades(data.Dataset):
                 normalize,
             ]))
         valvideo_dataset = cls(
-            args.data, 'val_video', val_file, args.cache, args.cache_buster,
+            args.data, 'val_video', val_file, args.cache, True,
             transform=transforms.Compose([
                 transforms.Resize(int(256. / 224 * args.inputsize)),
                 transforms.CenterCrop(args.inputsize),

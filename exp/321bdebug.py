@@ -26,7 +26,7 @@ args = [
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
     '--pretrained',
     '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +
-                ';/nfs.yoda/gsigurds/ai2/caches/i3d12b2/model_best.pth.tar',
+                ';/nfs.yoda/gsigurds/caches/i3d12b2/model_best.pth.tar',
     '--start-epoch', '1',
     '--decay', '0.95',
     '--lr', '3e-5',

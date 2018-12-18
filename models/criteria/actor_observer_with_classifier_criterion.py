@@ -40,6 +40,8 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
             cls2, target2 = var_subset([cls, -target.long()], inds2)
             clsloss = self.clsloss(nn.Sigmoid()(cls2), target2.float())
             clsloss = clsloss.mean(1)
+            import pdb
+            pdb.set_trace()
             f = self.clsweight * clsloss.sum()
             final.append(f)
         else:

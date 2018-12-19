@@ -35,7 +35,7 @@ class MaskRCNNWrapper(Wrapper):
         cfg.MODEL.RPN.PRE_NMS_TOP_N_TEST = 6000
         cfg.MODEL.RPN.POST_NMS_TOP_N_TEST = 1000
         cfg.MODEL.ROI_HEADS.SCORE_THRESH = 0.001
-        cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG = 10000
+        cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG = 0
 
         # bind classes/methods from MaskRCNN-Benchmark
         from maskrcnn_benchmark.modeling.rpn.rpn import build_rpn
@@ -137,7 +137,7 @@ class MaskRCNNWrapper(Wrapper):
             score_predictions.append(score_prediction)
 
         # visualization
-        if True:
+        if False:
             cls_boxes = [[] for _ in range(81)]
             score_prediction = score_predictions[-1]
             boxes = score_prediction['boxes']

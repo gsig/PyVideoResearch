@@ -30,8 +30,6 @@ def load_partial_state(model, state_dict):
         k = k0.replace('module.', '').replace('mA.', '').replace('basenet.', '')
         if k not in sd or not sd[k].shape == v.shape:
             print('ignoring state key for loading: {}'.format(k))
-            import pdb
-            pdb.set_trace()
             continue
         if isinstance(v, torch.nn.Parameter):
             v = v.data

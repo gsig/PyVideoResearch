@@ -138,7 +138,7 @@ class MaskRCNNWrapper(Wrapper):
             score_predictions.append(score_prediction)
 
         # visualization
-        if True:
+        if False:
             cls_boxes = [[] for _ in range(81)]
             score_prediction = score_predictions[-1]
             boxes = score_prediction['boxes']

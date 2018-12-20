@@ -39,6 +39,7 @@ args = [
     '--metric', 'AVA6val',
     '--disable-cudnn-benchmark',
     '--freeze-batchnorm',
+    '--no-val-video',
     #'--freeze-base',
     #'--evaluate',
     #'--freeze-head',

@@ -35,8 +35,8 @@ class MaskRCNNWrapper(Wrapper):
         cfg.MODEL.RPN.PRE_NMS_TOP_N_TEST = 6000
         cfg.MODEL.RPN.POST_NMS_TOP_N_TEST = 1000
         #cfg.MODEL.ROI_HEADS.SCORE_THRESH = 0.001
-        cfg.MODEL.ROI_HEADS.SCORE_THRESH = 0
-        cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG = 0
+        #cfg.MODEL.ROI_HEADS.SCORE_THRESH = 0
+        #cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG = 0
 
         # bind classes/methods from MaskRCNN-Benchmark
         from maskrcnn_benchmark.modeling.rpn.rpn import build_rpn

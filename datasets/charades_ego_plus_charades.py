@@ -64,7 +64,8 @@ class CharadesEgoPlusCharades(CharadesMeta):
 
         if 'train' in splits:
             train_dataset.target_transform = transforms.Lambda(lambda x: -x)
-            train_dataset = ConcatDataset([train_dataset] + [train_datasetego] * 3)  # magic number to balance
+            #train_dataset = ConcatDataset([train_dataset] + [train_datasetego] * 3)  # magic number to balance
+            train_dataset = train_dataset  # TODO DEBUG
         if 'val' in splits:
             val_dataset.target_transform = transforms.Lambda(lambda x: -x)
             val_dataset = ConcatDataset([val_dataset] + [val_datasetego] * 3)

@@ -70,10 +70,10 @@ class StabilizationTask(Task):
             name = '{}_{}'.format(meta['id'][0], meta['start'][0])
             original = original[0]
             output = output[0]
+            original *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(original.device)
             original -= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :].to(original.device)
-            original -= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(original.device)
-            output *= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :].to(output.device)
             output *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(output.device)
+            output -= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :].to(output.device)
             ffmpeg_video_writer(original.cpu(), '{}/{}_original.mp4'.format(args.cache, name))
             ffmpeg_video_writer(output.cpu(), '{}/{}_stabilized.mp4'.format(args.cache, name))
             timer.tic()

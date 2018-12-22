@@ -62,6 +62,7 @@ class StabilizationTask(Task):
             if i >= self.num_align:
                 break
             if not args.cpu:
+                inputs = inputs.cuda()
                 target = target.cuda(async=True)
             original = inputs.detach().clone()
             with torch.enable_grad():

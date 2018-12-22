@@ -31,9 +31,9 @@ def parse():
     parser.add_argument('--pretrained', dest='pretrained', action='store_true', help='use pre-trained model')
     parser.add_argument('--pretrained-weights', default='')
     parser.add_argument('--nclass', default=157, type=int)
-    parser.add_argument('--wrapper', default='async_tf_base',
+    parser.add_argument('--wrapper', default='default_wrapper',
                         help='child of nn.Module that wraps the base arch. ''default_wrapper'' for no wrapper')
-    parser.add_argument('--criterion', default='async_tf_criterion', help=' ''default_criterion'' for sigmoid loss')
+    parser.add_argument('--criterion', default='default_criterion', help=' ''default_criterion'' for sigmoid loss')
     parser.add_argument('--features', default='fc', help='conv1;layer1;layer2;layer3;layer4;fc')
 
     # System parameters

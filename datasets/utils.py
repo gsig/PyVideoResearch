@@ -73,7 +73,7 @@ def ffmpeg_video_writer(video, path):
         .input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(w, h))
         .output(path, pix_fmt='yuv420p')
         .overwrite_output()
-        .run_async(pipe_stdin=True)
+        .run(pipe_stdin=True)
     )
 
     for frame in video:

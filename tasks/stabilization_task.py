@@ -57,8 +57,10 @@ class StabilizationTask(Task):
 
     def stabilize_all(self, loader, model, epoch, args):
         timer = Timer()
-        unnormalize = transforms.Normalize(mean=[-0.485, -0.456, -0.406],
-                                           std=[1/0.229, 1/0.224, 1/0.225])
+        unnormalize = transforms.Compose([transforms.Normalize(mean=[0, 0, 0],
+                                                               std=[1/0.229, 1/0.224, 1/0.225]),
+                                         transforms.Normalize(mean=[-0.485, -0.456, -0.406],
+                                                              std=[1, 1, 1])])
         for i, (inputs, target, meta) in enumerate(loader):
             if i >= self.num_align:
                 break

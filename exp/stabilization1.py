@@ -28,7 +28,7 @@ args = [
     '--batch-size', '1',
     '--val-size', '0',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
-    '--epochs', '1000',
+    '--epochs', '10',
     '--workers', '0',
     '--evaluate',
     '--features', 'conv1;fc',

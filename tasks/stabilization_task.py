@@ -32,7 +32,7 @@ class StabilizationTask(Task):
     def stabilize_video(self, video, model, args):
         #optimizer = torch.optim.LBFGS([video.requires_grad_()])
         optimizer = torch.optim.Adam([video.requires_grad_()],
-                                      lr=args.lr, weight_decay=args.weight_decay)
+                                     lr=args.lr, weight_decay=args.weight_decay)
         video_min, video_max = video.min().item(), video.max().item()
         target = model(video)
         target = OrderedDict((k, v.detach().clone()) for k, v in target.items())  # freeze targets
@@ -49,7 +49,7 @@ class StabilizationTask(Task):
             timer.tic()
             if num_iter % args.print_freq:
                 print('    Iter: [{0}/{1}]\t'
-                        'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {2}'.format(
+                      'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {2}'.format(
                           num_iter, args.epochs, loss.item(), timer=timer))
         print('Stabilization Done')
         return video
@@ -64,7 +64,7 @@ class StabilizationTask(Task):
             if not args.cpu:
                 target = target.cuda(async=True)
             original = inputs.detach().clone()
-            with torch.require_grad():
+            with torch.enable_grad():
                 output = self.stabilize_video(inputs, model, args)
             original = unnormalize(original)
             output = unnormalize(output)

@@ -24,6 +24,7 @@ args = [
     '--pretrained',
     '--resume', '/nfs.yoda/gsigurds/caches/i3d12b2/model.pth.tar',
     '--lr', '1e-2',
+    '--weight-decay', '0',
     '--batch-size', '1',
     '--val-size', '0',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',

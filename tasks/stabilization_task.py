@@ -30,7 +30,7 @@ class StabilizationTask(Task):
         return task.stabilize_all(loader, model, epoch, args)
 
     def stabilize_video(self, video, model, args):
-        #optimizer = torch.optim.LBFGS([video.requires_grad_()])
+        # optimizer = torch.optim.LBFGS([video.requires_grad_()])
         optimizer = torch.optim.Adam([video.requires_grad_()],
                                      lr=args.lr, weight_decay=args.weight_decay)
         video_min, video_max = video.min().item(), video.max().item()
@@ -43,15 +43,15 @@ class StabilizationTask(Task):
             output = model(video)
             content_loss = F.mse_loss(output['fc'], target['fc'])
             motion_loss = F.mse_loss(output['conv1'], target['conv1'])
-            #motion_loss = F.l1_loss(video[:, 1:, :, :], video[:, :-1, :, :])
+            # motion_loss = F.l1_loss(video[:, 1:, :, :], video[:, :-1, :, :])
             loss = content_loss * self.content_weight + motion_loss * self.motion_weight
             loss.backward()
             optimizer.step()
             timer.tic()
             if num_iter % args.print_freq == 0:
                 print('    Iter: [{0}/{1}]\t'
-                      'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {2}'.format(
-                          num_iter, args.epochs, loss.item(), timer=timer))
+                      'Time {timer.val:.3f} ({timer.avg:.3f}) Content Loss: {2} \tMotion Loss: {3}'.format(
+                          num_iter, args.epochs, content_loss.item(), motion_loss.item(), timer=timer))
             import pdb
             pdb.set_trace()
         print('Stabilization Done')

@@ -69,10 +69,10 @@ class StabilizationTask(Task):
             # save videos
             original = original[0]
             output = output[0]
-            original -= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :]
-            original -= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :]
-            output *= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :]
-            output *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :]
+            original -= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :].to(original.device)
+            original -= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(original.device)
+            output *= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :].to(output.device)
+            output *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(output.device)
             ffmpeg_video_writer(original.cpu(), args.cache + '/original.mp4')
             ffmpeg_video_writer(output.cpu(), args.cache + '/stabilized.mp4')
             timer.tic()

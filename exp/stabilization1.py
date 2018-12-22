@@ -30,6 +30,7 @@ args = [
     '--epochs', '1000',
     '--workers', '0',
     '--evaluate',
+    '--features', 'conv1;fc',
 ]
 sys.argv.extend(args)
 try:

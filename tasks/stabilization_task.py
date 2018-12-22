@@ -52,6 +52,8 @@ class StabilizationTask(Task):
                 print('    Iter: [{0}/{1}]\t'
                       'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {2}'.format(
                           num_iter, args.epochs, loss.item(), timer=timer))
+            import pdb
+            pdb.set_trace()
         print('Stabilization Done')
         return video
 

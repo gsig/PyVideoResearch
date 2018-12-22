@@ -34,7 +34,7 @@ args = [
     '--classifier-weight', '2.0',
     '--lr-decay-rate', '8',
     '--batch-size', '15',
-    '--train-size', '1.0',
+    '--train-size', '0.1',
     '--val-size', '0.1',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--epochs', '50',

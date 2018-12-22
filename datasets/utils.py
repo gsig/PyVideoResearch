@@ -60,6 +60,27 @@ def ffmpeg_video_loader(path):
         return None, None
 
 
+def ffmpeg_video_writer(video, path):
+    # video n, h, w, c (unit8 [0-255])
+    import ffmpeg  # @ffmpeg-python
+    n, h, w, c = video.shape
+    process = (
+        ffmpeg
+        .input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(w, h))
+        .output(path, pix_fmt='yuv420p')
+        .overwrite_output()
+        .run_async(pipe_stdin=True)
+    )
+
+    for frame in video:
+        process.stdin.write(
+            frame
+            .astype(np.uint8)
+            .tobytes()
+        )
+    print('saved video to ' + path)
+
+
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
     #for _ in range(5):
@@ -76,7 +97,7 @@ def pil_loader(path):
         img = Image.open(f)
         return img.convert('RGB')
 
-    
+
 def pil_loader2(path):
     img = Image.open(path)
     img2 = img.copy()

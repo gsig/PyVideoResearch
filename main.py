@@ -51,9 +51,15 @@ def main():
     metrics = get_metrics(args.metrics)
     tasks = get_tasks(args.tasks)
     model, criterion = get_model(args)
-    optimizer = torch.optim.SGD(model.parameters(), args.lr,
-                                momentum=args.momentum,
-                                weight_decay=args.weight_decay)
+    if args.optimizer == 'sgd':
+        optimizer = torch.optim.SGD(model.parameters(), args.lr,
+                                    momentum=args.momentum,
+                                    weight_decay=args.weight_decay)
+    elif args.optimizer == 'adam':
+        optimizer = torch.optim.Adam(model.parameters(), args.lr,
+                                     weight_decay=args.weight_decay)
+    else:
+        assert False, "invalid optimizer"
 
     if args.resume:
         best_score = checkpoints.load(args, model, optimizer)

@@ -34,6 +34,7 @@ def parse():
     parser.add_argument('--wrapper', default='async_tf_base',
                         help='child of nn.Module that wraps the base arch. ''default_wrapper'' for no wrapper')
     parser.add_argument('--criterion', default='async_tf_criterion', help=' ''default_criterion'' for sigmoid loss')
+    parser.add_argument('--features', default='fc', help='conv1;layer1;layer2;layer3;layer4;fc')
 
     # System parameters
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
@@ -48,6 +49,7 @@ def parse():
     parser.add_argument('--cpu', action='store_true', help='run on cpu only')
 
     # Training parameters
+    parser.add_argument('--optimizer', default='sgd', type=str, help='sgd | adam')
     parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
     parser.add_argument('--start-epoch', default=0, type=int, help='manual epoch number (useful on restarts)')
     parser.add_argument('-b', '--batch-size', default=256, type=int, help='mini-batch size (default: 256)')

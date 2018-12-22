@@ -43,11 +43,12 @@ class StabilizationTask(Task):
             output = model(video)
             content_loss = F.mse_loss(output['fc'], target['fc'])
             motion_loss = F.mse_loss(output['conv1'], target['conv1'])
+            #motion_loss = F.l1_loss(video[:, 1:, :, :], video[:, :-1, :, :])
             loss = content_loss * self.content_weight + motion_loss * self.motion_weight
             loss.backward()
             optimizer.step()
             timer.tic()
-            if num_iter % args.print_freq:
+            if num_iter % args.print_freq == 0:
                 print('    Iter: [{0}/{1}]\t'
                       'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {2}'.format(
                           num_iter, args.epochs, loss.item(), timer=timer))

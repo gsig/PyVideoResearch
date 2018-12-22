@@ -42,7 +42,7 @@ class StabilizationTask(Task):
             video.data.clamp_(video_min, video_max)
             output = model(video)
             content_loss = F.mse_loss(output['fc'], target['fc'])
-            motion_loss = F.mse_loss(output['conv1'], target['conv1'].zero())
+            motion_loss = F.mse_loss(output['conv1'], target['conv1'].clone().zero_())
             # motion_loss = F.l1_loss(video[:, 1:, :, :], video[:, :-1, :, :])
             loss = content_loss * self.content_weight + motion_loss * self.motion_weight
             loss.backward()

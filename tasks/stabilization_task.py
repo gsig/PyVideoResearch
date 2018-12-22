@@ -9,7 +9,6 @@ from datasets.get import get_dataset
 from collections import OrderedDict
 import torch
 import torch.nn.functional as F
-import torchvision.transforms as transforms
 from datasets.utils import ffmpeg_video_writer
 
 
@@ -57,10 +56,6 @@ class StabilizationTask(Task):
 
     def stabilize_all(self, loader, model, epoch, args):
         timer = Timer()
-        unnormalize = transforms.Compose([transforms.Normalize(mean=[0, 0, 0],
-                                                               std=[1/0.229, 1/0.224, 1/0.225]),
-                                         transforms.Normalize(mean=[-0.485, -0.456, -0.406],
-                                                              std=[1, 1, 1])])
         for i, (inputs, target, meta) in enumerate(loader):
             if i >= self.num_align:
                 break
@@ -74,12 +69,10 @@ class StabilizationTask(Task):
             # save videos
             original = original[0]
             output = output[0]
-            import pdb
-            pdb.set_trace()
-            for ii, x in enumerate(original):
-                original[ii] = unnormalize(x)
-            for ii, x in enumerate(output):
-                output[ii] = unnormalize(x)
+            original -= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :]
+            original -= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :]
+            output *= torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :]
+            output *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :]
             ffmpeg_video_writer(original.cpu(), args.cache + '/original.mp4')
             ffmpeg_video_writer(output.cpu(), args.cache + '/stabilized.mp4')
             timer.tic()

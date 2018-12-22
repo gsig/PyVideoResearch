@@ -74,6 +74,8 @@ class StabilizationTask(Task):
             # save videos
             original = original[0]
             output = output[0]
+            import pdb
+            pdb.set_trace()
             for ii, x in enumerate(original):
                 original[ii] = unnormalize(x)
             for ii, x in enumerate(output):

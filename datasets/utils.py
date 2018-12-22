@@ -3,6 +3,7 @@ import os
 import time
 from PIL import Image
 import numpy as np
+import torch
 
 
 def flow_loader(path):
@@ -63,6 +64,9 @@ def ffmpeg_video_loader(path):
 def ffmpeg_video_writer(video, path):
     # video n, h, w, c (unit8 [0-255])
     import ffmpeg  # @ffmpeg-python
+    if isinstance(video, torch.Tensor):
+        video = video.numpy()
+        video = np.asarray(np.clip(video*255., 0, 255), dtype="uint8")
     n, h, w, c = video.shape
     process = (
         ffmpeg

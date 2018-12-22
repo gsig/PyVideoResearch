@@ -68,8 +68,8 @@ class StabilizationTask(Task):
             original = inputs.detach().clone()
             with torch.enable_grad():
                 output = self.stabilize_video(inputs, model, args)
-            original = unnormalize(original)
-            output = unnormalize(output)
+            original = unnormalize(original.cpu())
+            output = unnormalize(output.cpu())
             ffmpeg_video_writer(original, args.cache + '/original.mp4')
             ffmpeg_video_writer(output, args.cache + '/stabilized.mp4')
             timer.tic()

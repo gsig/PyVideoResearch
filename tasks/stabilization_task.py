@@ -1,7 +1,7 @@
 """
     Defines tasks for evaluation
 """
-from misc_utils.utils import Timer
+from misc_utils.utils import Timer, AverageMeter
 from models.wrappers.feature_extractor_wrapper import FeatureExtractorWrapper
 from tasks.task import Task
 from datasets.get import get_dataset
@@ -52,10 +52,12 @@ class StabilizationTask(Task):
                       'Time {timer.val:.3f} ({timer.avg:.3f}) Content Loss: {2} \tMotion Loss: {3}'.format(
                           num_iter, args.epochs, content_loss.item(), motion_loss.item(), timer=timer))
         print('Stabilization Done')
-        return video
+        return video, content_loss.item(), motion_loss.item()
 
     def stabilize_all(self, loader, model, epoch, args):
         timer = Timer()
+        content_losses = AverageMeter()
+        motion_losses = AverageMeter()
         for i, (inputs, target, meta) in enumerate(loader):
             if i >= self.num_videos:
                 break
@@ -64,7 +66,9 @@ class StabilizationTask(Task):
                 target = target.cuda(async=True)
             original = inputs.detach().clone()
             with torch.enable_grad():
-                output = self.stabilize_video(inputs, model, args)
+                output, content_loss, motion_loss = self.stabilize_video(inputs, model, args)
+            content_losses.update(content_loss)
+            motion_losses.update(motion_loss)
 
             # save videos
             name = '{}_{}'.format(meta[0]['id'], meta[0]['time'])
@@ -81,5 +85,6 @@ class StabilizationTask(Task):
                   'Time {timer.val:.3f} ({timer.avg:.3f})'.format(
                       i, len(loader), timer=timer))
 
-        scores = {}  # TODO
+        scores = {'stabilization_task_content_loss': content_losses.avg,
+                  'stabilization_task_motion_loss': motion_losses.avg}  # TODO
         return scores

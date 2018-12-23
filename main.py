@@ -11,6 +11,7 @@ import train
 from models.get import get_model
 from datasets.get import get_dataset
 import checkpoints
+from checkpoints import score_file
 from opts import parse
 from misc_utils import tee
 from misc_utils.utils import seed
@@ -70,6 +71,7 @@ def main():
     if args.evaluate:
         scores = validate(trainer, val_loader, model, criterion, args, metrics, tasks, -1)
         print(scores)
+        score_file(scores, "{}/model_999.txt".format(args.cache))
         return
 
     if args.warmups > 0:

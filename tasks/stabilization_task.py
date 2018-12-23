@@ -40,7 +40,7 @@ class StabilizationTask(Task):
         transform[4] *= scale
 
         # rotation
-        rotation = random.choice((-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5))
+        rotation = random.choice((-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5)) / 360. * 2 * math.pi
         transform[0] *= math.cos(rotation)
         transform[4] *= math.cos(rotation)
         transform[1] = -math.sin(rotation)

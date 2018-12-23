@@ -35,6 +35,7 @@ class SpatialTransformerNetwork(nn.Module):
         if conv3d:
             b, n, d, d, c = x.shape
             x = x.reshape(-1, d, d, c)
+            x = x.permute(0, 3, 1, 2)
         xs = self.localization(x)
         xs = xs.view(-1, 10 * 3 * 3)
         theta = self.fc_loc(xs)
@@ -43,6 +44,7 @@ class SpatialTransformerNetwork(nn.Module):
         grid = F.affine_grid(theta, x.size())
         x = F.grid_sample(x, grid)
         if conv3d:
+            x = x.permute(0, 2, 3, 1)
             x = x.reshape(b, n, d, d, c)
 
         return x

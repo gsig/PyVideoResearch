@@ -31,7 +31,7 @@ class SpatialTransformerNetwork(nn.Module):
 
     # Spatial transformer network forward function
     def forward(self, x):
-        conv3d = x.dim == 5
+        conv3d = x.dim() == 5
         if conv3d:
             b, n, d, d, c = x.shape
             x = x.reshape(-1, d, d, c)

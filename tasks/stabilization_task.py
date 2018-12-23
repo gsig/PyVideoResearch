@@ -67,8 +67,7 @@ class StabilizationTask(Task):
             params = transformer.parameters()
         else:
             assert False, "invalid stabilization target"
-        optimizer = torch.optim.Adam(params,
-                                     lr=args.lr, weight_decay=args.weight_decay)
+        optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
         video_min, video_max = video.min().item(), video.max().item()
         target = model(video)
         target = OrderedDict((k, v.detach().clone()) for k, v in target.items())  # freeze targets

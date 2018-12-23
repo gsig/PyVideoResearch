@@ -53,6 +53,7 @@ def video_trajectory(video):
                                                     qualityLevel=0.01,
                                                     minDistance=30.0,
                                                     blockSize=3)
+    video = np.asarray(np.clip(video*255., 0, 255), dtype="uint8")
     prev_frame = video[0]
     trajectory = [np.zeros((3,))]
     for frame in video[1:]:

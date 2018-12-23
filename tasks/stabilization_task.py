@@ -31,8 +31,8 @@ class StabilizationTask(Task):
         transform = torch.Tensor([1, 0, 0, 0, 1, 0]).float()
 
         # jittering
-        transform[2] = torch.randint(-16, 16+1) / 224.
-        transform[5] = torch.randint(-16, 16+1) / 224.
+        transform[2] = random.randint(-16, 16) / 224.
+        transform[5] = random.randint(-16, 16) / 224.
 
         # scaling
         scale = random.choice((1, 0.975, 1.025, 0.95, 1.05))

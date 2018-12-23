@@ -101,7 +101,7 @@ class StabilizationTask(Task):
             name = '{}_{}'.format(meta[0]['id'], meta[0]['time'])
             ffmpeg_video_writer(original.cpu(), '{}/{}_original.mp4'.format(args.cache, name))
             ffmpeg_video_writer(output.cpu(), '{}/{}_stabilized.mp4'.format(args.cache, name))
-            combined = torch.cat((original.cpu(), output.cpu()), 1)
+            combined = torch.cat((original.cpu(), output.cpu()), 2)
             ffmpeg_video_writer(combined, '{}/{}_combined.mp4'.format(args.cache, name))
 
             # calculate stability losses

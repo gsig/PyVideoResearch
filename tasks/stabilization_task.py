@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from datasets.utils import ffmpeg_video_writer
-from models.layers.spatial_transformer_network import SpatialTransformerNetwork
+from models.layers.video_stabilizer import VideoStabilizer
 
 
 class StabilizationTask(Task):
@@ -36,7 +36,7 @@ class StabilizationTask(Task):
         if self.stabilization_target == 'video':
             params = [video.requires_grad_()]
         elif self.stabilization_target == 'transformer':
-            transformer = SpatialTransformerNetwork().to(next(model.parameters()).device)
+            transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
             model = nn.Sequential(transformer, model)
         else:

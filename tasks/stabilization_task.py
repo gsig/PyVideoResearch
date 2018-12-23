@@ -106,14 +106,17 @@ class StabilizationTask(Task):
 
             # calculate stability losses
             print('calculating stability losses')
-            original_trajectory = video_trajectory(original.cpu().numpy())
-            original_losses.update(trajectory_loss(original_trajectory))
-            output_trajectory = video_trajectory(output.cpu().numpy())
-            output_losses.update(trajectory_loss(output_trajectory))
+            try:
+                original_trajectory = video_trajectory(original.permute(0, 3, 1, 2).cpu().numpy())
+                original_losses.update(trajectory_loss(original_trajectory))
+                output_trajectory = video_trajectory(output.permute(0, 3, 1, 2).cpu().numpy())
+                output_losses.update(trajectory_loss(output_trajectory))
+            except Exception as e:
+                print(e)
             timer.tic()
             print('Stabilization: [{0}/{1}]\t'
-                  'Time {timer.val:.3f} ({timer.avg:.3f})'.format(
-                      i, len(loader), timer=timer))
+                  'Time {timer.val:.3f} ({timer.avg:.3f}) Original Loss {2} \t Output Loss {3}'.format(
+                      i, original_losses.avg, output_losses.avg, len(loader), timer=timer))
 
         scores = {'stabilization_task_content_loss': content_losses.avg,
                   'stabilization_task_motion_loss': motion_losses.avg,

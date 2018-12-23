@@ -82,6 +82,8 @@ def ffmpeg_video_writer(video, path):
             .astype(np.uint8)
             .tobytes()
         )
+    process.stdin.close()
+    process.wait()
     print('saved video to ' + path)
 
 

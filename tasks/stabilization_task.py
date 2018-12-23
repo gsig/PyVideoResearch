@@ -15,7 +15,7 @@ from datasets.utils import ffmpeg_video_writer
 class StabilizationTask(Task):
     def __init__(self, model, epoch, args):
         super(StabilizationTask, self).__init__()
-        self.num_align = 1
+        self.num_videos = 50
         self.content_weight = 1
         self.motion_weight = 1
 
@@ -41,8 +41,8 @@ class StabilizationTask(Task):
             video.data.clamp_(video_min, video_max)
             output = model(video)
             content_loss = F.mse_loss(output['fc'], target['fc'])
-            motion_loss = F.mse_loss(output['conv1'], target['conv1'].clone().zero_())
-            # motion_loss = F.l1_loss(video[:, 1:, :, :], video[:, :-1, :, :])
+            # motion_loss = F.mse_loss(output['conv1'], target['conv1'].clone().zero_())
+            motion_loss = F.l1_loss(video[:, 1:, :, :], video[:, :-1, :, :])
             loss = content_loss * self.content_weight + motion_loss * self.motion_weight
             loss.backward()
             optimizer.step()
@@ -57,7 +57,7 @@ class StabilizationTask(Task):
     def stabilize_all(self, loader, model, epoch, args):
         timer = Timer()
         for i, (inputs, target, meta) in enumerate(loader):
-            if i >= self.num_align:
+            if i >= self.num_videos:
                 break
             if not args.cpu:
                 inputs = inputs.cuda()

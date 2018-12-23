@@ -36,7 +36,7 @@ class StabilizationTask(Task):
         if self.stabilization_target == 'video':
             params = [video.requires_grad_()]
         elif self.stabilization_target == 'transformer':
-            transformer = SpatialTransformerNetwork()
+            transformer = SpatialTransformerNetwork().to(next(model.parameters()).device)
             params = transformer.parameters()
             model = nn.Sequential(transformer, model)
         else:

@@ -67,7 +67,7 @@ class StabilizationTask(Task):
                 output = self.stabilize_video(inputs, model, args)
 
             # save videos
-            name = '{}_{}'.format(meta['id'][0], meta['start'][0])
+            name = '{}_{}'.format(meta[0]['id'], meta[0]['start'])
             original = original[0]
             output = output[0]
             original *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(original.device)

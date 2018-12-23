@@ -75,5 +75,5 @@ def video_trajectory(video):
 def trajectory_loss(trajectory):
     loss = 0
     for t1, t2 in zip(trajectory, trajectory[1:]):
-        loss += (t2 - t1).abs().sum()
+        loss += np.abs(t2 - t1).sum()
     return loss

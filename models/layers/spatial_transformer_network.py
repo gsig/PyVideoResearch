@@ -26,7 +26,7 @@ class SpatialTransformerNetwork(nn.Module):
 
         # Initialize the weights/bias with identity transformation
         self.fc_loc[2].weight.data.zero_()
-        self.fc_loc[2].bias.data.copy_(torch.Tensor([1, 0, 0, 0, 1, 0], dtype=torch.float))
+        self.fc_loc[2].bias.data.copy_(torch.Tensor([1, 0, 0, 0, 1, 0]).float())
 
     # Spatial transformer network forward function
     def forward(self, x):

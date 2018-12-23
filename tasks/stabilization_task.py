@@ -12,6 +12,8 @@ import torch.nn.functional as F
 from datasets.utils import ffmpeg_video_writer
 from models.layers.video_stabilizer import VideoStabilizer
 from misc_utils.video import video_trajectory, trajectory_loss
+import random
+import math
 
 
 class StabilizationTask(Task):
@@ -21,6 +23,31 @@ class StabilizationTask(Task):
         self.content_weight = args.content_weight
         self.motion_weight = args.motion_weight
         self.stabilization_target = args.stabilization_target
+
+    def augmentation(self, video):
+        # https://distill.pub/2017/feature-visualization/
+        channels = video.shape[1]
+        augmenter = VideoStabilizer(channels).to(video.device)
+        transform = torch.Tensor([1, 0, 0, 0, 1, 0]).float()
+
+        # jittering
+        transform[2] = torch.randint(-16, 16+1) / 224.
+        transform[5] = torch.randint(-16, 16+1) / 224.
+
+        # scaling
+        scale = random.choice((1, 0.975, 1.025, 0.95, 1.05))
+        transform[0] *= scale
+        transform[4] *= scale
+
+        # rotation
+        rotation = random.choice((-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5))
+        transform[0] *= math.cos(rotation)
+        transform[4] *= math.cos(rotation)
+        transform[1] = -math.sin(rotation)
+        transform[3] = math.sin(rotation)
+
+        augmenter.theta.data.copy_(transform[None, :].repeat(channels, 1))
+        return augmenter(video)
 
     @classmethod
     def run(cls, model, criterion, epoch, args):
@@ -50,7 +77,7 @@ class StabilizationTask(Task):
             optimizer.zero_grad()
             if self.stabilization_target == 'video':
                 video.data.clamp_(video_min, video_max)
-                output = model(video)
+                output = model(self.augmentation(video))
                 video_transformed = video
             elif self.stabilization_target == 'transformer':
                 video_transformed = transformer(video)

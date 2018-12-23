@@ -10,7 +10,6 @@ class VideoStabilizer(nn.Module):
         identity = torch.Tensor([1, 0, 0, 0, 1, 0]).float()
         self.theta.data.copy_(identity[None, :].repeat(channels, 1))
 
-    # Stabilizer forward function
     def forward(self, x):
         conv3d = x.dim() == 5
         if conv3d:
@@ -24,5 +23,4 @@ class VideoStabilizer(nn.Module):
         if conv3d:
             x = x.permute(0, 2, 3, 1)
             x = x.reshape(b, n, d, d, c)
-
         return x

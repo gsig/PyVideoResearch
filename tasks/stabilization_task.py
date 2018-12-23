@@ -8,7 +8,6 @@ from datasets.get import get_dataset
 # from models.utils import set_distributed_backend
 from collections import OrderedDict
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from datasets.utils import ffmpeg_video_writer
 from models.layers.video_stabilizer import VideoStabilizer
@@ -38,7 +37,6 @@ class StabilizationTask(Task):
         elif self.stabilization_target == 'transformer':
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
-            model = nn.Sequential(transformer, model)
         else:
             assert False, "invalid stabilization target"
         optimizer = torch.optim.Adam(params,
@@ -49,11 +47,18 @@ class StabilizationTask(Task):
         timer = Timer()
         for num_iter in range(args.epochs):
             optimizer.zero_grad()
-            video.data.clamp_(video_min, video_max)
-            output = model(video)
+            if self.stabilization_target == 'video':
+                video.data.clamp_(video_min, video_max)
+                output = model(video)
+                video_transformed = video
+            elif self.stabilization_target == 'transformer':
+                video_transformed = transformer(video)
+                output = model(video_transformed)
+            else:
+                assert False, "invalid stabilization target"
             content_loss = F.mse_loss(output['fc'], target['fc'])
             # motion_loss = F.mse_loss(output['conv1'], target['conv1'].clone().zero_())
-            motion_loss = F.l1_loss(video[:, 1:, :, :], video[:, :-1, :, :])
+            motion_loss = F.l1_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
             loss = content_loss * self.content_weight + motion_loss * self.motion_weight
             loss.backward()
             optimizer.step()
@@ -62,10 +67,8 @@ class StabilizationTask(Task):
                 print('    Iter: [{0}/{1}]\t'
                       'Time {timer.val:.3f} ({timer.avg:.3f}) Content Loss: {2} \tMotion Loss: {3}'.format(
                           num_iter, args.epochs, content_loss.item(), motion_loss.item(), timer=timer))
-            import pdb
-            pdb.set_trace()
         print('Stabilization Done')
-        return video, content_loss.item(), motion_loss.item()
+        return video_transformed, content_loss.item(), motion_loss.item()
 
     def stabilize_all(self, loader, model, epoch, args):
         timer = Timer()

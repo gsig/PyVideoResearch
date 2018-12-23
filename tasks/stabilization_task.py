@@ -16,8 +16,8 @@ class StabilizationTask(Task):
     def __init__(self, model, epoch, args):
         super(StabilizationTask, self).__init__()
         self.num_videos = 50
-        self.content_weight = 1
-        self.motion_weight = 1
+        self.content_weight = args.content_weight
+        self.motion_weight = args.motion_weight
 
     @classmethod
     def run(cls, model, criterion, epoch, args):

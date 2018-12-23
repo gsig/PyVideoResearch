@@ -97,6 +97,10 @@ def parse():
     parser.add_argument('--video-metrics', default='charades_map_metric;videotop1_metric;videotop5_metric', help='for video_task')
     parser.add_argument('--actor-observer-classification-task-dataset', default='charades_ego_only_first')
 
+    # Video Stabilization Parameters
+    parser.add_argument('--content-weight', default=1.0, type=float)
+    parser.add_argument('--motion-weight', default=1.0, type=float)
+
     args = parser.parse_args()
     args.distributed = args.world_size > 1
     args.cache = args.cache_dir + args.name + '/'

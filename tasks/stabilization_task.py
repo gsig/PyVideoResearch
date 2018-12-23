@@ -80,8 +80,6 @@ class StabilizationTask(Task):
             print('Stabilization: [{0}/{1}]\t'
                   'Time {timer.val:.3f} ({timer.avg:.3f})'.format(
                       i, len(loader), timer=timer))
-            import pdb
-            pdb.set_trace()
 
         scores = {}  # TODO
         return scores

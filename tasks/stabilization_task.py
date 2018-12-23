@@ -8,8 +8,10 @@ from datasets.get import get_dataset
 # from models.utils import set_distributed_backend
 from collections import OrderedDict
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from datasets.utils import ffmpeg_video_writer
+from models.layers.spatial_transformer_network import SpatialTransformerNetwork
 
 
 class StabilizationTask(Task):
@@ -18,6 +20,7 @@ class StabilizationTask(Task):
         self.num_videos = 50
         self.content_weight = args.content_weight
         self.motion_weight = args.motion_weight
+        self.stabilization_target = args.stabilization_target
 
     @classmethod
     def run(cls, model, criterion, epoch, args):
@@ -30,7 +33,15 @@ class StabilizationTask(Task):
 
     def stabilize_video(self, video, model, args):
         # optimizer = torch.optim.LBFGS([video.requires_grad_()])
-        optimizer = torch.optim.Adam([video.requires_grad_()],
+        if self.stabilization_target == 'video':
+            params = [video.requires_grad_()]
+        elif self.stabilization_target == 'transformer':
+            transformer = SpatialTransformerNetwork()
+            params = transformer.parameters()
+            model = nn.Sequential(transformer, model)
+        else:
+            assert False, "invalid stabilization target"
+        optimizer = torch.optim.Adam(params,
                                      lr=args.lr, weight_decay=args.weight_decay)
         video_min, video_max = video.min().item(), video.max().item()
         target = model(video)

@@ -100,6 +100,7 @@ def parse():
     # Video Stabilization Parameters
     parser.add_argument('--content-weight', default=1.0, type=float)
     parser.add_argument('--motion-weight', default=1.0, type=float)
+    parser.add_argument('--stabilization-target', default='video', type=str, help='video | transformer')
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

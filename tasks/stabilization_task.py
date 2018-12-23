@@ -65,6 +65,10 @@ class StabilizationTask(Task):
         elif self.stabilization_target == 'transformer':
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
+        elif self.stabilization_target == 'videotransformer':
+            params = [video.requires_grad_()]
+            transformer = VideoStabilizer(64).to(next(model.parameters()).device)
+            params += list(transformer.parameters())
         else:
             assert False, "invalid stabilization target"
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
@@ -81,6 +85,10 @@ class StabilizationTask(Task):
             elif self.stabilization_target == 'transformer':
                 video_transformed = transformer(video)
                 output = model(video_transformed)
+            elif self.stabilization_target == 'videotransformer':
+                video.data.clamp_(video_min, video_max)
+                video_transformed = transformer(video)
+                output = model(self.augmentation(video))
             else:
                 assert False, "invalid stabilization target"
             content_loss = F.mse_loss(output['fc'], target['fc'])

@@ -107,9 +107,9 @@ class StabilizationTask(Task):
             # calculate stability losses
             print('calculating stability losses')
             #try:
-            original_trajectory = video_trajectory(original.permute(0, 3, 1, 2).cpu().numpy())
+            original_trajectory = video_trajectory(original.cpu().numpy())
             original_losses.update(trajectory_loss(original_trajectory))
-            output_trajectory = video_trajectory(output.permute(0, 3, 1, 2).cpu().numpy())
+            output_trajectory = video_trajectory(output.cpu().numpy())
             output_losses.update(trajectory_loss(output_trajectory))
             #except Exception as e:
             #    print(e)

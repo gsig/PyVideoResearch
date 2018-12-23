@@ -11,6 +11,7 @@ import torch
 import torch.nn.functional as F
 from datasets.utils import ffmpeg_video_writer
 from models.layers.video_stabilizer import VideoStabilizer
+from misc_utils.video import video_trajectory, trajectory_loss
 
 
 class StabilizationTask(Task):
@@ -74,6 +75,8 @@ class StabilizationTask(Task):
         timer = Timer()
         content_losses = AverageMeter()
         motion_losses = AverageMeter()
+        original_losses = AverageMeter()
+        output_losses = AverageMeter()
         for i, (inputs, target, meta) in enumerate(loader):
             if i >= self.num_videos:
                 break
@@ -86,21 +89,34 @@ class StabilizationTask(Task):
             content_losses.update(content_loss)
             motion_losses.update(motion_loss)
 
-            # save videos
-            name = '{}_{}'.format(meta[0]['id'], meta[0]['time'])
+            # prepare videos
             original = original[0]
             output = output[0]
             original *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(original.device)
             original += torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :].to(original.device)
             output *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :].to(output.device)
             output += torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :].to(output.device)
+
+            # save video
+            name = '{}_{}'.format(meta[0]['id'], meta[0]['time'])
             ffmpeg_video_writer(original.cpu(), '{}/{}_original.mp4'.format(args.cache, name))
             ffmpeg_video_writer(output.cpu(), '{}/{}_stabilized.mp4'.format(args.cache, name))
+            combined = torch.cat((original.cpu(), output.cpu()), 1)
+            ffmpeg_video_writer(combined, '{}/{}_combined.mp4'.format(args.cache, name))
+
+            # calculate stability losses
+            print('calculating stability losses')
+            original_trajectory = video_trajectory(original)
+            original_losses.update(trajectory_loss(original_trajectory))
+            output_trajectory = video_trajectory(output)
+            output_losses.update(trajectory_loss(output_trajectory))
             timer.tic()
             print('Stabilization: [{0}/{1}]\t'
                   'Time {timer.val:.3f} ({timer.avg:.3f})'.format(
                       i, len(loader), timer=timer))
 
         scores = {'stabilization_task_content_loss': content_losses.avg,
-                  'stabilization_task_motion_loss': motion_losses.avg}  # TODO
+                  'stabilization_task_motion_loss': motion_losses.avg,
+                  'stabilization_task_original_loss': original_losses.avg,
+                  'stabilization_task_output_loss': output_losses.avg}
         return scores

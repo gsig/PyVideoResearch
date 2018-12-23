@@ -106,9 +106,9 @@ class StabilizationTask(Task):
 
             # calculate stability losses
             print('calculating stability losses')
-            original_trajectory = video_trajectory(original)
+            original_trajectory = video_trajectory(original.numpy())
             original_losses.update(trajectory_loss(original_trajectory))
-            output_trajectory = video_trajectory(output)
+            output_trajectory = video_trajectory(output.numpy())
             output_losses.update(trajectory_loss(output_trajectory))
             timer.tic()
             print('Stabilization: [{0}/{1}]\t'

@@ -34,6 +34,7 @@ args = [
     '--features', 'conv1;fc',
     '--content-weight', '10',
     '--stabilization-target', 'transformer',
+    '--style-weight', '0',
 ]
 sys.argv.extend(args)
 try:

@@ -19,8 +19,8 @@ import math
 def gram_matrix(x):
     conv3d = x.dim() == 5
     if conv3d:
-        b, n, d, d, c = x.shape
-        x = x.reshape(-1, d, d, c)
+        b, n, d1, d2, c = x.shape
+        x = x.reshape(-1, d1, d2, c)
         x = x.permute(0, 3, 1, 2)
 
     a, b, c, d = x.size()  # a=batch size(=1)

@@ -23,7 +23,7 @@ args = [
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
     '--pretrained',
     '--resume', '/nfs.yoda/gsigurds/caches/i3d12b2/model.pth.tar',
-    '--lr', '5e-2',
+    '--lr', '1e-2',
     '--weight-decay', '0',
     '--batch-size', '1',
     '--val-size', '0',

@@ -21,7 +21,8 @@ def gram_matrix(x):
     if conv3d:
         b, n, d1, d2, c = x.shape
         x = x.reshape(-1, d1, d2, c)
-        x = x.permute(0, 3, 1, 2)
+        x = x.contiguous()
+        #x = x.permute(0, 3, 1, 2)
 
     a, b, c, d = x.size()  # a=batch size(=1)
     # b=number of feature maps

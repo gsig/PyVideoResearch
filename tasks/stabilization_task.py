@@ -16,12 +16,27 @@ import random
 import math
 
 
+def gram_matrix(input):
+    a, b, c, d = input.size()  # a=batch size(=1)
+    # b=number of feature maps
+    # (c,d)=dimensions of a f. map (N=c*d)
+
+    features = input.view(a * b, c * d)  # resise F_XL into \hat F_XL
+
+    g = torch.mm(features, features.t())  # compute the gram product
+
+    # we 'normalize' the values of the gram matrix
+    # by dividing by the number of element in each feature maps.
+    return g.div(a * b * c * d)
+
+
 class StabilizationTask(Task):
     def __init__(self, model, epoch, args):
         super(StabilizationTask, self).__init__()
         self.num_videos = 50
         self.content_weight = args.content_weight
         self.motion_weight = args.motion_weight
+        self.style_weight = args.style_weight
         self.stabilization_target = args.stabilization_target
 
     def augmentation(self, video):
@@ -102,9 +117,11 @@ class StabilizationTask(Task):
             else:
                 assert False, "invalid stabilization target"
             content_loss = F.mse_loss(output['fc'], target['fc'])
-            # motion_loss = F.mse_loss(output['conv1'], target['conv1'].clone().zero_())
+            style_loss = F.mse_loss(gram_matrix(output['conv1']), gram_matrix(target['conv1']))
             motion_loss = F.l1_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
-            loss = content_loss * self.content_weight + motion_loss * self.motion_weight
+            loss = (content_loss * self.content_weight +
+                    motion_loss * self.motion_weight +
+                    style_loss * self.style_weight)
             loss.backward()
             optimizer.step()
             timer.tic()
@@ -151,6 +168,7 @@ class StabilizationTask(Task):
             # calculate stability losses
             print('calculating stability losses')
             try:
+                # this can fail when there are no feature matches found
                 original_trajectory = video_trajectory(original.cpu().numpy())
                 original_losses.update(trajectory_loss(original_trajectory))
                 output_trajectory = video_trajectory(output.cpu().numpy())

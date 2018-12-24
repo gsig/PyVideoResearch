@@ -26,8 +26,6 @@ class StabilizationTask(Task):
 
     def augmentation(self, video):
         # https://distill.pub/2017/feature-visualization/
-        return video
-
         channels = video.shape[1]
         augmenter = VideoStabilizer(channels).to(video.device)
         transform = torch.Tensor([1, 0, 0, 0, 1, 0]).float()

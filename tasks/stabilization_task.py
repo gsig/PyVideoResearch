@@ -16,12 +16,18 @@ import random
 import math
 
 
-def gram_matrix(input):
-    a, b, c, d = input.size()  # a=batch size(=1)
+def gram_matrix(x):
+    conv3d = x.dim() == 5
+    if conv3d:
+        b, n, d, d, c = x.shape
+        x = x.reshape(-1, d, d, c)
+        x = x.permute(0, 3, 1, 2)
+
+    a, b, c, d = x.size()  # a=batch size(=1)
     # b=number of feature maps
     # (c,d)=dimensions of a f. map (N=c*d)
 
-    features = input.view(a * b, c * d)  # resise F_XL into \hat F_XL
+    features = x.view(a * b, c * d)  # resise F_XL into \hat F_XL
 
     g = torch.mm(features, features.t())  # compute the gram product
 

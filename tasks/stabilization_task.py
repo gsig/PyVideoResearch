@@ -26,6 +26,8 @@ class StabilizationTask(Task):
 
     def augmentation(self, video):
         # https://distill.pub/2017/feature-visualization/
+        return video
+
         channels = video.shape[1]
         augmenter = VideoStabilizer(channels).to(video.device)
         transform = torch.Tensor([1, 0, 0, 0, 1, 0]).float()
@@ -43,8 +45,8 @@ class StabilizationTask(Task):
         rotation = random.choice((-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5)) / 360. * 2 * math.pi
         transform[0] *= math.cos(rotation)
         transform[4] *= math.cos(rotation)
-        transform[1] = -math.sin(rotation)
-        transform[3] = math.sin(rotation)
+        transform[1] = -scale * math.sin(rotation)
+        transform[3] = scale * math.sin(rotation)
 
         augmenter.theta.data.copy_(transform[None, :].repeat(channels, 1))
         return augmenter(video)

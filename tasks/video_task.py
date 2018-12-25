@@ -13,7 +13,7 @@ class VideoTask(Task):
     @classmethod
     def run(cls, model, criterion, epoch, args):
         task = cls(model, epoch, args)
-        loader, = get_dataset(args, splits=('val_video'))
+        loader, = get_dataset(args, splits=('val_video', ))
         return task.validate_video(loader, model, criterion, epoch, args)
 
     def validate_video(self, loader, model, criterion, epoch, args):

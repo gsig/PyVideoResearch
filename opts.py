@@ -75,7 +75,7 @@ def parse():
     parser.add_argument('--nhidden', default=10, type=int)
     parser.add_argument('--adjustment', dest='adjustment', action='store_true')
     parser.add_argument('--originalloss-weight', default=1, type=float)
-    parser.add_argument('--window-smooth', default=3, type=int)
+    parser.add_argument('--window-smooth', default=0, type=int)
     parser.add_argument('--videoloss', dest='videoloss', action='store_true')
 
     # AVA FRCNN Parameters

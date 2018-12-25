@@ -51,6 +51,4 @@ class FeatureExtractorWrapper(ResNet3D):
             logits = logits.mean(1)
         if 'fc' in self.output_features:
             output['fc'] = x
-        import pdb
-        pdb.set_trace()
         return output

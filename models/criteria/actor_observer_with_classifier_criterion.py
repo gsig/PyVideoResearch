@@ -45,6 +45,8 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
             final.append(f)
         else:
             cls2 = target2 = torch.Tensor([])
+        import pdb
+        pdb.set_trace()
 
         print('losses:', ' '.join(['{}'.format(r.item()) for r in final]))
         pred['class_prediction'] = cls2.detach().cpu()

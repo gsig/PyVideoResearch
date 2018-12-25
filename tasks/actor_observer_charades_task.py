@@ -11,8 +11,8 @@ class ActorObserverCharadesTask(VideoTask):
 
     @classmethod
     def run(cls, model, criterion, epoch, args):
-        model = ActorObserverClassifierWrapper(model, args)
-        model = set_distributed_backend(model, args)
+        #model = ActorObserverClassifierWrapper(model, args)
+        #model = set_distributed_backend(model, args)
         criterion = DefaultCriterion(args)
         task = cls(model, epoch, args)
         loader, = get_dataset(args, splits=('val_video', ), dataset='charades')

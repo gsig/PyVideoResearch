@@ -11,6 +11,7 @@ import torch
 import torch.nn.functional as F
 from datasets.utils import ffmpeg_video_writer
 from models.layers.video_stabilizer import VideoStabilizer
+from models.layers.video_deformer import VideoDeformer
 from misc_utils.video import video_trajectory, trajectory_loss
 import random
 import math
@@ -87,6 +88,9 @@ class StabilizationTask(Task):
         elif self.stabilization_target == 'transformer':
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
+        elif self.stabilization_target == 'deformer':
+            transformer = VideoDeformer(64).to(next(model.parameters()).device)
+            params = transformer.parameters()
         elif self.stabilization_target == 'videotransformer':
             params = [video.requires_grad_()]
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
@@ -110,6 +114,9 @@ class StabilizationTask(Task):
                 output = model(self.augmentation(video))
                 video_transformed = video
             elif self.stabilization_target == 'transformer':
+                video_transformed = transformer(video)
+                output = model(video_transformed)
+            elif self.stabilization_target == 'deformer':
                 video_transformed = transformer(video)
                 output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':

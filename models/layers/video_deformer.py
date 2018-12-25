@@ -22,8 +22,8 @@ class VideoDeformer(nn.Module):
 
         grid = F.affine_grid(theta, x.size())
         grid = grid + self.grid
-        x = F.grid_sample(x, grid)
-        # x = F.grid_sample(x, grid, padding_mode="reflection")
+        # x = F.grid_sample(x, grid)
+        x = F.grid_sample(x, grid, padding_mode="reflection")
         if conv3d:
             x = x.permute(0, 2, 3, 1)
             x = x.reshape(b, n, d, d, c)

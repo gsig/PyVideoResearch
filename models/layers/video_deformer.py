@@ -10,7 +10,7 @@ class VideoDeformer(nn.Module):
         identity = torch.Tensor([1, 0, 0, 0, 1, 0]).float()
         self.theta.data.copy_(identity[None, :].repeat(channels, 1))
         self.grid = nn.Parameter(torch.Tensor(channels, 224, 224, 2))
-        self.grid.data.zeros_()
+        self.grid.data.zero_()
 
     def forward(self, x):
         conv3d = x.dim() == 5

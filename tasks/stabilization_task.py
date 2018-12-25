@@ -131,7 +131,7 @@ class StabilizationTask(Task):
             else:
                 assert False, "invalid stabilization target"
             content_loss = F.mse_loss(output['fc'], target['fc'])
-            style_loss = F.mse_loss(gram_matrix(output['conv2']), gram_matrix(target['conv2']))
+            style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))
             motion_loss = F.l1_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
             loss = (content_loss * self.content_weight +
                     motion_loss * self.motion_weight +

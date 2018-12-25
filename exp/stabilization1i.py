@@ -31,7 +31,7 @@ args = [
     '--epochs', '10000',
     '--workers', '0',
     '--evaluate',
-    '--features', 'conv1;conv2;fc',
+    '--features', 'conv1;layer1;fc',
     '--content-weight', '10',
     '--stabilization-target', 'deformer',
     '--style-weight', '0',

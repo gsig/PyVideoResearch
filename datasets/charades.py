@@ -53,8 +53,6 @@ class Charades(Dataset):
                 times.append(int(np.floor(loc))+1)
                 ns.append(n)
                 alllabels.append(label)
-        import pdb
-        pdb.set_trace()
         return {'image_paths': image_paths, 'ids': ids, 'times': times, 'ns': ns, 'labels': alllabels, 'split': split}
 
     def get_item(self, index, shift=None):

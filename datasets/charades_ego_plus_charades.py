@@ -46,21 +46,22 @@ class CharadesEgoMeta(CharadesEgo):
 class CharadesEgoPlusCharades(CharadesMeta):
     @classmethod
     def get(cls, args, splits=('train', 'val', 'val_video')):
-        newargs = copy.deepcopy(args)
-        vars(newargs).update({
-            'train_file': args.train_file.split(';')[1],
-            'val_file': args.val_file.split(';')[1],
-            'data': args.data.split(';')[1]})
-        vars(args).update({
+        newargs1 = copy.deepcopy(args)
+        newargs2 = copy.deepcopy(args)
+        vars(newargs1).update({
             'train_file': args.train_file.split(';')[0],
             'val_file': args.val_file.split(';')[0],
             'data': args.data.split(';')[0]})
+        vars(newargs2).update({
+            'train_file': args.train_file.split(';')[1],
+            'val_file': args.val_file.split(';')[1],
+            'data': args.data.split(';')[1]})
 
         if 'train' in splits or 'val' in splits:
-            train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(args, splits=splits)
+            train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(newargs1, splits=splits)
         else:
             train_datasetego, val_datasetego = None, None
-        train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades, cls).get(newargs, splits=splits)
+        train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades, cls).get(newargs2, splits=splits)
 
         if 'train' in splits:
             train_dataset.target_transform = transforms.Lambda(lambda x: -x)

@@ -69,7 +69,5 @@ def get_dataset(args, splits=('train', 'val'), dataset=None):
             valvideo_dataset, batch_size=1, shuffle=False, collate_fn=cat_collate,
             num_workers=args.workers, pin_memory=False)
         returns.append(valvideo_loader)
-    import pdb
-    pdb.set_trace()
 
     return tuple(returns)

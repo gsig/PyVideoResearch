@@ -46,6 +46,7 @@ class StabilizationTask(Task):
         self.content_weight = args.content_weight
         self.motion_weight = args.motion_weight
         self.style_weight = args.style_weight
+        self.grid_weight = args.grid_weight
         self.stabilization_target = args.stabilization_target
 
     def augmentation(self, video):

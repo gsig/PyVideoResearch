@@ -101,6 +101,7 @@ def parse():
     parser.add_argument('--content-weight', default=1.0, type=float)
     parser.add_argument('--motion-weight', default=1.0, type=float)
     parser.add_argument('--style-weight', default=1.0, type=float)
+    parser.add_argument('--grid-weight', default=1.0, type=float)
     parser.add_argument('--stabilization-target', default='video', type=str, help='video | transformer')
 
     args = parser.parse_args()

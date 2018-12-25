@@ -12,6 +12,7 @@ import torch.nn.functional as F
 from datasets.utils import ffmpeg_video_writer
 from models.layers.video_stabilizer import VideoStabilizer
 from models.layers.video_deformer import VideoDeformer
+from models.layers.video_tv_deformer import VideoTVDeformer
 from misc_utils.video import video_trajectory, trajectory_loss
 import random
 import math
@@ -91,6 +92,9 @@ class StabilizationTask(Task):
         elif self.stabilization_target == 'deformer':
             transformer = VideoDeformer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
+        elif self.stabilization_target == 'tvdeformer':
+            transformer = VideoTVDeformer(64).to(next(model.parameters()).device)
+            params = transformer.parameters()
         elif self.stabilization_target == 'videotransformer':
             params = [video.requires_grad_()]
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
@@ -107,6 +111,7 @@ class StabilizationTask(Task):
         target = model(video)
         target = OrderedDict((k, v.detach().clone()) for k, v in target.items())  # freeze targets
         timer = Timer()
+        grid_loss = 0
         for num_iter in range(args.epochs):
             optimizer.zero_grad()
             if self.stabilization_target == 'video':
@@ -118,6 +123,14 @@ class StabilizationTask(Task):
                 output = model(video_transformed)
             elif self.stabilization_target == 'deformer':
                 video_transformed = transformer(video)
+                output = model(video_transformed)
+            elif self.stabilization_target == 'tvdeformer':
+                video_transformed, grid = transformer(video)
+                grid_loss = (
+                    torch.sum(torch.abs(grid[:, :-1, :, :] - grid[:, 1:, :, :])) +
+                    torch.sum(torch.abs(grid[:, :, :-1, :] - grid[:, :, 1:, :])) +
+                    torch.sum(torch.abs(grid[:-1, :, :, :] - grid[1:, :, :, :]))
+                )
                 output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':
                 video.data.clamp_(video_min, video_max)
@@ -133,19 +146,19 @@ class StabilizationTask(Task):
             content_loss = F.mse_loss(output['fc'], target['fc'])
             style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))
             motion_loss = F.l1_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
-            #motion_loss = F.mse_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
             loss = (content_loss * self.content_weight +
                     motion_loss * self.motion_weight +
-                    style_loss * self.style_weight)
+                    style_loss * self.style_weight +
+                    grid_loss * self.grid_weight)
             loss.backward()
             optimizer.step()
             timer.tic()
             if num_iter % args.print_freq == 0:
                 print('    Iter: [{0}/{1}]\t'
                       'Time {timer.val:.3f} ({timer.avg:.3f}) '
-                      'Content Loss: {2} \tMotion Loss: {3}\t Style Loss: {4}'.format(
+                      'Content Loss: {2} \tMotion Loss: {3}\t Style Loss: {4}\t Grid Loss: {5}'.format(
                           num_iter, args.epochs,
-                          content_loss.item(), motion_loss.item(), style_loss.item(), timer=timer))
+                          content_loss.item(), motion_loss.item(), style_loss.item(), grid_loss.item(), timer=timer))
         print('Stabilization Done')
         return video_transformed, content_loss.item(), motion_loss.item()
 

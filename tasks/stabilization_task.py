@@ -128,9 +128,9 @@ class StabilizationTask(Task):
             elif self.stabilization_target == 'tvdeformer':
                 video_transformed, grid = transformer(video)
                 grid_loss = (
-                    torch.sum(torch.abs(grid[:, :-1, :, :] - grid[:, 1:, :, :])) +
-                    torch.sum(torch.abs(grid[:, :, :-1, :] - grid[:, :, 1:, :])) +
-                    torch.sum(torch.abs(grid[:-1, :, :, :] - grid[1:, :, :, :]))
+                    torch.mean(torch.abs(grid[:, :-1, :, :] - grid[:, 1:, :, :])) +
+                    torch.mean(torch.abs(grid[:, :, :-1, :] - grid[:, :, 1:, :])) +
+                    torch.mean(torch.abs(grid[:-1, :, :, :] - grid[1:, :, :, :]))
                 )
                 output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':

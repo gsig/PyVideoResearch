@@ -13,6 +13,7 @@ from datasets.utils import ffmpeg_video_writer
 from models.layers.video_stabilizer import VideoStabilizer
 from models.layers.video_deformer import VideoDeformer
 from models.layers.video_tv_deformer import VideoTVDeformer
+from models.layers.video_residual_deformer import VideoResidualDeformer
 from misc_utils.video import video_trajectory, trajectory_loss
 import random
 import math
@@ -96,6 +97,9 @@ class StabilizationTask(Task):
         elif self.stabilization_target == 'tvdeformer':
             transformer = VideoTVDeformer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
+        elif self.stabilization_target == 'residualdeformer':
+            transformer = VideoResidualDeformer(64).to(next(model.parameters()).device)
+            params = transformer.parameters()
         elif self.stabilization_target == 'videotransformer':
             params = [video.requires_grad_()]
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
@@ -130,6 +134,13 @@ class StabilizationTask(Task):
                 grid_loss = (
                     F.mse_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
                     F.mse_loss(grid[:, :, :-1, :], grid[:, :, 1:, :])
+                )
+                output = model(video_transformed)
+            elif self.stabilization_target == 'residualdeformer':
+                video_transformed, grid = transformer(video)
+                grid_loss = (
+                    F.l1_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
+                    F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :])
                 )
                 output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':

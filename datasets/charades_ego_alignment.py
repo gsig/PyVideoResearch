@@ -8,6 +8,12 @@ class CharadesEgoAlignment(CharadesEgo):
     def get(cls, args):
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                          std=[0.229, 0.224, 0.225])
+        if ';' in args.train_file:
+            args = copy.deepcopy(args)
+            vars(args).update({
+                'train_file': args.train_file.split(';')[0],
+                'val_file': args.val_file.split(';')[0],
+                'data': args.data.split(';')[0]})
         val_dataset = cls(
             args, args.data, 'val', args.val_file, args.cache,
             transform=transforms.Compose([

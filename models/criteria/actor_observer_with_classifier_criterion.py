@@ -39,9 +39,8 @@ class ActorObserverWithClassifierCriterion(ActorObserverCriterion):
         if len(inds2) > 0:
             cls2, target2 = var_subset([cls, -target.long()], inds2)
             clsloss = self.clsloss(nn.Sigmoid()(cls2), target2.float())
-            #clsloss = clsloss.mean(1)
-            clsloss = clsloss.sum(1)
-            f = self.clsweight * clsloss.sum()
+            clsloss = clsloss.mean(1)
+            f = self.clsweight * clsloss.mean()
             final.append(f)
         else:
             cls2 = target2 = torch.Tensor([])

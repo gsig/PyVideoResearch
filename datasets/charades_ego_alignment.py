@@ -2,6 +2,8 @@
 import torchvision.transforms as transforms
 from datasets.charades_ego import CharadesEgo
 import torch
+import copy
+
 
 class CharadesEgoAlignment(CharadesEgo):
     @classmethod

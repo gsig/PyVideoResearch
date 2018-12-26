@@ -30,7 +30,7 @@ resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
 
 def validate(trainer, val_loader, model, criterion, args, metrics, tasks, epoch=-1):
     scores = {}
-    #scores.update(trainer.validate(val_loader, model, criterion, epoch, metrics, args))
+    scores.update(trainer.validate(val_loader, model, criterion, epoch, metrics, args))
     for task in tasks:
         with torch.no_grad():
             scores.update(task.run(model, criterion, epoch, args))

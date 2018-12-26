@@ -163,10 +163,12 @@ class StabilizationTask(Task):
             elif self.stabilization_target == 'actualdoubledeformer':
                 video_transformed, grid = transformer(video)
                 video_motion, grid2 = motiontransformer(video_transformed[:, :-1, :, :, :])
+                identity = torch.Tensor([1, 0, 0, 0, 1, 0]).float().to(grid2.device)
                 grid_loss = (
                     F.l1_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
                     F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :]) +
-                    F.l1_loss(grid2[:-1, :], grid2[1:, :])
+                    F.l1_loss(grid2[:-1, :], grid2[1:, :]) +
+                    F.l1_loss(grid2, identity.replicate(grid2.shape[0], 1))
                 )
                 output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':

@@ -8,7 +8,7 @@ class VideoTVDeformer(nn.Module):
         super(VideoTVDeformer, self).__init__()
         self.grid = nn.Parameter(torch.Tensor(channels, 224, 224, 2))
         identity = torch.Tensor([1, 0, 0, 0, 1, 0]).float()
-        grid = F.affine_grid(identity[None, :].repeat(channels, 1), (channels, 3, 224, 224))
+        grid = F.affine_grid(identity[None, :].repeat(channels, 1).view(-1, 2, 3), (channels, 3, 224, 224))
         self.theta.grid.copy_(grid.detach())
 
     def forward(self, x):

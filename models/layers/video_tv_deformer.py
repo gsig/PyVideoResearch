@@ -19,4 +19,5 @@ class VideoTVDeformer(nn.Module):
         if conv3d:
             x = x.permute(0, 2, 3, 1)
             x = x.reshape(b, n, d, d, c)
+        print('grid min: {} grid max: {} grid mean: {}'.format(self.grid.min(), self.grid.max(), self.grid.mean()))
         return x, self.grid

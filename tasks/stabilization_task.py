@@ -108,7 +108,7 @@ class StabilizationTask(Task):
             params = list(transformer.parameters()) + list(motiontransformer.parameters())
         elif self.stabilization_target == 'actualdoubledeformer':
             transformer = VideoResidualDeformer(64).to(next(model.parameters()).device)
-            motiontransformer = VideoStabilizerConstrained(64).to(next(model.parameters()).device)
+            motiontransformer = VideoStabilizerConstrained(64-1).to(next(model.parameters()).device)
             params = list(transformer.parameters()) + list(motiontransformer.parameters())
         elif self.stabilization_target == 'videotransformer':
             params = [video.requires_grad_()]

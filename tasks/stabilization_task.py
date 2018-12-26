@@ -112,7 +112,7 @@ class StabilizationTask(Task):
         target = model(video)
         target = OrderedDict((k, v.detach().clone()) for k, v in target.items())  # freeze targets
         timer = Timer()
-        grid_loss = 0
+        grid_loss = torch.zeros(1)
         for num_iter in range(args.epochs):
             optimizer.zero_grad()
             if self.stabilization_target == 'video':
@@ -147,8 +147,7 @@ class StabilizationTask(Task):
             content_loss = F.mse_loss(output['fc'], target['fc'])
             style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))
             # motion_loss = F.l1_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
-            print(output['conv1'].shape)
-            motion_loss = F.l1_loss(output['conv1'][:, 1:, :, :], output['conv1'][:, :-1, :, :])
+            motion_loss = F.l1_loss(output['conv1'][:, 1:, :, :, :], output['conv1'][:, :-1, :, :, :])
             loss = (content_loss * self.content_weight +
                     motion_loss * self.motion_weight +
                     style_loss * self.style_weight +

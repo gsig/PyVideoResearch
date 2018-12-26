@@ -15,6 +15,7 @@ from models.layers.video_deformer import VideoDeformer
 from models.layers.video_tv_deformer import VideoTVDeformer
 from models.layers.video_residual_deformer import VideoResidualDeformer
 from models.layers.video_transformer import VideoTransformer
+from models.layers.video_stabilizer_constrained import VideoStabilizerConstrained
 from misc_utils.video import video_trajectory, trajectory_loss
 import random
 import math
@@ -105,6 +106,9 @@ class StabilizationTask(Task):
             transformer = VideoResidualDeformer(64).to(next(model.parameters()).device)
             motiontransformer = VideoTransformer(64).to(next(model.parameters()).device)
             params = list(transformer.parameters()) + list(motiontransformer.parameters())
+        elif self.stabilization_target == 'actualdoubledeformer':
+            transformer = VideoResidualDeformer(64).to(next(model.parameters()).device)
+            motiontransformer = VideoStabilizerConstrained(64).to(next(model.parameters()).device)
         elif self.stabilization_target == 'videotransformer':
             params = [video.requires_grad_()]
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
@@ -155,6 +159,15 @@ class StabilizationTask(Task):
                     F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :])
                 )
                 output = model(video_transformed)
+            elif self.stabilization_target == 'actualdoubledeformer':
+                video_transformed, grid = transformer(video)
+                video_motion, grid2 = motiontransformer(video_transformed[:, :-1, :, :, :])
+                grid_loss = (
+                    F.l1_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
+                    F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :]) +
+                    F.l1_loss(grid2[:-1, :], grid2[1:, :])
+                )
+                output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':
                 video.data.clamp_(video_min, video_max)
                 video_transformed = transformer(video)
@@ -171,9 +184,10 @@ class StabilizationTask(Task):
             if self.stabilization_target == 'doubledeformer':
                 motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :],
                                         motiontransformer(video_transformed[:, :-1, :, :, :]))
+            elif self.stabilization_target == 'actualdoubledeformer':
+                motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_motion)
             else:
                 motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
-            # motion_loss = F.l1_loss(output['conv1'][:, 1:, :, :, :], output['conv1'][:, :-1, :, :, :])
             loss = (content_loss * self.content_weight +
                     motion_loss * self.motion_weight +
                     style_loss * self.style_weight +

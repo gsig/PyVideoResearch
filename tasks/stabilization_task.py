@@ -168,7 +168,7 @@ class StabilizationTask(Task):
                     F.l1_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
                     F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :]) +
                     F.l1_loss(grid2[:-1, :], grid2[1:, :]) +
-                    F.l1_loss(grid2, identity.replicate(grid2.shape[0], 1))
+                    F.l1_loss(grid2, identity[None, :].repeat(grid2.shape[0], 1))
                 )
                 output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':

@@ -27,8 +27,7 @@ args = [
     '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_test.csv;/nfs.yoda/gsigurds/Charades_v1_test.csv',
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/;/scratch/gsigurds/Charades_v1_rgb/',
     '--pretrained',
-    '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +
-                ';/nfs.yoda/gsigurds/charades_pretrained/resnet_rgb_python3.pth.tar',
+    '--resume', '/nfs.yoda/gsigurds/caches/class321debug4/model.pth.tar' +
     '--decay', '0.95',
     '--lr', '1e-5',
     '--classifier-weight', '2.0',

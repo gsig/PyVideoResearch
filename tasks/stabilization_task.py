@@ -112,7 +112,7 @@ class StabilizationTask(Task):
         target = model(video)
         target = OrderedDict((k, v.detach().clone()) for k, v in target.items())  # freeze targets
         timer = Timer()
-        grid_loss = torch.zeros(1)
+        grid_loss = torch.zeros(1).cuda()
         for num_iter in range(args.epochs):
             optimizer.zero_grad()
             if self.stabilization_target == 'video':

@@ -128,9 +128,8 @@ class StabilizationTask(Task):
             elif self.stabilization_target == 'tvdeformer':
                 video_transformed, grid = transformer(video)
                 grid_loss = (
-                    torch.mean(torch.abs(grid[:, :-1, :, :] - grid[:, 1:, :, :])) +
-                    torch.mean(torch.abs(grid[:, :, :-1, :] - grid[:, :, 1:, :])) +
-                    torch.mean(torch.abs(grid[:-1, :, :, :] - grid[1:, :, :, :]))
+                    F.mse_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
+                    F.mse_loss(grid[:, :, :-1, :], grid[:, :, 1:, :])
                 )
                 output = model(video_transformed)
             elif self.stabilization_target == 'videotransformer':
@@ -146,8 +145,8 @@ class StabilizationTask(Task):
                 assert False, "invalid stabilization target"
             content_loss = F.mse_loss(output['fc'], target['fc'])
             style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))
-            # motion_loss = F.l1_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
-            motion_loss = F.l1_loss(output['conv1'][:, 1:, :, :, :], output['conv1'][:, :-1, :, :, :])
+            motion_loss = F.l1_loss(video_transformed[:, 1:, :, :], video_transformed[:, :-1, :, :])
+            # motion_loss = F.l1_loss(output['conv1'][:, 1:, :, :, :], output['conv1'][:, :-1, :, :, :])
             loss = (content_loss * self.content_weight +
                     motion_loss * self.motion_weight +
                     style_loss * self.style_weight +

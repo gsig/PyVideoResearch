@@ -12,8 +12,8 @@ class ActorObserverCharadesTask(VideoTask):
 
     @classmethod
     def run(cls, model, criterion, epoch, args):
-        #model = ActorObserverClassifierWrapper(model, args)
-        #model = set_distributed_backend(model, args)
+        model = ActorObserverClassifierWrapper(model, args)
+        model = set_distributed_backend(model, args)
         criterion = DefaultCriterion(args)
         task = cls(model, epoch, args)
         newargs = copy.deepcopy(args)

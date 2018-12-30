@@ -3,6 +3,7 @@
 """
 from misc_utils.utils import Timer, AverageMeter
 from models.wrappers.feature_extractor_wrapper import FeatureExtractorWrapper
+from models.bases.resnet50_3d_decoder import ResNet503DDecoder
 from tasks.task import Task
 from datasets.get import get_dataset
 # from models.utils import set_distributed_backend
@@ -90,6 +91,9 @@ class StabilizationTask(Task):
         # optimizer = torch.optim.LBFGS([video.requires_grad_()])
         if self.stabilization_target == 'video':
             params = [video.requires_grad_()]
+        elif self.stabilization_target == 'network':
+            decoder = ResNet503DDecoder.get(args)
+            params = decoder.parameters()
         elif self.stabilization_target == 'transformer':
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
@@ -133,6 +137,11 @@ class StabilizationTask(Task):
                 video.data.clamp_(video_min, video_max)
                 output = model(self.augmentation(video))
                 video_transformed = video
+            elif self.stabilization_target == 'network':
+                video_transformed = decoder(target['layer4'])
+                output = {}
+                output['fc'] = target['fc']
+                output['layer1'] = target['layer1']
             elif self.stabilization_target == 'transformer':
                 video_transformed = transformer(video)
                 output = model(video_transformed)

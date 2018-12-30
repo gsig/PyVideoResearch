@@ -93,6 +93,7 @@ class StabilizationTask(Task):
             params = [video.requires_grad_()]
         elif self.stabilization_target == 'network':
             decoder = ResNet503DDecoder.get(args)
+            decoder = decoder.to(next(model.parameters()).device)
             params = decoder.parameters()
         elif self.stabilization_target == 'transformer':
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)

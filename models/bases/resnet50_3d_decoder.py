@@ -128,32 +128,32 @@ class ResNet3DDecoder(nn.Module):
         x = x.permute(0, 2, 3, 4, 1)
         return x
 
-    def load_2d(self, model2d):
-        print('inflating 2d resnet parameters')
-        sd = self.state_dict()
-        sd2d = model2d.state_dict()
-        sd = OrderedDict([(x.replace('module.', ''), y) for x, y in sd.items()])
-        sd2d = OrderedDict([(x.replace('module.', ''), y) for x, y in sd2d.items()])
-        for k, v in sd2d.items():
-            if k not in sd:
-                print('ignoring state key for loading: {}'.format(k))
-                continue
-            if 'conv' in k or 'downsample.0' in k:
-                s = sd[k].shape
-                t = s[2]
-                sd[k].copy_(v.unsqueeze(2).expand(*s) / t)
-            elif 'bn' in k or 'downsample.1' in k:
-                sd[k].copy_(v)
-            else:
-                print('skipping: {}'.format(k))
+#    def load_2d(self, model2d):
+#        print('inflating 2d resnet parameters')
+#        sd = self.state_dict()
+#        sd2d = model2d.state_dict()
+#        sd = OrderedDict([(x.replace('module.', ''), y) for x, y in sd.items()])
+#        sd2d = OrderedDict([(x.replace('module.', ''), y) for x, y in sd2d.items()])
+#        for k, v in sd2d.items():
+#            if k not in sd:
+#                print('ignoring state key for loading: {}'.format(k))
+#                continue
+#            if 'conv' in k or 'downsample.0' in k:
+#                s = sd[k].shape
+#                t = s[2]
+#                sd[k].copy_(v.unsqueeze(2).expand(*s) / t)
+#            elif 'bn' in k or 'downsample.1' in k:
+#                sd[k].copy_(v)
+#            else:
+#                print('skipping: {}'.format(k))
 
 
 class ResNet503DDecoder(Base):
     @classmethod
     def get(cls, args):
         model = ResNet3DDecoder(Bottleneck3D, [3, 4, 6, 3])  # 50
-        if args.pretrained:
-            from torchvision.models.resnet import resnet50
-            model2d = resnet50(pretrained=True)
-            model.load_2d(model2d)
+        #if args.pretrained:
+        #    from torchvision.models.resnet import resnet50
+        #    model2d = resnet50(pretrained=True)
+        #    model.load_2d(model2d)
         return model

@@ -4,6 +4,8 @@
 from misc_utils.utils import Timer, AverageMeter
 from models.wrappers.feature_extractor_wrapper import FeatureExtractorWrapper
 from models.bases.resnet50_3d_decoder import ResNet503DDecoder
+from models.bases.resnet50_3d_decoder2 import ResNet503DDecoder2
+from models.bases.resnet50_3d_decoder3 import ResNet503DDecoder3
 from tasks.task import Task
 from datasets.get import get_dataset
 # from models.utils import set_distributed_backend
@@ -95,6 +97,14 @@ class StabilizationTask(Task):
             decoder = ResNet503DDecoder.get(args)
             decoder = decoder.to(next(model.parameters()).device)
             params = decoder.parameters()
+        elif self.stabilization_target == 'network2':
+            decoder = ResNet503DDecoder2.get(args)
+            decoder = decoder.to(next(model.parameters()).device)
+            params = decoder.parameters()
+        elif self.stabilization_target == 'network3':
+            decoder = ResNet503DDecoder3.get(args)
+            decoder = decoder.to(next(model.parameters()).device)
+            params = decoder.parameters()
         elif self.stabilization_target == 'transformer':
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
@@ -140,6 +150,16 @@ class StabilizationTask(Task):
                 video_transformed = video
             elif self.stabilization_target == 'network':
                 video_transformed = decoder(target['layer4'])
+                output = {}
+                output['fc'] = target['fc']
+                output['layer1'] = target['layer1']
+            elif self.stabilization_target == 'network2':
+                video_transformed = decoder(target['layer4'])
+                output = {}
+                output['fc'] = target['fc']
+                output['layer1'] = target['layer1']
+            elif self.stabilization_target == 'network3':
+                video_transformed = decoder(target['layer2'])
                 output = {}
                 output['fc'] = target['fc']
                 output['layer1'] = target['layer1']

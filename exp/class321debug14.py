@@ -31,7 +31,7 @@ args = [
                 ';/nfs.yoda/gsigurds/charades_pretrained/resnet_rgb_python3.pth.tar',
     '--decay', '0.95',
     '--lr', '1e-5',
-    '--classifier-weight', '2.0',
+    '--classifier-weight', '100.0',
     '--lr-decay-rate', '8',
     '--batch-size', '15',
     '--train-size', '0.1',

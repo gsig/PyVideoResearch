@@ -49,13 +49,13 @@ class ActorObserverWithSoftmaxCriterion(ActorObserverCriterion):
                     oldsoftmax_target[i] = random.choice(target2[i].nonzero())
             target2 = oldsoftmax_target.to(target2.device)
 
-            clsloss = self.clsloss(nn.Sigmoid()(cls2), target2)
+            clsloss = self.clsloss(cls2, target2)
             f = self.clsweight * clsloss.mean()
             final.append(f)
         else:
             cls2 = target2 = torch.Tensor([])
 
         print('losses:', ' '.join(['{}'.format(r.item()) for r in final]))
-        pred['class_prediction'] = cls2.detach().cpu()
+        pred['class_prediction'] = nn.Softmax()(cls2.detach().cpu())
         targ['class_target'] = target2.detach().cpu()
         return pred, sum(final), targ

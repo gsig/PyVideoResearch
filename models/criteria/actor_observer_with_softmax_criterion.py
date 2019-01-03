@@ -30,7 +30,7 @@ class ActorObserverWithSoftmaxCriterion(ActorObserverCriterion):
         if len(inds1) > 0:
             vars1 = var_subset([dist_a, dist_b, x, y, z, target[:, 0]], inds1)
             vars1 += [{'id': [ids[i] for i in inds1]}]
-            pred, f, targ = super(ActorObserverWithClassifierCriterion, self).forward(*vars1)
+            pred, f, targ = super(ActorObserverWithSoftmaxCriterion, self).forward(*vars1)
             final.append(f)
         else:
             pred = {'triplet_prediction': [], 'weights': []}
@@ -47,7 +47,7 @@ class ActorObserverWithSoftmaxCriterion(ActorObserverCriterion):
                 else:
                     oldsoftmax_target[i] = random.choice(target2[i].nonzero())
             target2 = oldsoftmax_target
-     
+
             clsloss = self.clsloss(nn.Sigmoid()(cls2), target2.float())
             clsloss = clsloss.mean(1)
             f = self.clsweight * clsloss.mean()

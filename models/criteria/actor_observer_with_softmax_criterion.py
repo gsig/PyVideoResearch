@@ -48,7 +48,7 @@ class ActorObserverWithSoftmaxCriterion(ActorObserverCriterion):
                     oldsoftmax_target[i] = random.choice(target2[i].nonzero())
             target2 = oldsoftmax_target.to(target2.device)
 
-            clsloss = self.clsloss(nn.Sigmoid()(cls2), target2.float())
+            clsloss = self.clsloss(nn.Sigmoid()(cls2), target2)
             clsloss = clsloss.mean(1)
             f = self.clsweight * clsloss.mean()
             final.append(f)

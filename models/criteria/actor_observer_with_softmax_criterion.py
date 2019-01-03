@@ -37,6 +37,7 @@ class ActorObserverWithSoftmaxCriterion(ActorObserverCriterion):
             targ = {'triplet_target': []}
 
         # Classification loss
+        inds2 = [i for i in inds2 if target[i].sum() != 0]
         if len(inds2) > 0:
             cls2, target2 = var_subset([cls, -target.long()], inds2)
             b = target2.shape[0]

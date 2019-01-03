@@ -61,7 +61,7 @@ class CharadesEgoPlusCharades3(CharadesMeta):
             train_datasetego, val_datasetego, _ = CharadesEgoMeta.get(newargs1, splits=splits)
         else:
             train_datasetego, val_datasetego = None, None
-        train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades, cls).get(newargs2, splits=splits)
+        train_dataset, val_dataset, valvideo_dataset = super(CharadesEgoPlusCharades3, cls).get(newargs2, splits=splits)
 
         if 'train' in splits:
             train_dataset.target_transform = transforms.Lambda(lambda x: -x)

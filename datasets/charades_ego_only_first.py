@@ -14,7 +14,7 @@ class CharadesEgoOnlyFirst(Charades):
         return labels
 
     @classmethod
-    def get(cls, args, scale=(0.08, 1.0), splits=('train', 'val', 'val_video')):
+    def get(cls, args, scale=(0.8, 1.0), splits=('train', 'val', 'val_video')):
         if ';' in args.train_file:
             args = copy.deepcopy(args)
             vars(args).update({

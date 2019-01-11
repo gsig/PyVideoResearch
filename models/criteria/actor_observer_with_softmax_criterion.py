@@ -48,11 +48,9 @@ class ActorObserverWithSoftmaxCriterion(ActorObserverCriterion):
                 else:
                     oldsoftmax_target[i] = random.choice(target2[i].nonzero())
             target2 = oldsoftmax_target.to(target2.device)
-            import pdb
-            pdb.set_trace()
 
             clsloss = self.clsloss(cls2, target2)
-            f = self.clsweight * clsloss.mean()
+            f = self.clsweight * clsloss.sum()
             final.append(f)
         else:
             cls2 = target2 = torch.Tensor([])

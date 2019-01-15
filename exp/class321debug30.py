@@ -24,7 +24,7 @@ args = [
     '--actor-observer-classification-task-dataset', 'charades_ego_only_first',
     '--criterion', 'actor_observer_with_classifier_criterion',
     '--train-file', '/home/gsigurds/actor-observer/datasets/labels/CharadesEgo_v0_train.csv;/nfs.yoda/gsigurds/Charades_v1_train.csv',
-    '--val-file', '/home/gsigurds/actor-observer/datasets/labels/CharadesEgo_v0_test.csv;/nfs.yoda/gsigurds/Charades_v1_test.csv',
+    '--val-file', '/home/gsigurds/actor-observer/datasets/labels/CharadesEgo_v01_test.csv;/nfs.yoda/gsigurds/Charades_v1_test.csv',
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/;/scratch/gsigurds/Charades_v1_rgb/',
     '--pretrained',
     '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +

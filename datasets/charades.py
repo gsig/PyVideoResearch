@@ -69,6 +69,8 @@ class Charades(Dataset):
         for x in self.data['labels'][index]:
             if x['start'] < shift/float(self.fps) < x['end']:
                 target[self.cls2int(x['class'])] = 1
+        import pdb
+        pdb.set_trace()
         meta['id'] = self.data['ids'][index]
         img = default_loader(path)
         if self.transform is not None:

@@ -31,13 +31,13 @@ class Charades(Dataset):
         fps, gap = self.fps, self.train_gap
         datadir = path
         image_paths, ids, times, ns, alllabels = [], [], [], [], []
-        import pdb
-        pdb.set_trace()
 
         for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
             lines = glob(iddir+'/*.jpg')
             n = len(lines)
+            import pdb
+            pdb.set_trace()
             if i % 100 == 0:
                 print("{} {}".format(i, iddir))
             if n == 0:

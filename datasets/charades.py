@@ -36,8 +36,6 @@ class Charades(Dataset):
             iddir = datadir + '/' + vid
             lines = glob(iddir+'/*.jpg')
             n = len(lines)
-            import pdb
-            pdb.set_trace()
             if i % 100 == 0:
                 print("{} {}".format(i, iddir))
             if n == 0:

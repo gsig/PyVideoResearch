@@ -11,6 +11,8 @@ class CharadesEgoOnlyFirst(Charades):
     def parse_charades_csv(filename):
         labels = Charades.parse_charades_csv(filename)
         labels = dict((k, v) for k, v in labels.items() if 'EGO' in k)
+        import pdb
+        pdb.set_trace()
         return labels
 
     @classmethod

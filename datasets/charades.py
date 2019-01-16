@@ -31,6 +31,8 @@ class Charades(Dataset):
         fps, gap = self.fps, self.train_gap
         datadir = path
         image_paths, ids, times, ns, alllabels = [], [], [], [], []
+        import pdb
+        pdb.set_trace()
 
         for i, (vid, label) in enumerate(labels.items()):
             iddir = datadir + '/' + vid
@@ -69,8 +71,6 @@ class Charades(Dataset):
         for x in self.data['labels'][index]:
             if x['start'] < shift/float(self.fps) < x['end']:
                 target[self.cls2int(x['class'])] = 1
-        import pdb
-        pdb.set_trace()
         meta['id'] = self.data['ids'][index]
         img = default_loader(path)
         if self.transform is not None:

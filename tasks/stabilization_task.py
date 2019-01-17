@@ -141,6 +141,11 @@ class StabilizationTask(Task):
             params = list(decoder.parameters())
             motiontransformer = VideoStabilizer(64-1).to(next(model.parameters()).device)
             params += list(motiontransformer.parameters())
+        elif self.stabilization_target == 'deep2':
+            decoder = ResNet503DDecoder.get(args)
+            #decoder = ResNet503DDecoder2.get(args)
+            decoder = decoder.to(next(model.parameters()).device)
+            params = list(decoder.parameters())
         else:
             assert False, "invalid stabilization target"
 
@@ -227,7 +232,10 @@ class StabilizationTask(Task):
             else:
                 assert False, "invalid stabilization target"
 
-            content_loss = F.mse_loss(output['fc'], target['fc'])
+            if self.stabilization_target == 'deep2':
+                content_loss = F.mse_loss(video, video_transformed)
+            else:
+                content_loss = F.mse_loss(output['fc'], target['fc'])
             style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))
 
             if self.stabilization_target == 'doubledeformer':

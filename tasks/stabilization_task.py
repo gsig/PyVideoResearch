@@ -139,7 +139,7 @@ class StabilizationTask(Task):
             decoder = decoder.to(next(model.parameters()).device)
             params = list(decoder.parameters())
             motiontransformer = VideoStabilizer(64-1).to(next(model.parameters()).device)
-            params += list(transformer.parameters())
+            params += list(motiontransformer.parameters())
         else:
             assert False, "invalid stabilization target"
 

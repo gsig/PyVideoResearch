@@ -134,8 +134,15 @@ class StabilizationTask(Task):
             params = [video.requires_grad_()]
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params += list(transformer.parameters())
+        elif self.stabilization_target == 'deep1':
+            decoder = ResNet503DDecoder3.get(args)
+            decoder = decoder.to(next(model.parameters()).device)
+            params = list(decoder.parameters())
+            motiontransformer = VideoStabilizer(64-1).to(next(model.parameters()).device)
+            params += list(transformer.parameters())
         else:
             assert False, "invalid stabilization target"
+
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
         video_min, video_max = video.min().item(), video.max().item()
         target = model(video)
@@ -144,6 +151,7 @@ class StabilizationTask(Task):
         grid_loss = torch.zeros(1).cuda()
         for num_iter in range(args.epochs):
             optimizer.zero_grad()
+
             if self.stabilization_target == 'video':
                 video.data.clamp_(video_min, video_max)
                 output = model(self.augmentation(video))
@@ -210,17 +218,28 @@ class StabilizationTask(Task):
                 video_transformed = transformer(original_video)
                 video_transformed += video
                 output = model(self.augmentation(video_transformed))
+            elif self.stabilization_target == 'deep1':
+                video_transformed = decoder(target['layer4'])
+                output = {}
+                output['fc'] = target['fc']
+                output['layer1'] = target['layer1']
             else:
                 assert False, "invalid stabilization target"
+
             content_loss = F.mse_loss(output['fc'], target['fc'])
             style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))
+
             if self.stabilization_target == 'doubledeformer':
                 motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :],
                                         motiontransformer(video_transformed[:, :-1, :, :, :]))
             elif self.stabilization_target == 'actualdoubledeformer':
                 motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_motion)
+            elif self.stabilization_target == 'deep1':
+                motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :],
+                                        motiontransformer(video[:, :-1, :, :, :]))
             else:
                 motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
+
             loss = (content_loss * self.content_weight +
                     motion_loss * self.motion_weight +
                     style_loss * self.style_weight +

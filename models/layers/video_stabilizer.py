@@ -19,8 +19,8 @@ class VideoStabilizer(nn.Module):
         theta = self.theta.view(-1, 2, 3)
 
         grid = F.affine_grid(theta, x.size())
-        x = F.grid_sample(x, grid)
-        # x = F.grid_sample(x, grid, padding_mode="reflection")
+        # x = F.grid_sample(x, grid)
+        x = F.grid_sample(x, grid, padding_mode="reflection")
         if conv3d:
             x = x.permute(0, 2, 3, 1)
             x = x.reshape(b, n, d, d, c)

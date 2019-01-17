@@ -135,7 +135,8 @@ class StabilizationTask(Task):
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params += list(transformer.parameters())
         elif self.stabilization_target == 'deep1':
-            decoder = ResNet503DDecoder3.get(args)
+            decoder = ResNet503DDecoder.get(args)
+            #decoder = ResNet503DDecoder2.get(args)
             decoder = decoder.to(next(model.parameters()).device)
             params = list(decoder.parameters())
             motiontransformer = VideoStabilizer(64-1).to(next(model.parameters()).device)

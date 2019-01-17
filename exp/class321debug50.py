@@ -23,8 +23,8 @@ args = [
     '--tasks', 'alignment_task;actor_observer_classification_task;actor_observer_charades_task',
     '--actor-observer-classification-task-dataset', 'charades_ego_only_first',
     '--criterion', 'actor_observer_with_classifier_criterion',
-    '--train-file', '/home/gsigurds/actor-observer/datasets/labels/CharadesEgo_v05_train.csv;/nfs.yoda/gsigurds/Charades_v1_train.csv',
-    '--val-file', '/home/gsigurds/actor-observer/datasets/labels/CharadesEgo_v05_test.csv;/nfs.yoda/gsigurds/Charades_v1_test.csv',
+    '--train-file', '/nfs.yoda/gsigurds/CharadesEgo_v05_train.csv;/nfs.yoda/gsigurds/Charades_v1_train.csv',
+    '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v05_test.csv;/nfs.yoda/gsigurds/Charades_v1_test.csv',
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/;/scratch/gsigurds/Charades_v1_rgb/',
     '--pretrained',
     '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +

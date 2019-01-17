@@ -229,6 +229,11 @@ class StabilizationTask(Task):
                 output = {}
                 output['fc'] = target['fc']
                 output['layer1'] = target['layer1']
+            elif self.stabilization_target == 'deep2':
+                video_transformed = decoder(target['layer4'])
+                output = {}
+                output['fc'] = target['fc']
+                output['layer1'] = target['layer1']
             else:
                 assert False, "invalid stabilization target"
 

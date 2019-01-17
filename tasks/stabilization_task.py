@@ -238,6 +238,8 @@ class StabilizationTask(Task):
             elif self.stabilization_target == 'deep1':
                 motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :],
                                         motiontransformer(video[:, :-1, :, :, :]))
+                motion_loss += F.l1_loss(video[:, 1:, :, :, :],
+                                         motiontransformer(video[:, :-1, :, :, :]))
             else:
                 motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
 

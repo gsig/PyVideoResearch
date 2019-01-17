@@ -146,6 +146,11 @@ class StabilizationTask(Task):
             #decoder = ResNet503DDecoder2.get(args)
             decoder = decoder.to(next(model.parameters()).device)
             params = list(decoder.parameters())
+        elif self.stabilization_target == 'deep3':
+            decoder = ResNet503DDecoder.get(args)
+            #decoder = ResNet503DDecoder2.get(args)
+            decoder = decoder.to(next(model.parameters()).device)
+            params = list(decoder.parameters())
         else:
             assert False, "invalid stabilization target"
 
@@ -234,11 +239,18 @@ class StabilizationTask(Task):
                 output = {}
                 output['fc'] = target['fc']
                 output['layer1'] = target['layer1']
+            elif self.stabilization_target == 'deep3':
+                video_transformed = decoder(target['layer4'])
+                output = {}
+                output['fc'] = target['fc']
+                output['layer1'] = target['layer1']
             else:
                 assert False, "invalid stabilization target"
 
             if self.stabilization_target == 'deep2':
                 content_loss = F.mse_loss(video, video_transformed)
+            elif self.stabilization_target == 'deep3':
+                content_loss = F.l1_loss(video, video_transformed)
             else:
                 content_loss = F.mse_loss(output['fc'], target['fc'])
             style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))

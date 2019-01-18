@@ -19,7 +19,7 @@ class VisualizationTask(Task):
         model.eval()
         task.visualize_all(train_loader, model, epoch, args, 'train')
         task.visualize_all(val_loader, model, epoch, args, 'val')
-        return {'visualization_task', args.cache}
+        return {'visualization_task': args.cache}
 
     def visualize_all(self, loader, model, epoch, args, split):
         for i, (inputs, target, meta) in enumerate(loader):

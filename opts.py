@@ -35,6 +35,7 @@ def parse():
                         help='child of nn.Module that wraps the base arch. ''default_wrapper'' for no wrapper')
     parser.add_argument('--criterion', default='default_criterion', help=' ''default_criterion'' for sigmoid loss')
     parser.add_argument('--features', default='fc', help='conv1;layer1;layer2;layer3;layer4;fc')
+    parser.add_argument('--replace-last-layer', action='store_true')
 
     # System parameters
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')

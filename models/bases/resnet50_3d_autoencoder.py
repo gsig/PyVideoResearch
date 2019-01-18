@@ -22,12 +22,8 @@ class ResNet503DAutoencoder(Base):
     @classmethod
     def get(cls, args):
         model = ResNet3DAutoencoder([3, 4, 6, 3])  # 50
-        import pdb
-        pdb.set_trace()
         if args.pretrained:
             from torchvision.models.resnet import resnet50
             model2d = resnet50(pretrained=True)
             model.encoder.load_2d(model2d)
-        import pdb
-        pdb.set_trace()
         return model

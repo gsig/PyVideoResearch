@@ -15,6 +15,8 @@ class ResNet3DAutoencoder(nn.Module):
     def forward(self, x):
         code = self.encoder(x)
         x_hat = self.decoder(code)
+        import pdb
+        pdb.set_trace()
         return x_hat, code, x
 
 

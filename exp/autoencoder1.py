@@ -21,7 +21,7 @@ args = [
     '--wrapper', 'default',
     '--criterion', 'autoencoder_criterion',
     '--epochs', '300',
-    '--batch-size', '4',
+    '--batch-size', '6',
     #'--batch-size', '32',
     '--train-size', '0.2',
     '--weight-decay', '0.0000001',

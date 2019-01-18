@@ -23,10 +23,12 @@ args = [
     '--epochs', '300',
     '--batch-size', '6',
     #'--batch-size', '32',
-    '--train-size', '0.2',
+    #'--train-size', '0.2',
+    '--train-size', '0',
     '--weight-decay', '0.0000001',
     '--window-smooth', '0',
-    '--val-size', '0.1',
+    #'--val-size', '0.1',
+    '--val-size', '0',
     '--cache-dir', '/nfs.yoda/gsigurds/ai2/caches/',
     '--data', '/scratch/gsigurds/kinetics_compress/train_256/',
     '--valdata', '/scratch/gsigurds/kinetics_compress/val_256/',
@@ -39,6 +41,7 @@ args = [
     '--workers', '6',
     '--metric', 'val_loss',
     '--metrics', '',
+    '--tasks', 'visualization_task',
     #'--evaluate',
 ]
 sys.argv.extend(args)

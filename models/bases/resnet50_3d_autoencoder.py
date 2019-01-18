@@ -1,7 +1,7 @@
 from models.bases.base import Base
-from models.bases.resnet50_3d_encoder import ResNet503DEncoder
+from models.bases.resnet50_3d_encoder import ResNet3DEncoder
 from models.bases.resnet50_3d_encoder import Bottleneck3D as Encoder_Bottleneck3D
-from models.bases.resnet50_3d_decoder import ResNet503DDecoder
+from models.bases.resnet50_3d_decoder import ResNet3DDecoder
 from models.bases.resnet50_3d_decoder import Bottleneck3D as Decoder_Bottleneck3D
 import torch.nn as nn
 
@@ -9,8 +9,8 @@ import torch.nn as nn
 class ResNet3DAutoencoder(nn.Module):
     def __init__(self, layers, num_classes=400):
         super(ResNet3DAutoencoder, self).__init__()
-        self.encoder = ResNet503DEncoder(Encoder_Bottleneck3D, layers, num_classes)
-        self.decoder = ResNet503DDecoder(Decoder_Bottleneck3D, layers, num_classes)
+        self.encoder = ResNet3DEncoder(Encoder_Bottleneck3D, layers, num_classes)
+        self.decoder = ResNet3DDecoder(Decoder_Bottleneck3D, layers, num_classes)
 
     def forward(self, x):
         code = self.encoder(x)

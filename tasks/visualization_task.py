@@ -17,8 +17,8 @@ class VisualizationTask(Task):
         task = cls(model, epoch, args)
         train_loader, val_loader = get_dataset(args, splits=('train', 'val'), dataset=args.dataset)
         model.eval()
-        task.visulize_all(train_loader, model, epoch, args, 'train')
-        task.visulize_all(val_loader, model, epoch, args, 'val')
+        task.visualize_all(train_loader, model, epoch, args, 'train')
+        task.visualize_all(val_loader, model, epoch, args, 'val')
         return {'visualization_task', args.cache}
 
     def visualize_all(self, loader, model, epoch, args, split):

@@ -32,7 +32,7 @@ args = [
     '--workers', '0',
     '--evaluate',
     '--features', 'conv1;layer1;layer4;fc',
-    '--content-weight', '0',
+    '--content-weight', '1',
     '--motion-weight', '1',
     '--stabilization-target', 'autoencoder',
     '--style-weight', '0',

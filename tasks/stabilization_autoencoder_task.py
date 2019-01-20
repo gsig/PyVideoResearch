@@ -80,7 +80,6 @@ class StabilizationAutoencoderTask(Task):
     def run(cls, model, criterion, epoch, args):
         task = cls(model, epoch, args)
         loader, = get_dataset(args, splits=('val', ), dataset=args.dataset)
-        model = FeatureExtractorWrapper(model, args)
         # model = set_distributed_backend(model, args)
         model.eval()
         return task.stabilize_all(loader, model, epoch, args)

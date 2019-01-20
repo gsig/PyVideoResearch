@@ -90,15 +90,19 @@ class StabilizationAutoencoderTask(Task):
         model = copy.deepcopy(model)
         params = model.parameters()
         lr = 1e-4
+        warmup = 10
         #optimizer = torch.optim.SGD(params, lr=lr, momentum=args.momentum, weight_decay=0)
         optimizer = torch.optim.Adam(params, lr=lr, weight_decay=0)
         criteria = AutoencoderCriterion(args)
         tol = 1e-1
         loss = torch.Tensor([999])
-        num_iter = 0
         timer = Timer()
         with torch.enable_grad():
-            while loss > tol:
+            #num_iter = 0
+            #while loss > tol:
+            for num_iter in range(1000):
+                if num_iter > warmup:
+                    lr = 1e-3
                 optimizer.zero_grad()
                 x_hat, code, x = model(inputs, None)
                 _, loss, _ = criteria(x_hat, code, x, None, None)

@@ -120,7 +120,7 @@ class StabilizationAutoencoderTask(Task):
         x_hat, code, x = model(video, None)
         if self.stabilization_target == 'autoencoder':
             model = model.basenet.decoder
-            params = model.parameters()
+            params = list(model.parameters())
         else:
             assert False, "invalid stabilization target"
 

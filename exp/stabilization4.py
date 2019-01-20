@@ -15,7 +15,7 @@ args = [
     '--name', name,
     '--dataset', 'charades_video',
     '--print-freq', '1',
-    '--arch', 'resnet50_3d',
+    '--arch', 'resnet50_3d_autoencoder',
     '--wrapper', 'default',
     '--tasks', 'stabilization_autoencoder_task',
     '--train-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_train.csv',

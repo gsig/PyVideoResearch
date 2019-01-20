@@ -125,7 +125,7 @@ class StabilizationAutoencoderTask(Task):
             assert False, "invalid stabilization target"
 
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
-        n_params = [x.numel() for x in params]
+        n_params = sum([x.numel() for x in params])
         original_params = [v.detach().clone() for v in model.parameters()]
         timer = Timer()
         for num_iter in range(args.epochs):

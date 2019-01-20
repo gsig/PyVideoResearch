@@ -137,7 +137,8 @@ class StabilizationAutoencoderTask(Task):
                 assert False, "invalid stabilization target"
 
             content_loss = [((a - b)**2).sum() for a, b in zip(params, original_params)]
-            content_loss = (sum(content_loss) / n_params).sqrt()
+            #content_loss = (sum(content_loss) / n_params).sqrt()
+            content_loss = 0
             motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
 
             loss = (content_loss * self.content_weight +

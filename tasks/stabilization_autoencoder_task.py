@@ -89,7 +89,8 @@ class StabilizationAutoencoderTask(Task):
     def fine_tune_autoencoder(self, inputs, model, args):
         model = copy.deepcopy(model)
         params = model.parameters()
-        optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
+        lr = 1e-5
+        optimizer = torch.optim.Adam(params, lr=lr, weight_decay=0)
         criteria = AutoencoderCriterion(args)
         tol = 1e-2
         loss = torch.Tensor([999])
@@ -119,7 +120,7 @@ class StabilizationAutoencoderTask(Task):
 
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
         n_params = [x.numel() for x in params]
-        original_params = OrderedDict((k, v.detach().clone()) for k, v in model.parameters())
+        original_params = [v.detach().clone() for v in model.parameters()]
         x_hat, code, x = model(video)
         timer = Timer()
         for num_iter in range(args.epochs):

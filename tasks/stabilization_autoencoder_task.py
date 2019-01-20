@@ -106,8 +106,8 @@ class StabilizationAutoencoderTask(Task):
                 timer.tic()
                 if num_iter % args.print_freq == 0:
                     print('    Iter: [{0}]\t'
-                          'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {3}'.format(
-                              num_iter, args.epochs, loss, timer=timer))
+                          'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {1}'.format(
+                              num_iter, loss, timer=timer))
         return model
 
     def stabilize_video(self, video, model, args):

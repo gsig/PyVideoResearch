@@ -18,6 +18,7 @@ from models.layers.video_stabilizer import VideoStabilizer
 from misc_utils.video import video_trajectory, trajectory_loss
 import random
 import math
+import copy
 
 
 def gram_matrix(x):
@@ -86,7 +87,7 @@ class StabilizationAutoencoderTask(Task):
         return task.stabilize_all(loader, model, epoch, args)
 
     def fine_tune_autoencoder(self, inputs, model, args):
-        model = model.clone()
+        model = copy.deepcopy(model)
         params = model.parameters()
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
         criteria = AutoencoderCriterion(args)

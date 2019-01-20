@@ -81,6 +81,7 @@ class StabilizationAutoencoderTask(Task):
         task = cls(model, epoch, args)
         loader, = get_dataset(args, splits=('val', ), dataset=args.dataset)
         # model = set_distributed_backend(model, args)
+        model = model.module
         model.eval()
         return task.stabilize_all(loader, model, epoch, args)
 

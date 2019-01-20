@@ -159,9 +159,9 @@ class StabilizationAutoencoderTask(Task):
                 inputs = inputs.cuda()
                 target = target.cuda(async=True)
             original = inputs.detach().clone()
-            reconstructed = model(inputs)[0]
+            reconstructed = model(inputs, None)[0]
             specific_model = self.fine_tune_autoencoder(inputs, model, args)
-            fine_tuned = specific_model(inputs)[0]
+            fine_tuned = specific_model(inputs, None)[0]
             with torch.enable_grad():
                 output, content_loss, motion_loss = self.stabilize_video(inputs, specific_model, args)
             content_losses.update(content_loss)

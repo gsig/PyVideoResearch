@@ -98,7 +98,7 @@ class StabilizationAutoencoderTask(Task):
         with torch.enable_grad():
             while loss > tol:
                 optimizer.zero_grad()
-                x_hat, code, x = model(inputs)
+                x_hat, code, x = model(inputs, None)
                 _, loss, _ = criteria(x_hat, code, x, None, None)
                 loss.backward()
                 optimizer.step()

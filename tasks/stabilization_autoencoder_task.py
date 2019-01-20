@@ -117,7 +117,7 @@ class StabilizationAutoencoderTask(Task):
         return model
 
     def stabilize_video(self, video, model, args):
-        x_hat, code, x = model(video)
+        x_hat, code, x = model(video, None)
         if self.stabilization_target == 'autoencoder':
             model = model.basenet.decoder
             params = model.parameters()

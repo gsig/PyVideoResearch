@@ -117,6 +117,7 @@ class StabilizationAutoencoderTask(Task):
         return model
 
     def stabilize_video(self, video, model, args):
+        x_hat, code, x = model(video)
         if self.stabilization_target == 'autoencoder':
             model = model.basenet.decoder
             params = model.parameters()
@@ -126,7 +127,6 @@ class StabilizationAutoencoderTask(Task):
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
         n_params = [x.numel() for x in params]
         original_params = [v.detach().clone() for v in model.parameters()]
-        x_hat, code, x = model(video)
         timer = Timer()
         for num_iter in range(args.epochs):
             optimizer.zero_grad()

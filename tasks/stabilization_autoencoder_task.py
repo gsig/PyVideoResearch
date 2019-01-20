@@ -89,7 +89,7 @@ class StabilizationAutoencoderTask(Task):
     def fine_tune_autoencoder(self, inputs, model, args):
         model = copy.deepcopy(model)
         params = model.parameters()
-        lr = 1e-5
+        lr = 1e-2
         optimizer = torch.optim.Adam(params, lr=lr, weight_decay=0)
         criteria = AutoencoderCriterion(args)
         tol = 1e-2

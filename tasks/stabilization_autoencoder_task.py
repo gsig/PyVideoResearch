@@ -138,7 +138,8 @@ class StabilizationAutoencoderTask(Task):
 
             content_loss = [((a - b)**2).sum() for a, b in zip(params, original_params)]
             content_loss = (sum(content_loss) / n_params).sqrt()
-            motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
+            #motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
+            motion_loss = (video_transformed[:, 1:, :, :, :] - video_transformed[:, :-1, :, :, :]).abs().mean()
 
             if num_iter < 10:
                 loss = motion_loss * self.motion_weight

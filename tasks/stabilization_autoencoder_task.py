@@ -125,7 +125,7 @@ class StabilizationAutoencoderTask(Task):
             assert False, "invalid stabilization target"
 
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
-        n_params = sum([x.numel() for x in params])
+        n_params = sum([param.numel() for param in params])
         original_params = [v.detach().clone() for v in model.parameters()]
         timer = Timer()
         for num_iter in range(args.epochs):
@@ -136,7 +136,8 @@ class StabilizationAutoencoderTask(Task):
             else:
                 assert False, "invalid stabilization target"
 
-            content_loss = [((a - b)**2).sum() for a, b in zip(params, original_params)]
+            #content_loss = [((a - b)**2).sum() for a, b in zip(params, original_params)]
+            content_loss = [((a - b)**2).sum() for a, b in zip(params, params)]
             content_loss = (sum(content_loss) / n_params).sqrt()
             motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
 
@@ -168,8 +169,7 @@ class StabilizationAutoencoderTask(Task):
                 target = target.cuda(async=True)
             original = inputs.detach().clone()
             reconstructed = model(inputs, None)[0]
-            #specific_model = self.fine_tune_autoencoder(inputs, model, args)
-            specific_model = model
+            specific_model = self.fine_tune_autoencoder(inputs, model, args)
             fine_tuned = specific_model(inputs, None)[0]
             with torch.enable_grad():
                 output, content_loss, motion_loss = self.stabilize_video(inputs, specific_model, args)

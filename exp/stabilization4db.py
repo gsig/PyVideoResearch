@@ -33,7 +33,7 @@ args = [
     '--evaluate',
     '--features', 'conv1;layer1;layer4;fc',
     '--content-weight', '100000',
-    '--motion-weight', '0.01',
+    '--motion-weight', '1',
     '--stabilization-target', 'autoencoder',
     '--style-weight', '0',
     '--grid-weight', '0',

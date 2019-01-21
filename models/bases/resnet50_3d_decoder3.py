@@ -126,6 +126,9 @@ class ResNet3DDecoder(nn.Module):
         # model expects b x c x n x h x w
         # x is of the form b x n x h x w x c
         x = x.permute(0, 2, 3, 4, 1)
+
+        # match the range of the normalized data
+        x /= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, None, :].to(x.device)
         return x
 
 #    def load_2d(self, model2d):

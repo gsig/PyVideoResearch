@@ -124,7 +124,7 @@ class StabilizationAutoencoderTask(Task):
         else:
             assert False, "invalid stabilization target"
 
-        optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.weight_decay)
+        optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=0)
         n_params = sum([param.numel() for param in params])
         original_params = [v.detach().clone() for v in model.parameters()]
         timer = Timer()
@@ -154,6 +154,9 @@ class StabilizationAutoencoderTask(Task):
                       'Content Loss: {2} \tMotion Loss: {3}'.format(
                           num_iter, args.epochs,
                           content_loss.item(), motion_loss.item(), timer=timer))
+            import pdb
+            pdb.set_trace()
+            print('asdf')
         print('Stabilization Done')
         return video_transformed, content_loss.item(), motion_loss.item()
 

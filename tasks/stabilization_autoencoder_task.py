@@ -155,9 +155,9 @@ class StabilizationAutoencoderTask(Task):
                       'Content Loss: {2} \tMotion Loss: {3}'.format(
                           num_iter, args.epochs,
                           content_loss.item(), motion_loss.item(), timer=timer))
-            import pdb
-            pdb.set_trace()
-            print('asdf')
+            #import pdb
+            #pdb.set_trace()
+            #print('asdf')
         print('Stabilization Done')
         return video_transformed, content_loss.item(), motion_loss.item()
 

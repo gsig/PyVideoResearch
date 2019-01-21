@@ -137,8 +137,7 @@ class StabilizationAutoencoderTask(Task):
                 assert False, "invalid stabilization target"
 
             content_loss = [((a - b)**2).sum() for a, b in zip(params, original_params)]
-            #content_loss = (sum(content_loss) / n_params).sqrt()
-            content_loss = 0
+            content_loss = (sum(content_loss) / n_params).sqrt()
             motion_loss = F.l1_loss(video_transformed[:, 1:, :, :, :], video_transformed[:, :-1, :, :, :])
 
             loss = (content_loss * self.content_weight +
@@ -169,7 +168,8 @@ class StabilizationAutoencoderTask(Task):
                 target = target.cuda(async=True)
             original = inputs.detach().clone()
             reconstructed = model(inputs, None)[0]
-            specific_model = self.fine_tune_autoencoder(inputs, model, args)
+            #specific_model = self.fine_tune_autoencoder(inputs, model, args)
+            specific_model = model
             fine_tuned = specific_model(inputs, None)[0]
             with torch.enable_grad():
                 output, content_loss, motion_loss = self.stabilize_video(inputs, specific_model, args)

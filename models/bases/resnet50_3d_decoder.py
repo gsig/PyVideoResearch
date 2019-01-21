@@ -119,9 +119,13 @@ class ResNet3DDecoder(nn.Module):
         # (2, 64, 7, 56, 56)
 
         x = self.maxpool(x)
+        import pdb
+        pdb.set_trace()
         x = self.relu(x)
         x = self.bn1(x)
         x = self.conv1(x)
+        import pdb
+        pdb.set_trace()
         x = self.tanh(x)
         # model expects b x c x n x h x w
         # x is of the form b x n x h x w x c

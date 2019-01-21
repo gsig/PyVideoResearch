@@ -46,9 +46,9 @@ def gram_matrix(x):
     return g.div(a * b * c * d)
 
 
-class StabilizationTask(Task):
+class InpaintingTask(Task):
     def __init__(self, model, epoch, args):
-        super(StabilizationTask, self).__init__()
+        super(InpaintingTask, self).__init__()
         self.num_videos = 50
         self.content_weight = args.content_weight
         self.motion_weight = args.motion_weight

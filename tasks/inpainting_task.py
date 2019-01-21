@@ -263,7 +263,7 @@ class StabilizationTask(Task):
             mask = video.clone()
             mask[:] = 1
             mask[:, :, 224//2-100//2:224//2+100//2, 224//2-100//2:224//2+100//2, :] = 0
-            content_loss = ((((video - video_transformed)**2) * mask).sum()).sqrt()
+            content_loss = ((((video - video_transformed)**2) * mask).mean()).sqrt()
 
             style_loss = F.mse_loss(gram_matrix(output['layer1']), gram_matrix(target['layer1']))
 

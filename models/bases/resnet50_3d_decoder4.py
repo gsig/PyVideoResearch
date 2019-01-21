@@ -150,7 +150,7 @@ class ResNet3DDecoder(nn.Module):
 #                print('skipping: {}'.format(k))
 
 
-class ResNet503DDecoder(Base):
+class ResNet503DDecoder4(Base):
     @classmethod
     def get(cls, args):
         model = ResNet3DDecoder(Bottleneck3D, [3, 4, 6, 3])  # 50

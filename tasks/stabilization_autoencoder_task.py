@@ -100,7 +100,7 @@ class StabilizationAutoencoderTask(Task):
         with torch.enable_grad():
             #num_iter = 0
             #while loss > tol:
-            for num_iter in range(10):
+            for num_iter in range(1000):
                 #if num_iter > warmup:
                 #    lr = 1e-3
                 optimizer.zero_grad()

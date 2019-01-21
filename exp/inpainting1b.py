@@ -34,7 +34,7 @@ args = [
     '--features', 'conv1;layer1;layer4;fc',
     '--content-weight', '1',
     '--motion-weight', '0',
-    '--stabilization-target', 'network1',
+    '--stabilization-target', 'network',
     '--style-weight', '0',
     '--grid-weight', '0',
 ]

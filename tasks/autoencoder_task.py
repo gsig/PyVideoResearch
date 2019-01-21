@@ -17,7 +17,7 @@ import copy
 class AutoencoderTask(Task):
     def __init__(self, model, epoch, args):
         super(AutoencoderTask, self).__init__()
-        self.num_videos = 50
+        self.num_videos = 1
 
     @classmethod
     def run(cls, model, criterion, epoch, args):
@@ -38,22 +38,25 @@ class AutoencoderTask(Task):
         tol = 1e-1
         loss = torch.Tensor([999])
         timer = Timer()
-        with torch.enable_grad():
-            num_iter = 0
-            while loss > tol:
-                #if num_iter > warmup:
-                #    lr = 1e-3
-                optimizer.zero_grad()
-                x_hat, code, x = model(inputs, None)
-                _, loss, _ = criteria(x_hat, code, x, None, None)
-                loss.backward()
-                optimizer.step()
-                num_iter += 1
-                timer.tic()
-                if num_iter % args.print_freq == 0:
-                    print('    Iter: [{0}]\t'
-                          'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {1}'.format(
-                              num_iter, loss, timer=timer))
+        try:
+            with torch.enable_grad():
+                num_iter = 0
+                while loss > tol:
+                    #if num_iter > warmup:
+                    #    lr = 1e-3
+                    optimizer.zero_grad()
+                    x_hat, code, x = model(inputs, None)
+                    _, loss, _ = criteria(x_hat, code, x, None, None)
+                    loss.backward()
+                    optimizer.step()
+                    num_iter += 1
+                    timer.tic()
+                    if num_iter % args.print_freq == 0:
+                        print('    Iter: [{0}]\t'
+                              'Time {timer.val:.3f} ({timer.avg:.3f}) Loss: {1}'.format(
+                                  num_iter, loss, timer=timer))
+        except KeyboardInterrupt as e:
+            print(e)
         return model
 
     def stabilize_all(self, loader, model, epoch, args):

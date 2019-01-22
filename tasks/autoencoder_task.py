@@ -29,9 +29,7 @@ class AutoencoderTask(Task):
 
     def fine_tune_autoencoder(self, inputs, model, args):
         model = copy.deepcopy(model)
-        #x_hat, code, x = model(inputs, None)
-        #model = ResNet503DDecoder.get(args).cuda()
-        #model.train() # TODO seems important
+        model.train()
         params = model.parameters()
         #lr = 1e-4
         #warmup = 10
@@ -50,7 +48,6 @@ class AutoencoderTask(Task):
                     optimizer.zero_grad()
                     x_hat, code, x = model(inputs, None)
                     _, loss, _ = criteria(x_hat, code, x, None, None)
-                    #_, loss, _ = criteria(x_hat, None, inputs.detach(), None, None)
                     loss.backward()
                     optimizer.step()
                     num_iter += 1

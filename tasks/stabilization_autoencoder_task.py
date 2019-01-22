@@ -83,11 +83,12 @@ class StabilizationAutoencoderTask(Task):
         loader, = get_dataset(args, splits=('val', ), dataset=args.dataset)
         # model = set_distributed_backend(model, args)
         model = model.module
-        model.eval()
+        model.train()
         return task.stabilize_all(loader, model, epoch, args)
 
     def fine_tune_autoencoder(self, inputs, model, args):
         model = copy.deepcopy(model)
+        model.train()
         params = model.parameters()
         #lr = 1e-4
         #lr = 0.005
@@ -125,8 +126,8 @@ class StabilizationAutoencoderTask(Task):
         else:
             assert False, "invalid stabilization target"
 
-        #optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=0)
-        optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=0)
+        optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=0)
+        #optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=0)
         n_params = sum([param.numel() for param in params])
         original_params = [v.detach().clone() for v in model.parameters()]
         timer = Timer()

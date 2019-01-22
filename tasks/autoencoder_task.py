@@ -74,7 +74,8 @@ class AutoencoderTask(Task):
             original = inputs.detach().clone()
             reconstructed = model(inputs, None)[0]
             specific_model = self.fine_tune_autoencoder(inputs, model, args)
-            fine_tuned = specific_model(inputs, None)[0]
+            #fine_tuned = specific_model(inputs, None)[0]
+            fine_tuned = specific_model(inputs)
 
             # prepare videos
             original = original[0]

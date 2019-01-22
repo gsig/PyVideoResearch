@@ -31,7 +31,7 @@ class AutoencoderTask(Task):
         model = copy.deepcopy(model)
         #x_hat, code, x = model(inputs, None)
         #model = ResNet503DDecoder.get(args).cuda()
-        model.train()
+        #model.train() # TODO seems important
         params = model.parameters()
         #lr = 1e-4
         #warmup = 10

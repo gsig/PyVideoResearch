@@ -37,7 +37,7 @@ class AutoencoderTask(Task):
         #optimizer = torch.optim.SGD(params, lr=lr, momentum=args.momentum, weight_decay=0)
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=0)
         criteria = AutoencoderCriterion(args)
-        tol = 1e-1
+        tol = 1e-2
         loss = torch.Tensor([999])
         timer = Timer()
         try:

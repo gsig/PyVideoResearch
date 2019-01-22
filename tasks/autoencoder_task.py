@@ -30,7 +30,7 @@ class AutoencoderTask(Task):
     def fine_tune_autoencoder(self, inputs, model, args):
         #model = copy.deepcopy(model)
         x_hat, code, x = model(inputs, None)
-        model = ResNet503DDecoder.get(args)
+        model = ResNet503DDecoder.get(args).to(model.device)
         params = model.parameters()
         #lr = 1e-4
         warmup = 10

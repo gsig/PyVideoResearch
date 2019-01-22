@@ -61,7 +61,7 @@ class AutoencoderTask(Task):
                                   num_iter, loss, timer=timer))
         except KeyboardInterrupt as e:
             print(e)
-        return model
+        return model, x_hat
 
     def stabilize_all(self, loader, model, epoch, args):
         timer = Timer()
@@ -73,9 +73,8 @@ class AutoencoderTask(Task):
                 target = target.cuda(async=True)
             original = inputs.detach().clone()
             reconstructed = model(inputs, None)[0]
-            specific_model = self.fine_tune_autoencoder(inputs, model, args)
+            specific_model, fine_tuned = self.fine_tune_autoencoder(inputs, model, args)
             #fine_tuned = specific_model(inputs, None)[0]
-            fine_tuned = specific_model(inputs)
 
             # prepare videos
             original = original[0]

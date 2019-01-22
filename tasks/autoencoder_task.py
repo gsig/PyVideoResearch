@@ -49,9 +49,8 @@ class AutoencoderTask(Task):
                     #    lr = 1e-3
                     optimizer.zero_grad()
                     x_hat, code, x = model(inputs, None)
-                    #x_hat = model(code.detach())
-                    #_, loss, _ = criteria(x_hat, code, x, None, None)
-                    _, loss, _ = criteria(x_hat, None, inputs.detach(), None, None)
+                    _, loss, _ = criteria(x_hat, code, x, None, None)
+                    #_, loss, _ = criteria(x_hat, None, inputs.detach(), None, None)
                     loss.backward()
                     optimizer.step()
                     num_iter += 1

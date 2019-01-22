@@ -21,7 +21,7 @@ args = [
     '--train-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_train.csv',
     '--val-file', '/nfs.yoda/gsigurds/CharadesEgo_v1_test.csv',
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
-    #'--pretrained',
+    '--pretrained',
     #'--resume', '/nfs.yoda/gsigurds/caches/autoencoder1/model.pth.tar',
     '--lr', '1e-2',
     '--weight-decay', '1e-4',

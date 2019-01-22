@@ -89,13 +89,13 @@ class StabilizationAutoencoderTask(Task):
     def fine_tune_autoencoder(self, inputs, model, args):
         model = copy.deepcopy(model)
         params = model.parameters()
-        lr = 1e-4
+        #lr = 1e-4
         #lr = 0.005
-        warmup = 10
-        optimizer = torch.optim.SGD(params, lr=lr, momentum=args.momentum, weight_decay=0)
-        #optimizer = torch.optim.Adam(params, lr=lr, weight_decay=0)
+        #warmup = 10
+        #optimizer = torch.optim.SGD(params, lr=lr, momentum=args.momentum, weight_decay=0)
+        optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=0)
         criteria = AutoencoderCriterion(args)
-        tol = 1e-1
+        tol = 1e-2
         loss = torch.Tensor([999])
         timer = Timer()
         with torch.enable_grad():

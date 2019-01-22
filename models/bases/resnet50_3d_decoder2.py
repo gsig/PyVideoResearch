@@ -129,6 +129,8 @@ class ResNet3DDecoder(nn.Module):
         x = x.permute(0, 2, 3, 4, 1)
 
         # match the range of the normalized data
+        x = x * .5 + .5
+        x = x - torch.Tensor([0.485, 0.456, 0.406])[None, None, None, None, :].to(x.device)
         x = x / torch.Tensor([0.229, 0.224, 0.225])[None, None, None, None, :].to(x.device)
         return x
 

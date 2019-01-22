@@ -104,6 +104,7 @@ def parse():
     parser.add_argument('--style-weight', default=1.0, type=float)
     parser.add_argument('--grid-weight', default=1.0, type=float)
     parser.add_argument('--stabilization-target', default='video', type=str, help='video | transformer')
+    parser.add_argument('--fine-tune-iters', default=1000, type=int)
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

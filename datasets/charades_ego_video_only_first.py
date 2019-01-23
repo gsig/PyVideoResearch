@@ -21,4 +21,4 @@ class CharadesEgoVideoOnlyFirst(CharadesVideo):
                 'train_file': args.train_file.split(';')[0],
                 'val_file': args.val_file.split(';')[0],
                 'data': args.data.split(';')[0]})
-        return super(CharadesEgoVideoOnlyFirst, cls).get(args, scale, splits)
+        return super(CharadesEgoVideoOnlyFirst, cls).get(args, splits)

@@ -37,7 +37,7 @@ args = [
     '--batch-size', '3',
     '--video-batch-size', '3',
     #'--train-size', '1.0',
-    '--train-size', '0.01',
+    '--train-size', '0.001',
     #'--val-size', '1.0',
     #'--val-size', '0.1',
     '--val-size', '0.001',

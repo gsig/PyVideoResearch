@@ -3,13 +3,13 @@ from datasets.charades_video import CharadesVideo
 import copy
 
 
-class CharadesEgoVideoOnlyFirst(Charades):
+class CharadesEgoVideoOnlyFirst(CharadesVideo):
     def __init__(self, *args, **kwargs):
         super(CharadesEgoVideoOnlyFirst, self).__init__(*args, **kwargs)
 
     @staticmethod
     def parse_charades_csv(filename):
-        labels = Charades.parse_charades_csv(filename)
+        labels = CharadesVideo.parse_charades_csv(filename)
         labels = dict((k, v) for k, v in labels.items() if 'EGO' in k)
         return labels
 

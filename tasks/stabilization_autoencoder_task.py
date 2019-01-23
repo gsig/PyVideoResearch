@@ -123,6 +123,33 @@ class StabilizationAutoencoderTask(Task):
         if self.stabilization_target == 'autoencoder':
             model = model.basenet.decoder
             params = list(model.parameters())
+        elif self.stabilization_target == 'autoencoder2':
+            model = model.basenet.decoder
+            for p in model.conv1.parameters():
+                p.requires_grad = False
+            for p in model.maxpool.parameters():
+                p.requires_grad = False
+            params = list(filter(lambda p: p.requires_grad, model.parameters()))
+        elif self.stabilization_target == 'autoencoder3':
+            model = model.basenet.decoder
+            for p in model.conv1.parameters():
+                p.requires_grad = False
+            for p in model.maxpool.parameters():
+                p.requires_grad = False
+            for p in model.layer1.parameters():
+                p.requires_grad = False
+            params = list(filter(lambda p: p.requires_grad, model.parameters()))
+        elif self.stabilization_target == 'autoencoder4':
+            model = model.basenet.decoder
+            for p in model.conv1.parameters():
+                p.requires_grad = False
+            for p in model.maxpool.parameters():
+                p.requires_grad = False
+            for p in model.layer1.parameters():
+                p.requires_grad = False
+            for p in model.layer2.parameters():
+                p.requires_grad = False
+            params = list(filter(lambda p: p.requires_grad, model.parameters()))
         else:
             assert False, "invalid stabilization target"
 

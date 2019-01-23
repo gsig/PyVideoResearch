@@ -24,8 +24,12 @@ class CharadesVideoMeta(CharadesVideo):
                      'firsttime_neg': 0,
                      'n': 0,
                      'n_ego': 0,
+                     #'class_target': torch.zeros(157).int(),
                      })
-        return [ims, ims, ims], target[0], meta
+        if self.split == 'val_video':
+            return ims, target, meta
+        else:
+            return [ims, ims, ims], target[0], meta
 
 
 class CharadesEgoVideoMeta(CharadesEgoVideo):

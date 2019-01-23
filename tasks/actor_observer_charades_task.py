@@ -22,5 +22,8 @@ class ActorObserverCharadesTask(VideoTask):
                 'train_file': args.train_file.split(';')[1],
                 'val_file': args.val_file.split(';')[1],
                 'data': args.data.split(';')[1]})
-        loader, = get_dataset(newargs, splits=('val_video', ), dataset='charades')
+        if '3d' in args.arch:
+            loader, = get_dataset(newargs, splits=('val_video', ), dataset='charades_video')
+        else:
+            loader, = get_dataset(newargs, splits=('val_video', ), dataset='charades')
         return task.validate_video(loader, model, criterion, epoch, args)

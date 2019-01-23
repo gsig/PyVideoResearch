@@ -156,7 +156,7 @@ class StabilizationAutoencoderTask(Task):
         optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=0)
         #optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=0)
         n_params = sum([param.numel() for param in params])
-        original_params = [v.detach().clone() for v in model.parameters()]
+        original_params = [v.detach().clone() for v in model.parameters() if v.requires_grad]
         timer = Timer()
         for num_iter in range(args.epochs):
             optimizer.zero_grad()

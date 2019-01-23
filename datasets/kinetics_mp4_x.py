@@ -27,7 +27,7 @@ class Kineticsmp4X(Kineticsmp4):
                 ]),
                 input_size=args.input_size)
         else:
-            val_dataset = None
+            train_dataset = None
         if 'val' in splits:
             val_dataset = cls(
                 args, args.valdata, 'val', val_file, args.cache,

@@ -14,14 +14,14 @@ subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
 args = [
     '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
     '--print-freq', '1',
-    '--dataset', 'charades_video',
+    '--dataset', 'charades_video_x4',
     '--arch', 'resnet50_3d_autoencoder',
     '--lr', '0.005',
     '--lr-decay-rate', '100',
     '--wrapper', 'default',
     '--criterion', 'autoencoder_criterion',
     '--epochs', '300',
-    '--batch-size', '4',
+    '--batch-size', '6',
     #'--batch-size', '32',
     '--train-size', '0.1',
     '--weight-decay', '0.0000001',

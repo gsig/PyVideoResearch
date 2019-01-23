@@ -161,10 +161,7 @@ class StabilizationAutoencoderTask(Task):
         for num_iter in range(args.epochs):
             optimizer.zero_grad()
 
-            if self.stabilization_target == 'autoencoder':
-                video_transformed = model(code.detach())
-            else:
-                assert False, "invalid stabilization target"
+            video_transformed = model(code.detach())
 
             content_loss = [((a - b)**2).sum() for a, b in zip(params, original_params)]
             content_loss = (sum(content_loss) / n_params).sqrt()

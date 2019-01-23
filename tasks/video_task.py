@@ -28,6 +28,7 @@ class VideoTask(Task):
 
         for i, (input, target, meta) in enumerate(loader):
             if not args.cpu:
+                input = input.cuda()
                 target = target.cuda(async=True)
 
             # split batch into smaller chunks
@@ -37,7 +38,7 @@ class VideoTask(Task):
                 output_chunks = []
                 for chunk in input.split(args.video_batch_size):
                     output_chunks.append(model(chunk, meta))
-                output = gather(output_chunks)
+                output = gather(output_chunks, input.device)
 
             if type(output) != tuple:
                 output = (output,)

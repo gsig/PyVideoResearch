@@ -45,6 +45,12 @@ class CharadesEgoVideoAlignment(CharadesEgoVideo):
 
     @classmethod
     def get(cls, args):
+        if ';' in args.train_file:
+            args = copy.deepcopy(args)
+            vars(args).update({
+                'train_file': args.train_file.split(';')[0],
+                'val_file': args.val_file.split(';')[0],
+                'data': args.data.split(';')[0]})
         val_dataset = cls(
             args, args.data, 'val', args.val_file, args.cache,
             transform=transforms.Compose([

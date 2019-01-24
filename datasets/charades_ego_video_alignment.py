@@ -5,6 +5,7 @@ import torch
 import datasets.video_transforms as videotransforms
 from glob import glob
 import numpy as np
+import copy
 
 
 class CharadesEgoVideoAlignment(CharadesEgoVideo):

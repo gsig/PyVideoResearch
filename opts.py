@@ -14,7 +14,6 @@ def parse():
     parser.add_argument('--cache-dir', default='./cache/')
     parser.add_argument('--metric', default='CharadesmAPvalvideo', help='metric to find best model')
     parser.add_argument('--metrics', default='top1_metric;top5_metric', help='metrics during training and validation')
-    parser.add_argument('--videometrics', default='charades_map_metric;videotop1_metric;videotop5_metric')
 
     # Data parameters
     parser.add_argument('--data', default='/scratch/gsigurds/Charades_v1_rgb/', help='path to dataset')
@@ -32,9 +31,11 @@ def parse():
     parser.add_argument('--pretrained', dest='pretrained', action='store_true', help='use pre-trained model')
     parser.add_argument('--pretrained-weights', default='')
     parser.add_argument('--nclass', default=157, type=int)
-    parser.add_argument('--wrapper', default='async_tf_base',
+    parser.add_argument('--wrapper', default='default_wrapper',
                         help='child of nn.Module that wraps the base arch. ''default_wrapper'' for no wrapper')
-    parser.add_argument('--criterion', default='async_tf_criterion', help=' ''default_criterion'' for sigmoid loss')
+    parser.add_argument('--criterion', default='default_criterion', help=' ''default_criterion'' for sigmoid loss')
+    parser.add_argument('--features', default='fc', help='conv1;layer1;layer2;layer3;layer4;fc')
+    parser.add_argument('--replace-last-layer', action='store_true')
 
     # System parameters
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
@@ -46,8 +47,10 @@ def parse():
     parser.add_argument('--no-logger', dest='no_logger', action='store_true')
     parser.add_argument('--disable-cudnn-benchmark', action='store_true', help='in case it is causing problems')
     parser.add_argument('--disable-cudnn', action='store_true', help='in case it is causing problems')
+    parser.add_argument('--cpu', action='store_true', help='run on cpu only')
 
     # Training parameters
+    parser.add_argument('--optimizer', default='sgd', type=str, help='sgd | adam')
     parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
     parser.add_argument('--start-epoch', default=0, type=int, help='manual epoch number (useful on restarts)')
     parser.add_argument('-b', '--batch-size', default=256, type=int, help='mini-batch size (default: 256)')
@@ -62,7 +65,6 @@ def parse():
     parser.add_argument('--val-size', default=1.0, type=float)
     parser.add_argument('--accum-grad', default=1, type=int)
     parser.add_argument('--warmups', default=0, type=int)
-    parser.add_argument('--no-val-video', dest='no_val_video', action='store_true')
     parser.add_argument('--synchronous', dest='synchronous', action='store_true')
 
     # Asynchronous Temporal Fields Parameters
@@ -74,12 +76,35 @@ def parse():
     parser.add_argument('--nhidden', default=10, type=int)
     parser.add_argument('--adjustment', dest='adjustment', action='store_true')
     parser.add_argument('--originalloss-weight', default=1, type=float)
-    parser.add_argument('--window-smooth', default=3, type=int)
+    parser.add_argument('--window-smooth', default=0, type=int)
     parser.add_argument('--videoloss', dest='videoloss', action='store_true')
 
     # AVA FRCNN Parameters
     parser.add_argument('--freeze-head', action='store_true')
     parser.add_argument('--freeze-base', action='store_true')
+
+    # Actor Observer Parameters
+    parser.add_argument('--decay', default=0.9, type=float)
+    parser.add_argument('--finaldecay', default=0.9, type=float)
+    parser.add_argument('--margin', default=0.0, type=float)
+    parser.add_argument('--alignment', action='store_true')
+    parser.add_argument('--classifier-weight', default=1.0, type=float)
+    parser.add_argument('--share-selector', action='store_true')
+    parser.add_argument('--normalize-per-video', action='store_true')
+    parser.add_argument('--distance', default='l2', type=str)
+
+    # Task parameters
+    parser.add_argument('--tasks', default='', help='tasks to run every epoch')
+    parser.add_argument('--video-metrics', default='charades_map_metric;videotop1_metric;videotop5_metric', help='for video_task')
+    parser.add_argument('--actor-observer-classification-task-dataset', default='charades_ego_only_first')
+
+    # Video Stabilization Parameters
+    parser.add_argument('--content-weight', default=1.0, type=float)
+    parser.add_argument('--motion-weight', default=1.0, type=float)
+    parser.add_argument('--style-weight', default=1.0, type=float)
+    parser.add_argument('--grid-weight', default=1.0, type=float)
+    parser.add_argument('--stabilization-target', default='video', type=str, help='video | transformer')
+    parser.add_argument('--fine-tune-iters', default=1000, type=int)
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

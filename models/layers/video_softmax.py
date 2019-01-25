@@ -1,0 +1,35 @@
+import torch
+from torch import nn
+import math
+
+
+def lsetwo(a, b):
+    log, exp = math.log, math.exp
+    return log(1 + exp(-abs(a - b))) + max(a, b)
+
+
+class VideoSoftmax(nn.Module):
+    def __init__(self, storage, decay):
+        super(VideoSoftmax, self).__init__()
+        self.storage = storage
+        self.decay = decay
+
+    def get_constants(self, ids):
+        out = [self.storage[x] for x in ids]
+        return torch.Tensor(out)
+
+    def update_constants(self, input, ids):
+        for x, vid in zip(input, ids):
+            if vid not in self.storage:
+                self.storage[vid] = x.item()
+            else:
+                a = math.log(self.decay) + self.storage[vid]
+                b = math.log(1 - self.decay) + x.item()
+                self.storage[vid] = lsetwo(a, b)
+
+    def forward(self, input, ids, update_constants=True):
+        if update_constants:
+            self.update_constants(input, ids)
+        constants = self.get_constants(ids).to(input.device)
+        x = (input - constants).exp()
+        return x

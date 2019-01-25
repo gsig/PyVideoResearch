@@ -3,6 +3,7 @@ import os
 import time
 from PIL import Image
 import numpy as np
+import torch
 
 
 def flow_loader(path):
@@ -60,18 +61,48 @@ def ffmpeg_video_loader(path):
         return None, None
 
 
+def ffmpeg_video_writer(video, path):
+    # video n, h, w, c (unit8 [0-255])
+    import ffmpeg  # @ffmpeg-python
+    if isinstance(video, torch.Tensor):
+        video = video.numpy()
+        video = np.asarray(np.clip(video*255., 0, 255), dtype="uint8")
+    n, h, w, c = video.shape
+    process = (
+        ffmpeg
+        .input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(w, h))
+        #.output(path, pix_fmt='yuv420p')
+        .output(path, pix_fmt='yuv420p', b='5000k')
+        .overwrite_output()
+        .run_async(pipe_stdin=True)
+    )
+
+    for frame in video:
+        process.stdin.write(
+            frame
+            .astype(np.uint8)
+            .tobytes()
+        )
+    process.stdin.close()
+    process.wait()
+    print('saved video to ' + path)
+
+
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
-    for _ in range(10):
-        try:
-            with open(path, 'rb') as f:
-                img = Image.open(f)
-                return img.convert('RGB')
-        except IOError as e:
-            print(e)
-            print('waiting 5 sec and trying again')
-            time.sleep(5)
-    raise
+    #for _ in range(5):
+    #    try:
+    #        with open(path, 'rb') as f:
+    #            img = Image.open(f)
+    #            return img.convert('RGB')
+    #    except IOError as e:
+    #        print(e)
+    #        print('waiting 5 sec and trying again')
+    #        time.sleep(5)
+    #raise IOError
+    with open(path, 'rb') as f:
+        img = Image.open(f)
+        return img.convert('RGB')
 
 
 def pil_loader2(path):

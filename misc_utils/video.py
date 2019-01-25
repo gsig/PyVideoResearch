@@ -76,4 +76,5 @@ def trajectory_loss(trajectory):
     loss = 0
     for t1, t2 in zip(trajectory, trajectory[1:]):
         loss += np.abs(t2 - t1).sum()
+    # TODO normalize for video length?
     return loss

@@ -34,7 +34,7 @@ args = [
     '--val-file', '/nfs.yoda/gsigurds/kinetics400/kinetics_val.csv',
     '--pretrained',
     '--nclass', '400',
-    '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
+    '--resume', '/nfs.yoda/gsigurds/ai2/caches/i3d8k/model.pth.tar;/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
     #'--workers', '16',
     '--workers', '6',
     '--metric', 'val_loss',

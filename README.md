@@ -1,65 +1,134 @@
-## PyTorch Starter Code for Activity Classification and Localization on Charades
+## PyVideoResearch
+
+* A repositsory of common methods, datasets, and tasks for video research
+
+* Please note that this repository is in the process of being released to the public. Please bear with us as we standardize the API and streamline the code. 
+* Some of the baselines were run with an older version of the codebase (but the git commit hash is available for each experiment) and might need to be updated. 
+* We encourage you to submit a Pull Request to help us document and incorporate as many baselines and datasets as possible to this codebase
+* We hope this project will be of value to the community and everyone will consider adding their methods to this codebase
+
+List of implemented methods:
+* I3D
+* 3D ResNet
+* Asynchronous Temporal Fields
+* Actor Observer Network
+* Temporal Segment Networks
+* Temporal Relational Networks
+* Non-local neural networks
+* Two-Stream Networks
+* I3D Mask-RCNN 
+* 3D ResNet Video Autoencoder
+
+List of supported datasets:
+* Charades
+* CharadesEgo
+* Kinetics
+* AVA
+* ActivityNet
+* Something Something
+* Jester
+
+List of supported tasks:
+* Action classification
+* Action localization
+* Spatial Action localization
+* Inpainting
+* Video Alignment
+* Triplet Classification
 
 Contributor: Gunnar Atli Sigurdsson
 
-Simplified Deep CRF model on Charades
-
-* This code implements simplified and improved Asynchronous Temporal Fields (AsyncTF) model in PyTorch
+* If this code helps your research, please consider citing: 
 
 ```
-@inproceedings{sigurdsson2017asynchronous,
-author = {Gunnar A. Sigurdsson and Santosh Divvala and Ali Farhadi and Abhinav Gupta},
-title = {Asynchronous Temporal Fields for Action Recognition},
-booktitle={The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
-year={2017},
-pdf = {http://arxiv.org/pdf/1612.06371.pdf},
-code = {https://github.com/gsig/temporal-fields},
+@inproceedings{sigurdsson2018pyvideoresearch,
+author = {Gunnar A. Sigurdsson and Abhinav Gupta},
+title = {PyVideoResearch},
+year={2018},
+code = {https://github.com/gsig/PyVideoResearch},
 }
 ```
 
-Using the improved PyTorch code, a simple RGB-only model obtains **26.1% mAP** (evaluated with charades_v1_classify.m).
-
-
-## Technical Overview:
-
-The main differences between the original Torch codebase and the improved PyTorch codebase are that we got rid of the intent module and explicit object/verb/scene reasoning, and wrote everything using PyTorch autograd such that only a forward is needed. That is, temporal reasoning is through the temporally fully-connected connections only. The model is built on a ResNet-152 network and uses a sigmoid loss, improving the performance. We encourage the reader to browse through the code and observer that this is simply a single-frame model that caches predictions from frames to reuse for other frames. Finally we added the post-processing feature from the localization experiments in the paper to improve the classification.
- 
-The code is organized to train a two-stream network. Two independed network are trained: One RGB network and one Flow network.
-This code parses the training data into pairs of an image (or flow), and a label for a single activity class. This forms a sigmoid training setup similar to a standard CNN. The network is a ResNet-152 network. For RGB it is pretrained on Image-Net, and for Flow it is pretrained on UCF101. The pretrained networks can be downloaded with the scripts in this directory.
-For testing, the network uses a batch size of 50, scores all images, and max-pools the output to make a classfication prediction or uses all 50 outputs for localization.
-
-All outputs are stored in the cache-dir. This includes epoch*.txt which is the classification output, and localize*.txt which is the localization output (note the you need to specify that you want this in the options).
-Those output files can be combined after training with the python scripts in this directory.
-All output files can be scored with the official MATLAB evaluation script provided with the Charades dataset.
+## Installation Instructions
 
 Requirements:
-* Python 2.7
-* PyTorch 0.4
+* Python 2.7 or Python 3.6
+* PyTorch 0.4 or PyTorch 1.0
+
+Python packages:
+* numpy
+* ffmpeg-python
+* PIL
+* cv2
+* torchvision
+
+See remote libraries under external/ for requirements if using their corresponding baselines. 
+
+Run the following to get both this repository and the remote repositories under external/
+`
+git clone git@github.com:gsig/PyVideoResearch.git
+git fetch
+`
 
 
-## Steps to train your own AsyncTF network on Charades:
+## Steps to train your own network:
  
-1. Download the Charades Annotations (allenai.org/plato/charades/)
-2. Download the Charades RGB frames (allenai.org/plato/charades/)
-3. Duplicate and edit one of the experiment files under exp/ with appropriate parameters. For additional parameters, see opts.py
-4. Run an experiment by calling python exp/rgbnet.py where rgbnet.py is your experiment file
-5. The checkpoints/logfiles/outputs are stored in your specified cache directory. 
-6. Evaluate the submission file with the Charades_v1_classify.m or Charades_v1_localize.m evaluation scripts 
-7. Build of the code, cite our papers, and say hi to us at CVPR.
+1. Download the corresponding dataset 
+2. Duplicate and edit one of the experiment files under exp/ with appropriate parameters. For additional parameters, see opts.py
+3. Run an experiment by calling python exp/rgbnet.py where rgbnet.py is your experiment file. See baseline_exp/ for a variety of baselines.
+4. The checkpoints/logfiles/outputs are stored in your specified cache directory. 
+5. Build of the code, cite our papers, and say hi to us at CVPR.
 
 Good luck!
 
 
 ## Pretrained networks:
 
-The AsyncTF RGB-model is single-frame model and can be trained in a day on a modern GPU.
+We are in the process of preparing and releasing the pre-trained models. If anything is missing, please let us know. The names correspond to experiments under "baseline_exp". While we standardize the names, please be aware that some of the model may have names listed after "original name" in the experiment file. We also provide the generated log.txt file for each experiment as name.txt
 
-https://www.dropbox.com/s/1jqythww7fofyg3/asynctf_rgb.pth.tar?dl=1
+The models are stored here: https://www.dropbox.com/sh/duodxydolzz5qfl/AAC0i70lv8ssVRWg4ux5Vv9pa?dl=0
 
-* The rgb model was obtained after 5 epochs (epochSize=0.1)
-* The rgb model has a classification accuracy of 26.1% mAP (evalated with charades_v1_classify.m)
+* ResNet50 pre-trained on Charades
+    * resnet50_rgb.pth.tar
+    * resnet50_rgb_python3.pth.tar
+* ResNet1010 pre-trained on Charades
+    * resnet101_rgb.pth.tar
+    * resnet101_rgb_python3.pth.tar
+* I3D pre-trained on ImageNet (courtesy of https://github.com/piergiaj)
+    * aj_rgb_imagenet.pth
+* I3D pre-trained on ImageNet+Kinetics (courtesy of https://github.com/piergiaj)
+    * aj_rgb_kinetics.pth
 
-To fine-tune those models, or run experiments, please see exp/asynctf_rgb.py
+* actor_observer_3d_charades_ego.py
+* actor_observer_charades_ego.py
+* actor_observer_classification_charades_ego.py
+* async_tf_i3d_charades.py
+    * async__par1.pth.tar
+    * async__par1.txt
+* i3d_ava.py
+* i3d_mask_rcnn_ava.py
+* i3d_something_something.py
+* inpainting.py
+* nonlocal_resnet50_3d_charades.py
+* nonlocal_resnet50_3d_kinetics.py
+    * i3d8l.pth.tar
+    * i3d8l.txt
+* resnet50_3d_charades.py
+    * i3d12b2.pth.tar
+    * i3d12b2.txt
+* resnet50_3d_kinetics.py
+    * i3d8k.pth.tar
+    * i3d8k.txt
+* temporal_relational_networks_charades.py
+* temporal_relational_networks_something_something.py
+    * trn4b.pth.tar
+    * trn4b.txt
+* temporal_segment_networks_activity_net.py
+* temporal_segment_networks_charades.py
+    * trn2f3b.pth.tar
+    * trn2f3b.txt
+* two_stream_kinetics.py
+* two_stream_networks_activity_net.py
+    * anet2.pth.tar
+    * anet2.txt
 
-
-Charades submission files are available for multiple baselines at https://github.com/gsig/temporal-fields

@@ -24,7 +24,7 @@ class SoftmaxCriterion(DefaultCriterion):
         #target = target.max(1)[0]
         softmax_target = target.nonzero()[:, 1].long()
 
-        loss = self.loss(a, softmax_target.cuda()) * self.orig_loss
+        loss = self.loss(a, softmax_target.cuda())
         print('losses class: {}'.format(loss.item()))
         a = a.cpu()
 

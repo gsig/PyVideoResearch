@@ -50,7 +50,8 @@ def meta_to_entry(meta, nclasses, inputsize):
 
 class FRCNNWrapper3(Wrapper):
     def init_detectron(self, args):
-        del sys.modules['datasets']
+        if 'datasets' in sys.modules:
+            del sys.modules['datasets']
         this_dir = os.path.dirname(__file__)
         lib_path = os.path.join(this_dir, '../../external/Detectron.pytorch/lib')
         sys.path.insert(0, lib_path)
@@ -69,7 +70,7 @@ class FRCNNWrapper3(Wrapper):
         cfg.MODEL.TYPE = "generalized_rcnn"
 
         cfg.RPN.CLS_ACTIVATION = 'sigmoid'
-        cfg.RPN.SIZES = (16, 32, 64, 128, 256, 512)
+        cfg.RPN.SIZES = (32, 64, 128, 256, 512)
         cfg.RPN.STRIDE = 16
         cfg.FPN.COARSEST_STRIDE = 16  # bugfix, anchor stride depends on FPN parameters
 
@@ -131,6 +132,8 @@ class FRCNNWrapper3(Wrapper):
         self.n_class = args.nclass
         self.sigmoid = True
         self.input_size = args.input_size
+        self.freeze_base = args.freeze_base
+        self.freeze_head = args.freeze_head
         for i, end_point in enumerate(self.basenet.VALID_ENDPOINTS):
             if end_point == 'Mixed_4f':  # first half should include Mixed_4f
                 self.first_layers = self.basenet.VALID_ENDPOINTS[:i+1]
@@ -191,17 +194,12 @@ class FRCNNWrapper3(Wrapper):
         # model expects b x c x n x h x w
         x = im.permute(0, 4, 1, 2, 3)
         img_size = x.shape[3:]
-        with torch.no_grad():
+        with torch.set_grad_enabled(not self.freeze_base):
             x = self.baseforward(x, 'first')
 
         # slice feature map to get center frame
         t = x.shape[2]
         x_slice = x[:, :, t//2, :, :]
-
-        # TODO Add support for multilabel boxes
-        for m in meta:
-            s = 0.001*np.random.rand(*m['boxes'].shape)
-            m['boxes'] = m['boxes'] + torch.Tensor(s)
 
         # pass through region proposal network
         roidb = [meta_to_entry(m, self.n_class, self.input_size) for m in meta]
@@ -231,12 +229,13 @@ class FRCNNWrapper3(Wrapper):
         del pools
 
         # pass through rest of the network
-        x = self.baseforward(x, 'last')
-        x = F.avg_pool3d(x, kernel_size=x.size()[2:])  # global avg pool
+        with torch.set_grad_enabled(not self.freeze_head):
+            x = self.baseforward(x, 'last')
+            x = F.avg_pool3d(x, kernel_size=x.size()[2:])  # global avg pool
 
-        # compute scores and locations
-        x_drop = self.basenet.dropout(x)
-        roi_score = self.basenet.logits(x_drop).squeeze().view(x.shape[0], -1)
+            # compute scores and locations
+            x_drop = self.basenet.dropout(x)
+            roi_score = self.basenet.logits(x_drop).squeeze().view(x.shape[0], -1)
         roi_cls_loc = self.cls_loc(x_drop).squeeze().view(x.shape[0], -1)
 
         # get bounding boxes for prediction
@@ -251,6 +250,7 @@ class FRCNNWrapper3(Wrapper):
         pred_boxes = self.box_utils.clip_tiled_boxes(pred_boxes, (self.input_size, self.input_size))
         if self.cfg.MODEL.CLS_AGNOSTIC_BBOX_REG:
             pred_boxes = np.tile(pred_boxes, (1, roi_score.shape[1]))
+        pred_boxes = np.tile(boxes, (1, roi_score.shape[1]))  # no regression, DEBUG TODO
         if self.sigmoid:
             box_scores = F.sigmoid(roi_score.detach()).cpu().numpy()
         else:
@@ -280,8 +280,9 @@ class FRCNNWrapper3(Wrapper):
         rpn_kwargs = {k: v for k, v in rpn_kwargs.items()}
         tensorize(rpn_kwargs)
 
+
         # visual debugging
-        if False:
+        if True:
             # visualize gt
             # fake_scores = np.zeros((len(roidb[-1]['gt_classes']), 81))
             # fake_boxes = np.tile(roidb[-1]['boxes'], (1, roi_score.shape[1]))
@@ -290,10 +291,10 @@ class FRCNNWrapper3(Wrapper):
             # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             # visualize rpn
-            # fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
-            # fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
-            # fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
-            # scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
+            fake_scores = np.zeros((rpn_ret['rois'].shape[0], 81))
+            fake_scores[:, -1] = np.random.rand(fake_scores.shape[0])
+            fake_boxes = np.tile(rpn_ret['rois'][:, 1:5], (1, 81))
+            scores, boxes, cls_boxes = self.box_results_with_nms_and_limit(fake_scores, fake_boxes)
 
             import types
             dataset = types.SimpleNamespace()
@@ -303,7 +304,7 @@ class FRCNNWrapper3(Wrapper):
                 'visual',
                 './',
                 cls_boxes,
-                thresh=.05,
+                thresh=.1,
                 box_alpha=0.8,
                 dataset=dataset,
                 show_class=True

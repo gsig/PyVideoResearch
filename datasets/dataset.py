@@ -49,7 +49,7 @@ class Dataset(data.Dataset):
         except Exception as e:
             print('error getting item {}, moving on to next item'.format(index))
             print(e)
-            return self.__getitem__(index + 1)
+            return self.__getitem__((index + 1) % len(self))
 
     def get_item(self, index, shift=None, video=None):
         """

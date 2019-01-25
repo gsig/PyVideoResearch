@@ -36,7 +36,7 @@ args = [
     #'--sigma', '300',
     #'--val-size', '0.2',
     '--val-size', '0.005',
-    '--cache-dir', '/nfs.yoda/gsigurds/ai2/caches/',
+    '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/Charades_v1_rgb/',
     '--train-file', '/home/gsigurds/ai2/twostream/Charades_v1_train.csv',
     '--val-file', '/home/gsigurds/ai2/twostream/Charades_v1_test.csv',

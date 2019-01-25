@@ -6,13 +6,11 @@ import torch.nn.functional as F
 class _NonLocalBlockND(nn.Module):
     # @AlexHex7
     def __init__(self, in_channels, inter_channels=None, dimension=3, mode='embedded_gaussian',
-                 sub_sample=True, bn_layer=True, group_size=None):
+                 sub_sample=True, bn_layer=True, group_size=None, zero_init_conv=False):
         super(_NonLocalBlockND, self).__init__()
 
         assert dimension in [1, 2, 3]
         assert mode in ['embedded_gaussian', 'gaussian', 'dot_product', 'concatenation']
-
-        # print('Dimension: %d, mode: %s' % (dimension, mode))
 
         self.mode = mode
         self.dimension = dimension
@@ -42,6 +40,8 @@ class _NonLocalBlockND(nn.Module):
 
         self.g = conv_nd(in_channels=self.in_channels, out_channels=self.inter_channels,
                          kernel_size=1, stride=1, padding=0)
+        nn.init.normal_(self.g.weight, std=0.01)
+        nn.init.constant_(self.g.bias, 0)
 
         if bn_layer:
             self.W = nn.Sequential(
@@ -49,13 +49,19 @@ class _NonLocalBlockND(nn.Module):
                         kernel_size=1, stride=1, padding=0),
                 bn(self.in_channels)
             )
-            nn.init.constant(self.W[1].weight, 0)
-            nn.init.constant(self.W[1].bias, 0)
+            if zero_init_conv:
+                nn.init.constant_(self.W[1].weight, 0)
+            else:
+                nn.init.normal_(self.W[1].weight, std=0.01)
+            nn.init.constant_(self.W[1].bias, 0)
         else:
             self.W = conv_nd(in_channels=self.inter_channels, out_channels=self.in_channels,
                              kernel_size=1, stride=1, padding=0)
-            nn.init.constant(self.W.weight, 0)
-            nn.init.constant(self.W.bias, 0)
+            if zero_init_conv:
+                nn.init.constant_(self.W.weight, 0)
+            else:
+                nn.init.normal_(self.W.weight, std=0.01)
+            nn.init.constant_(self.W.bias, 0)
 
         self.theta = None
         self.phi = None
@@ -66,19 +72,16 @@ class _NonLocalBlockND(nn.Module):
                                  kernel_size=1, stride=1, padding=0)
             self.phi = conv_nd(in_channels=self.in_channels, out_channels=self.inter_channels,
                                kernel_size=1, stride=1, padding=0)
+            nn.init.normal_(self.theta.weight, std=0.01)
+            nn.init.constant_(self.theta.bias, 0)
+            nn.init.normal_(self.phi.weight, std=0.01)
+            nn.init.constant_(self.phi.bias, 0)
 
-            if mode == 'embedded_gaussian':
-                self.operation_function = self._embedded_gaussian
-            elif mode == 'dot_product':
-                self.operation_function = self._dot_product
-            elif mode == 'concatenation':
-                self.operation_function = self._concatenation
+            if mode == 'concatenation':
                 self.concat_project = nn.Sequential(
                     nn.Conv2d(self.inter_channels * 2, 1, 1, 1, 0, bias=False),
                     nn.ReLU()
                 )
-        elif mode == 'gaussian':
-            self.operation_function = self._gaussian
 
         if sub_sample:
             self.g = nn.Sequential(self.g, max_pool(kernel_size=2))
@@ -109,34 +112,8 @@ class _NonLocalBlockND(nn.Module):
         elif self.mode == 'gaussian':
             output = self._gaussian(x)
 
-        #output = self.operation_function(x)
-
-        # data parallel safe
-        #batch_size = x.size(0)
-        ## g=>(b, c, t, h, w)->(b, 0.5c, t, h, w)->(b, thw, 0.5c)
-        #g_x = self.g(x).view(batch_size, self.inter_channels, -1)
-        #g_x = g_x.permute(0, 2, 1)
-
-        ## theta=>(b, c, t, h, w)[->(b, 0.5c, t, h, w)]->(b, thw, 0.5c)
-        ## phi  =>(b, c, t, h, w)[->(b, 0.5c, t, h, w)]->(b, 0.5c, thw)
-        ## f=>(b, thw, 0.5c)dot(b, 0.5c, twh) = (b, thw, thw)
-        #theta_x = self.theta(x).view(batch_size, self.inter_channels, -1)
-        #theta_x = theta_x.permute(0, 2, 1)
-        #phi_x = self.phi(x).view(batch_size, self.inter_channels, -1)
-        #f = torch.matmul(theta_x, phi_x)
-        #f_div_C = F.softmax(f, dim=-1)
-
-        ## (b, thw, thw)dot(b, thw, 0.5c) = (b, thw, 0.5c)->(b, 0.5c, t, h, w)->(b, c, t, h, w)
-        #y = torch.matmul(f_div_C, g_x)
-        #y = y.permute(0, 2, 1).contiguous()
-        #y = y.view(batch_size, self.inter_channels, *x.size()[2:])
-        #W_y = self.W(y)
-        #z = W_y + x
-        #output = z
-
         if self.group_size is not None:
             b2, c2, t2, h2, w2 = output.shape
-            # output = output.reshape(b, c2, -1, h2, w2)
             output = output.permute(0, 2, 1, 3, 4)
             output = output.reshape(b, -1, c2, h2, w2)
             output = output.permute(0, 2, 1, 3, 4)

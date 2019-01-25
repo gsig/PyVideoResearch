@@ -6,6 +6,11 @@ import torch.distributed as dist
 import collections
 
 
+class IdentityModule(nn.Module):
+    def forward(self, inputs):
+        return inputs
+
+
 def split_list(lst, chunk_num):
     n = len(lst)
     chunk_size = max(1, n // chunk_num)
@@ -19,7 +24,7 @@ def split_list(lst, chunk_num):
 
 class MyDataParallel(nn.DataParallel):
     # Overloads nn.DataParallel to provide the ability to skip
-    # scatter/gather functionality for a simple unmotified
+    # scatter/gather functionality for a simple unmodified
     # list of dictionaries
     def __init__(self, *args, **kwargs):
         super(MyDataParallel, self).__init__(*args, **kwargs)
@@ -28,11 +33,17 @@ class MyDataParallel(nn.DataParallel):
         # only scatter inputs that don't have the do_not_collate flag
         inputss = []
         for inp in inputs:
-            if isinstance(inp[0], collections.Mapping) and 'do_not_collate' in inp[0]:
-                inp = split_list(inp, len(device_ids))
+            if isinstance(inp, collections.Sequence):
+                if isinstance(inp[0], collections.Mapping) and 'do_not_collate' in inp[0]:
+                    inp = split_list(inp, len(device_ids))
+                else:
+                    inp, kwargs = super(MyDataParallel, self).scatter((inp, ), kwargs, device_ids)
+                    inp = [x[0] if x != () else x for x in inp]  # de-tuple
             else:
                 inp, kwargs = super(MyDataParallel, self).scatter((inp, ), kwargs, device_ids)
-                inp = [x[0] for x in inp]  # de-tuple
+                inp = [x[0] if x != () else x for x in inp]  # de-tuple
+                if isinstance(kwargs[0], collections.Sequence):
+                    kwargs = [x[0] if x != () else x for x in kwargs]  # de-tuple
             inputss.append(inp)
         return tuple(zip(*inputss)), kwargs
 
@@ -82,11 +93,11 @@ def generic_load(arch, pretrained, weights, args):
 
 
 def replace_last_layer(model, args):
-    if hasattr(model, 'classifier'):
+    if hasattr(model, 'replace_logits'):
+        model.replace_logits(args.nclass)
+    elif hasattr(model, 'classifier'):
         newcls = list(model.classifier.children())
         model.classifier = nn.Sequential(*newcls[:-1])
-    elif hasattr(model, 'replace_logits'):
-        model.replace_logits(args.nclass)
     elif hasattr(model, 'fc'):
         model.fc = nn.Linear(model.fc.in_features, args.nclass)
         if hasattr(model, 'AuxLogits'):
@@ -94,6 +105,26 @@ def replace_last_layer(model, args):
     else:
         newcls = list(model.children())[:-1]
         model = nn.Sequential(*newcls)
+    return model
+
+
+def remove_last_layer(model):
+    if hasattr(model, 'classifier'):
+        newcls = list(model.classifier.children())
+        model.in_features = newcls[-1].in_features
+        model.classifier = nn.Sequential(*newcls[:-1])
+    elif hasattr(model, 'fc'):
+        if isinstance(model.fc, nn.Conv3d):
+            model.in_features = model.fc.in_channels
+            model.fc = IdentityModule()
+            model.global_pooling = True
+        else:
+            model.in_features = model.fc.in_features
+            model.fc = IdentityModule()
+    else:
+        newcls = list(model.children())[:-1]
+        model.in_features = list(model.children())[-1].in_features
+        model = nn.Sequential(*newcls[:-1])
     return model
 
 

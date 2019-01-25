@@ -278,7 +278,6 @@ class InceptionI3d(nn.Module):
                              use_batch_norm=False,
                              use_bias=True,
                              name='logits')
-
         self.build()
 
     def replace_logits(self, num_classes):
@@ -290,19 +289,19 @@ class InceptionI3d(nn.Module):
                              use_batch_norm=False,
                              use_bias=True,
                              name='logits')
-        
+
     def build(self):
         for k in self.end_points.keys():
             self.add_module(k, self.end_points[k])
-        
+
     def forward(self, x):
-        for module in self.modules():
-            if isinstance(module, torch.nn.modules.BatchNorm1d):
-                module.eval()
-            if isinstance(module, torch.nn.modules.BatchNorm2d):
-                module.eval()
-            if isinstance(module, torch.nn.modules.BatchNorm3d):
-                module.eval()
+        #for module in self.modules():
+        #    if isinstance(module, torch.nn.modules.BatchNorm1d):
+        #        module.eval()
+        #    if isinstance(module, torch.nn.modules.BatchNorm2d):
+        #        module.eval()
+        #    if isinstance(module, torch.nn.modules.BatchNorm3d):
+        #        module.eval()
         # x is of the form b x n x h x w x c
         # model expects b x c x n x h x w
         x = x.permute(0, 4, 1, 2, 3)
@@ -310,11 +309,9 @@ class InceptionI3d(nn.Module):
             if end_point in self.end_points:
                 x = self._modules[end_point](x) # use _modules to work with dataparallel
 
-        x = self.logits(self.dropout(self.avg_pool(x)))
+        logits = self.logits(self.dropout(self.avg_pool(x)))
         if self._spatial_squeeze:
-            #logits = x.squeeze(3).squeeze(3)
-            logits = x.mean(3).mean(3)
-        #logits = logits.permute(2, 1, 0).squeeze(2)
+            logits = logits.mean(3).mean(3)
         # model returns batch x classes x time
         logits = logits.permute(0, 2, 1)
         # logits is batch X time X classes
@@ -330,7 +327,6 @@ class InceptionI3d(nn.Module):
 class AJ_I3D(Base):
     @classmethod
     def get(cls, args):
-        #model = InceptionI3d(400, in_channels=3)
-        model = InceptionI3d(157, in_channels=3)
+        model = InceptionI3d(args.nclass, in_channels=3)
         model.in_features = 1024
         return model

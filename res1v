@@ -1,0 +1,8 @@
+{
+   cat ../results/$1/checkpoints/model_???.txt 2>/dev/null || 
+   cat ../results/$1/model_???.txt 2>/dev/null
+} | grep top1val | less
+{
+   cat ../results/$1/checkpoints/model_???.txt 2>/dev/null || 
+   cat ../results/$1/model_???.txt 2>/dev/null 
+} | grep top1val | sort -k2 -n | tail -n 1

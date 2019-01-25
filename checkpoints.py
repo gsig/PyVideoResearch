@@ -25,9 +25,9 @@ def ordered_load_state(model, chkpoint):
 def load_partial_state(model, state_dict):
     # @chenyuntc
     sd = model.state_dict()
-    sd = OrderedDict([(x.replace('module.', '').replace('mA.', '').replace('basenet.', ''), y) for x, y in sd.items()])
+    sd = OrderedDict([(x.replace('module.', '').replace('mA.', '').replace('basenet.', '').replace('encoder.', ''), y) for x, y in sd.items()])
     for k0, v in state_dict.items():
-        k = k0.replace('module.', '').replace('mA.', '').replace('basenet.', '')
+        k = k0.replace('module.', '').replace('mA.', '').replace('basenet.', '').replace('encoder.', '')
         if k not in sd or not sd[k].shape == v.shape:
             print('ignoring state key for loading: {}'.format(k))
             continue

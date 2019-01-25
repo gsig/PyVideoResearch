@@ -49,7 +49,7 @@ class FRCNNCriterion3(DefaultCriterion):
             loss_cls = sigmoid_loss(roi_score, rpn_ret['multilabels_int32'])
             print('sigmoid frcnn loss')
 
-        losses = [loss_rpn_cls, loss_rpn_bbox*2, loss_cls, loss_bbox*2]
+        losses = [loss_rpn_cls, loss_rpn_bbox*2, loss_cls*0, loss_bbox*0]
         print('losses {} {} {} {}'.format(*losses))
         print('accuracy {}'.format(accuracy_cls))
 

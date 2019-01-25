@@ -12,7 +12,9 @@ def get_model(args):
     """
 
     model = generic_load(args.arch, args.pretrained, args.pretrained_weights, args)
-    model = replace_last_layer(model, args)
+    if args.replace_last_layer:
+        print('replacing last layer')
+        model = replace_last_layer(model, args)
     for module in model.modules():
         if args.dropout != 0 and isinstance(module, torch.nn.modules.Dropout):
             print('setting Dropout p to {}'.format(args.dropout))

@@ -10,7 +10,6 @@ from models.criteria.criterion import Criterion
 class DefaultCriterion(Criterion):
     def __init__(self, args):
         super(DefaultCriterion, self).__init__(args)
-        self.orig_loss = args.originalloss_weight
         self.loss = nn.BCELoss()
         self.balance_loss = args.balanceloss
         self.balance_labels = BalanceLabels()
@@ -37,9 +36,9 @@ class DefaultCriterion(Criterion):
 
     def forward(self, a, target, meta, synchronous=False):
         a, target, meta = self.process_tensors(a, target, meta, self.balance_loss)
-        loss = self.loss(nn.Sigmoid()(a), target) * self.orig_loss
+        loss = self.loss(nn.Sigmoid()(a), target)
         print('losses class: {}'.format(loss.item()))
 
         if synchronous:
             a = winsmooth(a, kernelsize=self.win_smooth)
-        return a, loss, target
+        return a.detach().cpu(), loss, target.detach().cpu()

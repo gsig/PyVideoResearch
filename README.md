@@ -67,6 +67,7 @@ See remote libraries under external/ for requirements if using their correspondi
 Run the following to get both this repository and the remote repositories under external/
 `
 git clone git@github.com:gsig/PyVideoResearch.git
+
 git fetch
 `
 

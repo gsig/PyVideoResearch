@@ -32,7 +32,7 @@ args = [
     '--valdata', '/scratch/gsigurds/kinetics_compress/val_256/',
     '--train-file', '/nfs.yoda/gsigurds/kinetics400/kinetics_train.csv',
     '--val-file', '/nfs.yoda/gsigurds/kinetics400/kinetics_val.csv',
-    '--pretrained',
+    #'--pretrained',
     '--nclass', '400',
     '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
     #'--workers', '16',

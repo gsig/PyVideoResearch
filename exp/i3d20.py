@@ -39,6 +39,7 @@ args = [
     '--workers', '4',
     '--disable-cudnn-benchmark',
     '--disable-cudnn',
+    '--replace-last-layer',
 ]
 sys.argv.extend(args)
 try:

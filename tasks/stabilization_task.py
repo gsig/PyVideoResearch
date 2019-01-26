@@ -124,6 +124,9 @@ class StabilizationTask(Task):
         elif self.stabilization_target == 'smoothdeformer2':
             transformer = VideoSmoothDeformer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
+        elif self.stabilization_target == 'residualdeformer2':
+            transformer = VideoSmoothDeformer(64).to(next(model.parameters()).device)
+            params = transformer.parameters()
         elif self.stabilization_target == 'doubledeformer':
             transformer = VideoResidualDeformer(64).to(next(model.parameters()).device)
             motiontransformer = VideoTransformer(64).to(next(model.parameters()).device)
@@ -225,6 +228,13 @@ class StabilizationTask(Task):
                     F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :]) +
                     F.mse_loss(grid[:-1, :, :, :], grid[1:, :, :, :]) +
                     F.mse_loss(affine_grid[:-1, :], affine_grid[1:, :])
+                )
+                output = model(self.augmentation(video))
+            elif self.stabilization_target == 'residualdeformer2':
+                video_transformed, grid, affine_grid = transformer(video)
+                grid_loss = (
+                    F.l1_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
+                    F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :])
                 )
                 output = model(self.augmentation(video))
             elif self.stabilization_target == 'doubledeformer':

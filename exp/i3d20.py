@@ -28,7 +28,7 @@ args = [
     '--window-smooth', '0',
     '--val-size', '0.2',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
-    '--data', '/scratch/gsigurds/Charades_v1_rgb/',
+    '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
     '--train-file', '/home/gsigurds/ai2/twostream/CharadesEgo_v1_train.csv',
     '--val-file', '/home/gsigurds/ai2/twostream/CharadesEgo_v1_test.csv',
     '--pretrained',

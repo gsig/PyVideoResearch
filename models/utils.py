@@ -43,7 +43,7 @@ class MyDataParallel(nn.DataParallel):
                 inp, kwargs = super(MyDataParallel, self).scatter((inp, ), kwargs, device_ids)
                 inp = [x[0] if x != () else x for x in inp]  # de-tuple
                 if isinstance(kwargs[0], collections.Sequence):
-                    kwargs = [x[0] if x != () else x for x in kwargs]  # de-tuple
+                    kwargs = [x[0] for x in kwargs]  # de-tuple
             inputss.append(inp)
         return tuple(zip(*inputss)), kwargs
 

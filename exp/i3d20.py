@@ -40,6 +40,8 @@ args = [
     '--disable-cudnn-benchmark',
     '--disable-cudnn',
     '--replace-last-layer',
+    '--tasks', 'video_task',
+    '--metric', 'video_task_CharadesmAP',
 ]
 sys.argv.extend(args)
 try:

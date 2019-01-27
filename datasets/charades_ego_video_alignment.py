@@ -61,6 +61,6 @@ class CharadesEgoVideoAlignment(CharadesEgoVideo):
 
         val_loader = torch.utils.data.DataLoader(
             val_dataset, batch_size=args.video_batch_size, shuffle=False,
-            num_workers=args.workers, pin_memory=True)
+            drop_last=True, num_workers=args.workers, pin_memory=False)
 
         return val_loader

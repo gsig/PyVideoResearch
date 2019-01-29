@@ -15,7 +15,7 @@ class HookModule(nn.Module):
 
     def forward(self, x):
         self.storage = self.module(x)
-        return x
+        return self.storage
 
     def purge(self):
         self.storage = None

@@ -7,3 +7,6 @@
 [submodule "external/maskrcnn-benchmark"]
 	path = external/maskrcnn-benchmark
 	url = https://github.com/facebookresearch/maskrcnn-benchmark.git
+[submodule "external/SfmLearner-Pytorch"]
+	path = external/SfmLearner-Pytorch
+	url = https://github.com/ClementPinard/SfmLearner-Pytorch.git

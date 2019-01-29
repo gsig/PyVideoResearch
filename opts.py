@@ -106,6 +106,12 @@ def parse():
     parser.add_argument('--stabilization-target', default='video', type=str, help='video | transformer')
     parser.add_argument('--fine-tune-iters', default=1000, type=int)
 
+    # SfmLearner Parameters
+    parser.add_argument('--photo-loss-weight', default=1.0, type=float)
+    parser.add_argument('--mask-loss-weight', default=1.0, type=float)
+    parser.add_argument('--smooth-loss-weight', default=1.0, type=float)
+    parser.add_argument('--inverse-loss-weight', default=1.0, type=float)
+
     args = parser.parse_args()
     args.distributed = args.world_size > 1
     args.cache = args.cache_dir + args.name + '/'

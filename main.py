@@ -57,7 +57,7 @@ def main():
                                     momentum=args.momentum,
                                     weight_decay=args.weight_decay)
     elif args.optimizer == 'adam':
-        optimizer = torch.optim.Adam(model.parameters(), args.lr,
+        optimizer = torch.optim.Adam(model.parameters(), args.lr, betas=(0.9, 0.999),
                                      weight_decay=args.weight_decay)
     else:
         assert False, "invalid optimizer"

@@ -73,8 +73,9 @@ class SfmLearnerWrapper(Wrapper):
 
     def forward(self, im, meta):
         # im is of the form b x n x h x w x c
-        tgt_img = im[:, 0, :, :, :]
-        ref_imgs = [im[:, i, :, :, :] for i in range(1, im.size(1))]
+        im = im.permute(0, 4, 1, 2, 3)
+        tgt_img = im[:, :, 0, :, :]
+        ref_imgs = [im[:, :, i, :, :] for i in range(1, im.size(2))]
 
         # compute output
         disparities = self.disp_net(tgt_img)

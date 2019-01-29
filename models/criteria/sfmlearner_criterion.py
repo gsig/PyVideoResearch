@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from models.wrappers.wrapper import Wrapper
+from models.criteria.default_criterion import DefaultCriterion
 import sys
 import os.path
 import os
@@ -8,7 +8,7 @@ import torch
 import torch.nn.functional as F
 
 
-class SfmLearnerCriterion(Wrapper):
+class SfmLearnerCriterion(DefaultCriterion):
     def init_sfmlearner(self, args):
         def init_sfmlearner(self, args):
             this_dir = os.path.dirname(__file__)

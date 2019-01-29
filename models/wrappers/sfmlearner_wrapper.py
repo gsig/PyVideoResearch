@@ -81,7 +81,10 @@ class SfmLearnerWrapper(Wrapper):
 
         # compute output
         disparities = self.disp_net(tgt_img)
-        depth = [1/disp for disp in disparities]
+        if type(disparities) == tuple:
+            depth = [1/disp for disp in disparities]
+        else:
+            depth = 1/disparities
         explainability_mask, pose, intrinsics, intrinsics_inv = self.pose_exp_net(tgt_img, ref_imgs)
 
         return tgt_img, ref_imgs, intrinsics, intrinsics_inv, depth, explainability_mask, pose

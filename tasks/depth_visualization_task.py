@@ -36,16 +36,23 @@ class DepthVisualizationTask(Task):
             original += torch.Tensor([0.485, 0.456, 0.406])[:, None, None].to(original.device)
 
             # prepare depth
-            output = depth[0]
+            output = depth[0].clone()
             output = output / (1e-6 + output.max())
             output = output.clamp(0, 1)
             output = output[None, :, :].repeat(3, 1, 1)
+
+            # prepare depth not normalized
+            raw = depth[0].clone()
+            raw = raw / 10
+            raw = raw.clamp(0, 1)
+            raw = raw[None, :, :].repeat(3, 1, 1)
 
             # save video
             name = '{}_{:03d}_{}_{}'.format(split, epoch, meta[0]['id'], meta[0]['time'])
             gdb.arrtoim(original.cpu().numpy().copy()).save('{}/{}_original.png'.format(args.cache, name))
             gdb.arrtoim(output.cpu().numpy().copy()).save('{}/{}_original.png'.format(args.cache, name))
-            combined = torch.cat((original.cpu(), output.cpu()), 2)
+            gdb.arrtoim(raw.cpu().numpy().copy()).save('{}/{}_raw.png'.format(args.cache, name))
+            combined = torch.cat((original.cpu(), output.cpu(), raw.cpu()), 2)
             gdb.arrtoim(combined.cpu().numpy().copy()).save('{}/{}_combined.png'.format(args.cache, name))
 
             print('Visualization: [{0}/{1}]'.format(i, self.num_videos))

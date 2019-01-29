@@ -1,0 +1,9 @@
+#!/bin/bash
+# Simple script for retrieving experiment results files from a remote server
+# Runs in the background and prints "Sync successful" when done
+
+remotedir=yoda:/nfs.yoda/gsigurds/caches/
+folderpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo $folderpath > /dev/null
+rsync -a --include='*model*.txt' --include='*/' --exclude='*' $remotedir $folderpath/../results/ > /dev/null\
+&& echo '     >>>>    Sync successful.    <<<<     ' &

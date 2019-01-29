@@ -62,13 +62,13 @@ Python packages:
 * cv2
 * torchvision
 
-See remote libraries under external/ for requirements if using their corresponding baselines. 
+See external libraries under external/ for requirements if using their corresponding baselines. 
 
 Run the following to get both this repository and the remote repositories under external/
 
 ```
 git clone git@github.com:gsig/PyVideoResearch.git
-git fetch
+git submodule update --init --recursive
 ```
 
 

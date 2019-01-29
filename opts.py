@@ -12,7 +12,7 @@ def parse():
     parser.add_argument('--resume', default='', help='path to latest checkpoint (default: none)')
     parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true', help='evaluate on validation sets')
     parser.add_argument('--cache-dir', default='./cache/')
-    parser.add_argument('--metric', default='CharadesmAPvalvideo', help='metric to find best model')
+    parser.add_argument('--metric', default='val_loss', help='metric to find best model')
     parser.add_argument('--metrics', default='top1_metric;top5_metric', help='metrics during training and validation')
 
     # Data parameters
@@ -97,14 +97,6 @@ def parse():
     parser.add_argument('--tasks', default='', help='tasks to run every epoch')
     parser.add_argument('--video-metrics', default='charades_map_metric;videotop1_metric;videotop5_metric', help='for video_task')
     parser.add_argument('--actor-observer-classification-task-dataset', default='charades_ego_only_first')
-
-    # Video Stabilization Parameters
-    parser.add_argument('--content-weight', default=1.0, type=float)
-    parser.add_argument('--motion-weight', default=1.0, type=float)
-    parser.add_argument('--style-weight', default=1.0, type=float)
-    parser.add_argument('--grid-weight', default=1.0, type=float)
-    parser.add_argument('--stabilization-target', default='video', type=str, help='video | transformer')
-    parser.add_argument('--fine-tune-iters', default=1000, type=int)
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

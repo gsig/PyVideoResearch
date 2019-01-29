@@ -34,7 +34,7 @@ args = [
     '--photo-loss-weight', '1.0',
     '--mask-loss-weight', '0',
     '--smooth-loss-weight', '0.1',
-    '--inverse-loss-weight', '1.0',
+    '--inverse-loss-weight', '0.0001',
     '--metrics', '',
     '--metric', 'val_loss',
     '--tasks', 'depth_visualization_task',

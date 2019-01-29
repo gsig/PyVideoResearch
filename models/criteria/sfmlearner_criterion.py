@@ -20,8 +20,8 @@ class SfmLearnerCriterion(Wrapper):
             self.explainability_loss = explainability_loss
             self.smooth_loss = smooth_loss
 
-    def __init__(self, basenet, args):
-        super(SfmLearnerCriterion, self).__init__(basenet, args)
+    def __init__(self, args):
+        super(SfmLearnerCriterion, self).__init__(args)
         self.init_sfmlearner(args)
         self.photo_loss_weight = args.photo_loss_weight
         self.mask_loss_weight = args.mask_loss_weight

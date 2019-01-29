@@ -1,6 +1,5 @@
 from datasets.charades_video import CharadesVideo
 import cv2
-import torch
 import numpy as np
 
 
@@ -12,9 +11,9 @@ class CharadesVideoSfm2(CharadesVideo):
 
     def get_item(self, index, shift=None):
         img, target, meta = super(CharadesVideoSfm2, self).get_item(index, shift)
-        video = img.clone()
-        video *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :]
-        video += torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :]
+        video = img.copy()
+        video *= np.array([0.229, 0.224, 0.225])[None, None, None, :]
+        video += np.array([0.485, 0.456, 0.406])[None, None, None, :]
         video = np.asarray(np.clip(video*255., 0, 255), dtype="uint8")
         prev_frame = video[0]
         frame = video[1]

@@ -39,13 +39,13 @@ class DepthVisualizationTask(Task):
             output = depth[0].clone()
             output = output / (1e-6 + output.max())
             output = output.clamp(0, 1)
-            output = output[None, :, :].repeat(3, 1, 1)
+            output = output.repeat(3, 1, 1)
 
             # prepare depth not normalized
             raw = depth[0].clone()
             raw = raw / 10
             raw = raw.clamp(0, 1)
-            raw = raw[None, :, :].repeat(3, 1, 1)
+            raw = raw.repeat(3, 1, 1)
 
             # save video
             name = '{}_{:03d}_{}_{}'.format(split, epoch, meta[0]['id'], meta[0]['time'])

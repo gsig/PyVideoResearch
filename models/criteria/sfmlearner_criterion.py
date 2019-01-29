@@ -10,15 +10,14 @@ import torch.nn.functional as F
 
 class SfmLearnerCriterion(DefaultCriterion):
     def init_sfmlearner(self, args):
-        def init_sfmlearner(self, args):
-            this_dir = os.path.dirname(__file__)
-            lib_path = os.path.join(this_dir, '../../external/SfmLearner-Pytorch')
-            sys.path.insert(0, lib_path)
+        this_dir = os.path.dirname(__file__)
+        lib_path = os.path.join(this_dir, '../../external/SfmLearner-Pytorch')
+        sys.path.insert(0, lib_path)
 
-            from loss_functions import photometric_reconstruction_loss, explainability_loss, smooth_loss
-            self.pr_loss = photometric_reconstruction_loss
-            self.explainability_loss = explainability_loss
-            self.smooth_loss = smooth_loss
+        from loss_functions import photometric_reconstruction_loss, explainability_loss, smooth_loss
+        self.pr_loss = photometric_reconstruction_loss
+        self.explainability_loss = explainability_loss
+        self.smooth_loss = smooth_loss
 
     def __init__(self, args):
         super(SfmLearnerCriterion, self).__init__(args)

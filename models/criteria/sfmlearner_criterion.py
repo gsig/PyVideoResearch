@@ -47,5 +47,6 @@ class SfmLearnerCriterion(DefaultCriterion):
         identity = torch.eye(3).reshape((1, 3, 3)).repeat(b, 1, 1).to(approx_identity.device)
         loss_4 = F.mse_loss(approx_identity, identity)
         loss += w4*loss_4
+        print('losses {} {} {} {}'.format(loss_1, loss_2, loss_3, loss_4))
 
-        return depth, loss
+        return depth, loss, tgt_img

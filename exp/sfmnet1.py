@@ -34,6 +34,9 @@ args = [
     '--mask-loss-weight', '0',
     '--smooth-loss-weight', '0.1',
     '--inverse-loss-weight', '1.0',
+    '--metrics', '',
+    '--metric', 'val_loss',
+    '--tasks', 'depth_visualization_task',
     #'--evaluate',
 ]
 sys.argv.extend(args)

@@ -34,18 +34,21 @@ class DepthVisualizationTask(Task):
             original = tgt_img[0]
             original *= torch.Tensor([0.229, 0.224, 0.225])[:, None, None].to(original.device)
             original += torch.Tensor([0.485, 0.456, 0.406])[:, None, None].to(original.device)
+            original = original.permute(1, 2, 0)
 
             # prepare depth
             output = depth[0].clone()
             output = output / (1e-6 + output.max())
             output = output.clamp(0, 1)
             output = output.repeat(3, 1, 1)
+            output = output.permute(1, 2, 0)
 
             # prepare depth not normalized
             raw = depth[0].clone()
             raw = raw / 10
             raw = raw.clamp(0, 1)
             raw = raw.repeat(3, 1, 1)
+            raw = raw.permute(1, 2, 0)
 
             # save video
             name = '{}_{:03d}_{}_{}'.format(split, epoch, meta[0]['id'], meta[0]['time'])

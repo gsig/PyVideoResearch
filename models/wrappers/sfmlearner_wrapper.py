@@ -15,8 +15,8 @@ class SfmLearnerWrapper(Wrapper):
         lib_path = os.path.join(this_dir, '../../external/SfmLearner-Pytorch')
         sys.path.insert(0, lib_path)
 
-        from models import DispNetS, PoseExpNet
-        from models.PoseExpNet import conv
+        from models.DispNetS import DispNetS
+        from models.PoseExpNet import PoseExpNet, conv
         self.disp_net = DispNetS()
 
         class IntrinsicsPoseExpNet(PoseExpNet, object):

@@ -43,7 +43,7 @@ class SfmLearnerCriterion(DefaultCriterion):
 
         # intrinsics regularization
         b = intrinsics.size(0)
-        approx_identity = torch.mm(intrinsics, intrinsics_inv)
+        approx_identity = torch.bmm(intrinsics, intrinsics_inv)
         identity = torch.eye(3).reshape((1, 3, 3)).repeat(b, 1, 1)
         loss_4 = F.mse_loss(approx_identity, identity)
         loss += w4*loss_4

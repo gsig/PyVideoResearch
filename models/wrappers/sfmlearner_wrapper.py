@@ -7,6 +7,20 @@ import os
 import torch.nn as nn
 
 
+class HookModule(nn.Module):
+    def __init__(self, module):
+        super(HookModule, self).__init__()
+        self.module = module
+        self.storage = None
+
+    def forward(self, x):
+        self.storage = self.module(x)
+        return x
+
+    def purge(self):
+        self.storage = None
+
+
 class SfmLearnerWrapper(Wrapper):
     def init_sfmlearner(self, args):
         if 'models' in sys.modules:
@@ -22,13 +36,7 @@ class SfmLearnerWrapper(Wrapper):
         class IntrinsicsPoseExpNet(PoseExpNet, object):
             def __init__(self, nb_ref_imgs=2, output_exp=False):
                 super(IntrinsicsPoseExpNet, self).__init__(nb_ref_imgs, output_exp)
-                self.conv5_output = None
-                self.old_conv5 = self.conv5
-
-                def conv5_fun(x):
-                    self.conv5_output = self.old_conv5(x)
-                    return self.conv5_output
-                self.conv5 = conv5_fun
+                self.conv5 = HookModule(self.conv5)
                 conv_planes = [16, 32, 64, 128, 256, 256, 256]
                 self.conv6b = conv(conv_planes[4], conv_planes[5])
                 self.conv7b = conv(conv_planes[5], conv_planes[6])
@@ -40,7 +48,7 @@ class SfmLearnerWrapper(Wrapper):
 
             def forward(self, target_image, ref_imgs):
                 exp_mask, pose = super(IntrinsicsPoseExpNet, self).forward(target_image, ref_imgs)
-                conv5 = self.conv5_output
+                conv5 = self.conv5.storage
                 out_conv6b = self.conv6b(conv5)
                 out_conv7b = self.conv7b(out_conv6b)
                 intrinsics = self.intrinsics_pred(out_conv7b)
@@ -53,7 +61,7 @@ class SfmLearnerWrapper(Wrapper):
                 intrinsics_inv = intrinsics_inv.mean(3).mean(2)
                 intrinsics_inv = 0.01 * intrinsics_inv.view(intrinsics_inv.size(0), self.nb_ref_imgs, 9)
 
-                self.conv5_output = None
+                self.conv5.purge()
                 return exp_mask, pose, intrinsics, intrinsics_inv
         self.pose_exp_net = IntrinsicsPoseExpNet(nb_ref_imgs=1, output_exp=True)
         del sys.modules['models']

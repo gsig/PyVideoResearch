@@ -25,7 +25,7 @@ class SfmLearnerCriterion(DefaultCriterion):
         self.photo_loss_weight = args.photo_loss_weight
         self.mask_loss_weight = args.mask_loss_weight
         self.smooth_loss_weight = args.smooth_loss_weight
-        self.inverse_loss = args.inverse_loss_weight
+        self.inverse_loss_weight = args.inverse_loss_weight
 
     def forward(self, tgt_img, ref_imgs, intrinsics, intrinsics_inv, depth, explainability_mask, pose, target, meta):
         w1, w2, w3 = self.photo_loss_weight, self.mask_loss_weight, self.smooth_loss_weight

@@ -11,7 +11,7 @@ class CharadesVideoSfm2(CharadesVideo):
         super(CharadesVideoSfm2, self).__init__(*args, **kwargs)
 
     def get_item(self, index, shift=None):
-        img, target, meta = super(CharadesVideoSfm2, self).forward(index, shift)
+        img, target, meta = super(CharadesVideoSfm2, self).get_item(index, shift)
         video = img.clone()
         video *= torch.Tensor([0.229, 0.224, 0.225])[None, None, None, :]
         video += torch.Tensor([0.485, 0.456, 0.406])[None, None, None, :]
@@ -22,8 +22,6 @@ class CharadesVideoSfm2(CharadesVideo):
         current_frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         flow = cv2.calcOpticalFlowFarneback(prev_frame_gray, current_frame_gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
         mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
-        import pdb
-        pdb.set_trace()
         if mag.mean() < 1:
             raise ValueError('Less then 1 pixel average optical flow in the frame, skipping')
         return img, target, meta

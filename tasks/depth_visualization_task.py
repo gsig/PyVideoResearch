@@ -55,7 +55,9 @@ class DepthVisualizationTask(Task):
             gdb.arrtoim(original.cpu().numpy().copy()).save('{}/{}_original.png'.format(args.cache, name))
             gdb.arrtoim(output.cpu().numpy().copy()).save('{}/{}_original.png'.format(args.cache, name))
             gdb.arrtoim(raw.cpu().numpy().copy()).save('{}/{}_raw.png'.format(args.cache, name))
-            combined = torch.cat((original.cpu(), output.cpu(), raw.cpu()), 2)
+            combined = torch.cat((original.cpu(), output.cpu(), raw.cpu()), 1)
             gdb.arrtoim(combined.cpu().numpy().copy()).save('{}/{}_combined.png'.format(args.cache, name))
+            import pdb
+            pdb.set_trace()
 
             print('Visualization: [{0}/{1}]'.format(i, self.num_videos))

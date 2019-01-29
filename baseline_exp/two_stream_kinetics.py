@@ -14,36 +14,31 @@ from main import main
 from bdb import BdbQuit
 import os
 os.nice(19)
-import subprocess
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
+name = __file__.split('/')[-1].split('.')[0]
 
 args = [
-    '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
+    '--name', name,  # name is filename
     '--print-freq', '1',
     '--dataset', 'kinetics',
     '--arch', 'resnet152',
-    '--lr', '2.5e-2',
+    '--lr', '0.375',
     '--criterion', 'default',
     '--wrapper', 'default',
     '--lr-decay-rate', '8',
     '--epochs', '20',
     '--batch-size', '50',
     '--train-size', '0.1',
-    '--window-smooth', '1',
     '--val-size', '0.05',
-    '--cache-dir', '/nfs.yoda/gsigurds/ai2/caches/',
+    '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/kinetics/',
     '--train-file', '/nfs.yoda/gsigurds/kinetics400/kinetics_train.csv',
     '--val-file', '/nfs.yoda/gsigurds/kinetics400/kinetics_val.csv',
     '--pretrained',
     '--nclass', '400',
-    '--balanceloss',
-    '--nhidden', '3',
-    '--originalloss-weight', '15',
-    '--resume', '/nfs.yoda/gsigurds/ai2/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
+    '--resume', '/nfs.yoda/gsigurds/ai2/caches/' + name + '/model.pth.tar',
     '--workers', '4',
-    '--no-val-video',
-    '--metric', 'top1val',
+    '--metric', 'val_top1',
+    '--replace-last-layer'
 ]
 sys.argv.extend(args)
 try:

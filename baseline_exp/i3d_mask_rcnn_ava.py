@@ -9,17 +9,16 @@ from main import main
 from bdb import BdbQuit
 import os
 os.nice(19)
-import subprocess
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
+name = __file__.split('/')[-1].split('.')[0]
 
 args = [
-    '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
+    '--name', name,  # name is filename
     '--print-freq', '1',
     '--dataset', 'ava_mp4',
     '--arch', 'aj_i3d',
     '--wrapper', 'maskrcnn_wrapper',
     '--criterion', 'maskrcnn_criterion',
-    '--metrics', 'frcnn_metric;frcnn_map_metric;frcnn_metric6',
+    '--metrics', 'frcnn_metric6',
     '--lr', '0.1',
     '--lr-decay-rate', '50',
     '--input-size', '400',
@@ -34,12 +33,11 @@ args = [
     '--val-file', '/nfs.yoda/gsigurds/ava/ava_val_v2.1.csv',
     '--pretrained',
     '--nclass', '81',
-    '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
+    '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar',
     '--workers', '12',
-    '--metric', 'AVA6val',
+    '--metric', 'val_AVA6',
     '--disable-cudnn-benchmark',
     '--freeze-batchnorm',
-    '--no-val-video',
 ]
 sys.argv.extend(args)
 try:

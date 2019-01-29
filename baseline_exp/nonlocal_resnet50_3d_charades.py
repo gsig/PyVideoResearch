@@ -21,11 +21,10 @@ from main import main
 from bdb import BdbQuit
 import os
 os.nice(19)
-import subprocess
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
+name = __file__.split('/')[-1].split('.')[0]
 
 args = [
-    '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
+    '--name', name,  # name is filename
     '--print-freq', '1',
     '--dataset', 'charades_video',
     '--arch', 'resnet50_3d_nonlocal',
@@ -38,19 +37,21 @@ args = [
     '--video-batch-size', '5',
     '--train-size', '1.0',
     '--weight-decay', '0.0000001',
-    '--window-smooth', '0',
     '--val-size', '0.2',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/Charades_v1_rgb/',
-    '--train-file', '/home/gsigurds/ai2/twostream/Charades_v1_train.csv',
-    '--val-file', '/home/gsigurds/ai2/twostream/Charades_v1_test.csv',
+    '--train-file', '/nfs.yoda/gsigurds/Charades_v1_train.csv',
+    '--val-file', '/nfs.yoda/gsigurds/Charades_v1_test.csv',
     '--pretrained',
-    '--resume', '/nfs.yoda/gsigurds/ai2/caches/i3d8l/model_best.pth.tar',
     '--start-epoch', '1',
-    #'--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
+    '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +
+                ';/nfs.yoda/gsigurds/ai2/caches/i3d8l/model_best.pth.tar',
     '--workers', '4',
     '--disable-cudnn-benchmark',
     '--disable-cudnn',
+    '--tasks', 'video_task',
+    '--replace-last-layer',
+    '--metric', 'video_task_CharadesmAP',
 ]
 sys.argv.extend(args)
 try:

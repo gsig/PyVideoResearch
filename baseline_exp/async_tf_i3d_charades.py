@@ -20,14 +20,13 @@ from main import main
 from bdb import BdbQuit
 import os
 os.nice(19)
-import subprocess
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
+name = __file__.split('/')[-1].split('.')[0]
 
 args = [
-    '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
+    '--name', name,  # name is filename
     '--print-freq', '1',
     '--dataset', 'charades_video_x2',
-    '--arch', 'aj_i3dbn',
+    '--arch', 'aj_i3d',
     '--criterion', 'async_tf_criterion',
     '--wrapper', 'async_tf_base',
     '--lr', '2.5e-3',
@@ -45,16 +44,19 @@ args = [
     '--window-smooth', '1',
     '--sigma', '300',
     '--val-size', '0.2',
-    '--cache-dir', '/nfs.yoda/gsigurds/ai2/caches/',
+    '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/Charades_v1_rgb/',
-    '--train-file', '/home/gsigurds/ai2/twostream/Charades_v1_train.csv',
-    '--val-file', '/home/gsigurds/ai2/twostream/Charades_v1_test.csv',
+    '--train-file', '/nfs.yoda/gsigurds/Charades_v1_train.csv',
+    '--val-file', '/nfs.yoda/gsigurds/Charades_v1_test.csv',
     '--pretrained',
     '--balanceloss',
     '--nhidden', '3',
     '--originalloss-weight', '15',
-    '--resume', '/nfs.yoda/gsigurds/ai2/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar'+';'+'/nfs.yoda/gsigurds/charades_pretrained/aj_rgb_charades.pth',
+    '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +
+                ';/nfs.yoda/gsigurds/charades_pretrained/aj_rgb_charades.pth',
     '--workers', '4',
+    '--tasks', 'video_task',
+    '--metric', 'video_task_CharadesmAP',
 ]
 sys.argv.extend(args)
 try:

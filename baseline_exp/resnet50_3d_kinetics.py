@@ -17,11 +17,10 @@ from main import main
 from bdb import BdbQuit
 import os
 os.nice(19)
-import subprocess
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
+name = __file__.split('/')[-1].split('.')[0]
 
 args = [
-    '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
+    '--name', name,  # name is filename
     '--print-freq', '1',
     '--dataset', 'kinetics_mp4_x',
     '--arch', 'resnet50_3d',
@@ -33,20 +32,17 @@ args = [
     '--batch-size', '32',
     '--train-size', '0.2',
     '--weight-decay', '0.0000001',
-    '--window-smooth', '0',
     '--val-size', '0.1',
-    '--cache-dir', '/nfs.yoda/gsigurds/ai2/caches/',
+    '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/kinetics_compress/train_256/',
     '--valdata', '/scratch/gsigurds/kinetics_compress/val_256/',
     '--train-file', '/nfs.yoda/gsigurds/kinetics400/kinetics_train.csv',
     '--val-file', '/nfs.yoda/gsigurds/kinetics400/kinetics_val.csv',
     '--pretrained',
     '--nclass', '400',
-    '--originalloss-weight', '1.',
-    '--resume', '/nfs.yoda/gsigurds/ai2/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar',
+    '--resume', '/nfs.yoda/gsigurds/ai2/caches/' + name + '/model.pth.tar',
     '--workers', '16',
-    '--no-val-video',
-    '--metric', 'top1val',
+    '--metric', 'val_top1',
     '--disable-cudnn-benchmark',
 ]
 sys.argv.extend(args)

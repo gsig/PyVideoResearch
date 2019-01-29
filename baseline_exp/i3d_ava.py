@@ -10,11 +10,10 @@ from main import main
 from bdb import BdbQuit
 import os
 os.nice(19)
-import subprocess
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
+name = __file__.split('/')[-1].split('.')[0]
 
 args = [
-    '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
+    '--name', name,  # name is filename
     '--print-freq', '1',
     '--dataset', 'ava_mp4',
     '--arch', 'aj_i3d',
@@ -26,7 +25,6 @@ args = [
     '--batch-size', '18',
     '--train-size', '1.0',
     '--weight-decay', '0.0000001',
-    '--window-smooth', '0',
     '--val-size', '0.1',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/processed_videos2/',
@@ -34,11 +32,10 @@ args = [
     '--val-file', '/nfs.yoda/gsigurds/ava/ava_val_v2.1.csv',
     '--pretrained',
     '--nclass', '81',
-    '--originalloss-weight', '1.',
-    '--resume', '/nfs.yoda/gsigurds/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar'+';'+'/nfs.yoda/gsigurds/charades_pretrained/aj_rgb_imagenet.pth',
+    '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +
+                ';/nfs.yoda/gsigurds/charades_pretrained/aj_rgb_imagenet.pth',
     '--workers', '12',
-    '--no-val-video',
-    '--metric', 'top1val',
+    '--metric', 'val_top1',
 ]
 sys.argv.extend(args)
 try:

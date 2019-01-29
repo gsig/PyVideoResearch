@@ -4,11 +4,9 @@
 # orignal name: 321debug3
 import sys
 import os
-import subprocess
 import traceback
 import pdb
 from bdb import BdbQuit
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
 sys.path.insert(0, '.')
 os.nice(19)
 from main import main

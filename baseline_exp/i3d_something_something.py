@@ -16,41 +16,32 @@ from main import main
 from bdb import BdbQuit
 import os
 os.nice(19)
-import subprocess
-subprocess.Popen('find ./exp/.. -iname "*.pyc" -delete'.split())
+name = __file__.split('/')[-1].split('.')[0]
 
 args = [
-    '--name', __file__.split('/')[-1].split('.')[0],  # name is filename
+    '--name', name,  # name is filename
     '--print-freq', '1',
     '--dataset', 'something_something_webm',
     '--arch', 'aj_i3d',
-    '--lr', '2.5e-2',
+    '--lr', '0.375',
     '--lr-decay-rate', '20',
     '--epochs', '50',
-    '--memory-decay', '1.0',
-    '--memory-size', '1',
     '--batch-size', '5',
     '--train-size', '0.1',
-    '--temporal-weight', '0.000001',
     '--weight-decay', '0.0000001',
-    '--temporalloss-weight', '0',
-    '--window-smooth', '0',
-    '--sigma', '300',
     '--val-size', '0.05',
-    '--cache-dir', '/nfs.yoda/gsigurds/ai2/caches/',
+    '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/20bn-something-something-v2/',
     '--train-file', '/nfs.yoda/gsigurds/somethingsomething/something-something-v2-train.json',
     '--val-file', '/nfs.yoda/gsigurds/somethingsomething/something-something-v2-validation.json',
     '--label-file', '/nfs.yoda/gsigurds/somethingsomething/something-something-v2-labels.json',
     '--pretrained',
     '--nclass', '174',
-    '--balanceloss',
-    '--nhidden', '3',
-    '--originalloss-weight', '15',
-    '--resume', '/nfs.yoda/gsigurds/ai2/caches/' + __file__.split('/')[-1].split('.')[0] + '/model.pth.tar'+';'+'/nfs.yoda/gsigurds/charades_pretrained/aj_rgb_imagenet.pth',
+    '--resume', '/nfs.yoda/gsigurds/ai2/caches/' + name + '/model.pth.tar' +
+                ';/nfs.yoda/gsigurds/charades_pretrained/aj_rgb_imagenet.pth',
     '--workers', '6',
-    '--no-val-video',
-    '--metric', 'top1val',
+    '--replace-last-layer',
+    '--metric', 'val_top1',
 ]
 sys.argv.extend(args)
 try:

@@ -22,6 +22,8 @@ class CharadesVideoSfm2(CharadesVideo):
         current_frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         flow = cv2.calcOpticalFlowFarneback(prev_frame_gray, current_frame_gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
         mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+        import pdb
+        pdb.set_trace()
         if mag.mean() < 1:
             raise ValueError('Less then 1 pixel average optical flow in the frame, skipping')
         return img, target, meta

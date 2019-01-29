@@ -54,12 +54,14 @@ class SfmLearnerWrapper(Wrapper):
                 intrinsics = self.intrinsics_pred(out_conv7b)
                 intrinsics = intrinsics.mean(3).mean(2)
                 intrinsics = 0.01 * intrinsics.view(intrinsics.size(0), self.nb_ref_imgs, 9)
+                intrinsics = intrinsics.mean(1).view(intrinsics.size(0), 3, 3)
 
                 out_conv6c = self.conv6b(conv5)
                 out_conv7c = self.conv7b(out_conv6c)
                 intrinsics_inv = self.intrinsics_inv_pred(out_conv7c)
                 intrinsics_inv = intrinsics_inv.mean(3).mean(2)
                 intrinsics_inv = 0.01 * intrinsics_inv.view(intrinsics_inv.size(0), self.nb_ref_imgs, 9)
+                intrinsics_inv = intrinsics_inv.mean(1).view(intrinsics_inv.size(0), 3, 3)
 
                 self.conv5.purge()
                 return exp_mask, pose, intrinsics, intrinsics_inv

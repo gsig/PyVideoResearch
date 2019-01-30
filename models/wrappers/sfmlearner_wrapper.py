@@ -5,6 +5,7 @@ import sys
 import os.path
 import os
 import torch.nn as nn
+import torch
 
 
 class HookModule(nn.Module):
@@ -19,6 +20,98 @@ class HookModule(nn.Module):
 
     def purge(self):
         self.storage = None
+
+
+def modify_intrinsics(intrinsics, intrinsics_type):
+    if intrinsics_type == 'full':
+        pass
+    elif intrinsics_type == 'linear':
+        intrinsics[:, 0, 0] = torch.exp(intrinsics[:, 0, 0])
+        intrinsics[:, 1, 1] = torch.exp(intrinsics[:, 1, 1])
+        intrinsics[:, 2, 2] = torch.exp(intrinsics[:, 2, 2])
+        intrinsics[:, 0, 1] = 0
+        intrinsics[:, 1, 0] = 0
+        intrinsics[:, 2, 0] = 0
+        intrinsics[:, 2, 1] = 0
+    elif intrinsics_type == 'scaled':
+        intrinsics[:, 0, 0] = 7.215377e+02 * torch.exp(intrinsics[:, 0, 0])
+        intrinsics[:, 1, 1] = 7.215377e+02 * torch.exp(intrinsics[:, 1, 1])
+        intrinsics[:, 2, 2] = 1.000000e+00 * torch.exp(intrinsics[:, 2, 2])
+        intrinsics[:, 0, 2] = 6.095593e+02 * torch.exp(intrinsics[:, 0, 2])
+        intrinsics[:, 1, 2] = 1.728540e+02 * torch.exp(intrinsics[:, 1, 2])
+        intrinsics[:, 0, 1] = 0
+        intrinsics[:, 1, 0] = 0
+        intrinsics[:, 2, 0] = 0
+        intrinsics[:, 2, 1] = 0
+    elif intrinsics_type == 'fixed':
+        # KITTI camera 3
+        # 3x4 projection matrix after rectification
+        # 7.215377e+02 0.000000e+00 6.095593e+02 -3.395242e+02
+        # 0.000000e+00 7.215377e+02 1.728540e+02 2.199936e+00
+        # 0.000000e+00 0.000000e+00 1.000000e+00 2.729905e-03
+        #
+        # 3x3 inverted:
+        # array([[ 0.00138593,  0.        , -0.84480589],
+        #        [ 0.        ,  0.00138593, -0.23956337],
+        #        [ 0.        ,  0.        ,  1.        ]])
+        intrinsics[:, 0, 0] = 7.215377e+02
+        intrinsics[:, 1, 1] = 7.215377e+02
+        intrinsics[:, 2, 2] = 1.000000e+00
+        intrinsics[:, 0, 2] = 6.095593e+02
+        intrinsics[:, 1, 2] = 1.728540e+02
+        intrinsics[:, 0, 1] = 0
+        intrinsics[:, 1, 0] = 0
+        intrinsics[:, 2, 0] = 0
+        intrinsics[:, 2, 1] = 0
+    else:
+        assert False, "wrong intrinsics-type"
+    return intrinsics
+
+
+def modify_intrinsics_inv(intrinsics, intrinsics_type):
+    if intrinsics_type == 'full':
+        pass
+    elif intrinsics_type == 'linear':
+        intrinsics[:, 0, 0] = torch.exp(intrinsics[:, 0, 0])
+        intrinsics[:, 1, 1] = torch.exp(intrinsics[:, 1, 1])
+        intrinsics[:, 2, 2] = torch.exp(intrinsics[:, 2, 2])
+        intrinsics[:, 0, 1] = 0
+        intrinsics[:, 1, 0] = 0
+        intrinsics[:, 2, 0] = 0
+        intrinsics[:, 2, 1] = 0
+    elif intrinsics_type == 'scaled':
+        intrinsics[:, 0, 0] = 0.00138593 * torch.exp(intrinsics[:, 0, 0])
+        intrinsics[:, 1, 1] = 0.00138593 * torch.exp(intrinsics[:, 1, 1])
+        intrinsics[:, 2, 2] = 1 * torch.exp(intrinsics[:, 2, 2])
+        intrinsics[:, 0, 2] = -0.84480589 * torch.exp(intrinsics[:, 0, 2])
+        intrinsics[:, 1, 2] = -0.23956337 * torch.exp(intrinsics[:, 1, 2])
+        intrinsics[:, 0, 1] = 0
+        intrinsics[:, 1, 0] = 0
+        intrinsics[:, 2, 0] = 0
+        intrinsics[:, 2, 1] = 0
+    elif intrinsics_type == 'fixed':
+        # KITTI camera 3
+        # 3x4 projection matrix after rectification
+        # 7.215377e+02 0.000000e+00 6.095593e+02 -3.395242e+02
+        # 0.000000e+00 7.215377e+02 1.728540e+02 2.199936e+00
+        # 0.000000e+00 0.000000e+00 1.000000e+00 2.729905e-03
+        #
+        # 3x3 inverted:
+        # array([[ 0.00138593,  0.        , -0.84480589],
+        #        [ 0.        ,  0.00138593, -0.23956337],
+        #        [ 0.        ,  0.        ,  1.        ]])
+        intrinsics[:, 0, 0] = 0.00138593
+        intrinsics[:, 1, 1] = 0.00138593
+        intrinsics[:, 2, 2] = 1
+        intrinsics[:, 0, 2] = -0.84480589
+        intrinsics[:, 1, 2] = -0.23956337
+        intrinsics[:, 0, 1] = 0
+        intrinsics[:, 1, 0] = 0
+        intrinsics[:, 2, 0] = 0
+        intrinsics[:, 2, 1] = 0
+    else:
+        assert False, "wrong intrinsics-type"
+    return intrinsics
 
 
 class SfmLearnerWrapper(Wrapper):
@@ -55,6 +148,7 @@ class SfmLearnerWrapper(Wrapper):
                 intrinsics = intrinsics.mean(3).mean(2)
                 intrinsics = 0.01 * intrinsics.view(intrinsics.size(0), self.nb_ref_imgs, 9)
                 intrinsics = intrinsics.mean(1).view(intrinsics.size(0), 3, 3)
+                intrinsics = modify_intrinsics(intrinsics, args.intrinsics_type)
 
                 out_conv6c = self.conv6b(conv5)
                 out_conv7c = self.conv7b(out_conv6c)
@@ -62,6 +156,7 @@ class SfmLearnerWrapper(Wrapper):
                 intrinsics_inv = intrinsics_inv.mean(3).mean(2)
                 intrinsics_inv = 0.01 * intrinsics_inv.view(intrinsics_inv.size(0), self.nb_ref_imgs, 9)
                 intrinsics_inv = intrinsics_inv.mean(1).view(intrinsics_inv.size(0), 3, 3)
+                intrinsics_inv = modify_intrinsics_inv(intrinsics_inv, args.intrinsics_type)
 
                 self.conv5.purge()
                 return exp_mask, pose, intrinsics, intrinsics_inv

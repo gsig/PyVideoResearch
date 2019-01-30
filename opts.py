@@ -111,6 +111,7 @@ def parse():
     parser.add_argument('--mask-loss-weight', default=1.0, type=float)
     parser.add_argument('--smooth-loss-weight', default=1.0, type=float)
     parser.add_argument('--inverse-loss-weight', default=1.0, type=float)
+    parser.add_argument('--intrinsics-type', default='full', type=str)
 
     args = parser.parse_args()
     args.distributed = args.world_size > 1

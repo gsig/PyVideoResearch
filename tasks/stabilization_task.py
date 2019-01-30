@@ -17,6 +17,7 @@ from models.layers.video_stabilizer import VideoStabilizer
 from models.layers.video_deformer import VideoDeformer
 from models.layers.video_tv_deformer import VideoTVDeformer
 from models.layers.video_residual_deformer import VideoResidualDeformer
+from models.layers.video_homography_deformer import VideoHomographyDeformer
 from models.layers.video_smooth_deformer import VideoSmoothDeformer
 from models.layers.video_transformer import VideoTransformer
 from models.layers.video_stabilizer_constrained import VideoStabilizerConstrained
@@ -109,6 +110,9 @@ class StabilizationTask(Task):
         elif self.stabilization_target == 'transformer':
             transformer = VideoStabilizer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
+        elif self.stabilization_target == 'transformer2':
+            transformer = VideoStabilizer(64).to(next(model.parameters()).device)
+            params = transformer.parameters()
         elif self.stabilization_target == 'deformer':
             transformer = VideoDeformer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
@@ -126,6 +130,9 @@ class StabilizationTask(Task):
             params = transformer.parameters()
         elif self.stabilization_target == 'residualdeformer2':
             transformer = VideoSmoothDeformer(64).to(next(model.parameters()).device)
+            params = transformer.parameters()
+        elif self.stabilization_target == 'homographydeformer2':
+            transformer = VideoHomographyDeformer(64).to(next(model.parameters()).device)
             params = transformer.parameters()
         elif self.stabilization_target == 'doubledeformer':
             transformer = VideoResidualDeformer(64).to(next(model.parameters()).device)
@@ -195,6 +202,9 @@ class StabilizationTask(Task):
             elif self.stabilization_target == 'transformer':
                 video_transformed = transformer(video)
                 output = model(video_transformed)
+            elif self.stabilization_target == 'transformer2':
+                video_transformed = transformer(video)
+                output = model(self.augmentation(video_transformed))
             elif self.stabilization_target == 'deformer':
                 video_transformed = transformer(video)
                 output = model(video_transformed)
@@ -229,14 +239,17 @@ class StabilizationTask(Task):
                     F.mse_loss(grid[:-1, :, :, :], grid[1:, :, :, :]) +
                     F.mse_loss(affine_grid[:-1, :], affine_grid[1:, :])
                 )
-                output = model(self.augmentation(video))
+                output = model(self.augmentation(video_transformed))
             elif self.stabilization_target == 'residualdeformer2':
                 video_transformed, grid, affine_grid = transformer(video)
                 grid_loss = (
                     F.l1_loss(grid[:, :-1, :, :], grid[:, 1:, :, :]) +
                     F.l1_loss(grid[:, :, :-1, :], grid[:, :, 1:, :])
                 )
-                output = model(self.augmentation(video))
+                output = model(self.augmentation(video_transformed))
+            elif self.stabilization_target == 'homographydeformer2':
+                video_transformed = transformer(video)
+                output = model(self.augmentation(video_transformed))
             elif self.stabilization_target == 'doubledeformer':
                 video_transformed, grid = transformer(video)
                 grid_loss = (

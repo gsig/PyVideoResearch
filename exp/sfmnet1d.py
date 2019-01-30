@@ -29,7 +29,7 @@ args = [
     '--train-size', '8.0',
     '--val-size', '1.0',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
-    '--epochs', '30',
+    '--epochs', '40',
     '--workers', '4',
     '--photo-loss-weight', '1.0',
     '--mask-loss-weight', '0',
@@ -38,7 +38,7 @@ args = [
     '--metrics', '',
     '--metric', 'val_loss',
     '--tasks', 'depth_visualization_task',
-    #'--evaluate',
+    '--evaluate',
 ]
 sys.argv.extend(args)
 try:

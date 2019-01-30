@@ -87,4 +87,10 @@ class SfmLearnerWrapper(Wrapper):
             depth = 1/disparities
         explainability_mask, pose, intrinsics, intrinsics_inv = self.pose_exp_net(tgt_img, ref_imgs)
 
+        # debug
+        print('intrinsics:')
+        print(intrinsics.mean(0).view(-1))
+        print('intrinsics_inv:')
+        print(intrinsics_inv.mean(0).view(-1))
+
         return tgt_img, ref_imgs, intrinsics, intrinsics_inv, depth, explainability_mask, pose

@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class VideoHomographyDeformer(nn.Module):
     def __init__(self, channels):
-        super(VideoResidualDeformer, self).__init__()
+        super(VideoHomographyDeformer, self).__init__()
         self.theta = nn.Parameter(torch.Tensor(channels, 3 * 2))
         self.projection = nn.Parameter(torch.Tensor(channels, 3 * 2))
         identity = torch.Tensor([1, 0, 0, 0, 1, 0]).float()

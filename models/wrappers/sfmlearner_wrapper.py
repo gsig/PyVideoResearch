@@ -114,6 +114,40 @@ def modify_intrinsics_inv(intrinsics, intrinsics_type):
     return intrinsics
 
 
+def batch_2x2_matrix_determinant(a, b, c, d):
+    # mat is b x 2 x 2
+    # a, b = mat[:, 0, 0], mat[:, 0, 1]
+    # c, d = mat[:, 1, 0], mat[:, 1, 1]
+    return a*d - b*c
+
+
+def batch_3x3_matrix_determinant(mat):
+    # mat is b x 3 x 3
+    a1, a2, a3 = mat[:, 0, 0], mat[:, 0, 1], mat[:, 0, 2]
+    b1, b2, b3 = mat[:, 1, 0], mat[:, 1, 1], mat[:, 1, 2]
+    c1, c2, c3 = mat[:, 2, 0], mat[:, 2, 1], mat[:, 2, 2]
+    return a1*b2*c3 - a1*b3*c2 - a2*b1*c3 + a2*b3*c1 + a3*b1*c2 - a3*b2*c1
+
+
+def batch_3x3_matrix_inverse(mat):
+    a11, a12, a13 = mat[:, 0, 0], mat[:, 0, 1], mat[:, 0, 2]
+    a21, a22, a23 = mat[:, 1, 0], mat[:, 1, 1], mat[:, 1, 2]
+    a31, a32, a33 = mat[:, 2, 0], mat[:, 2, 1], mat[:, 2, 2]
+    out = mat.clone()
+    det = batch_2x2_matrix_determinant
+    out[:, 0, 0] = det(a22, a23, a32, a33)
+    out[:, 0, 1] = det(a13, a12, a33, a32)
+    out[:, 0, 2] = det(a12, a13, a22, a23)
+    out[:, 1, 0] = det(a23, a21, a33, a31)
+    out[:, 1, 1] = det(a11, a13, a31, a33)
+    out[:, 1, 2] = det(a13, a11, a23, a21)
+    out[:, 2, 0] = det(a21, a22, a31, a32)
+    out[:, 2, 1] = det(a12, a11, a32, a31)
+    out[:, 2, 2] = det(a11, a12, a21, a22)
+    out = out / batch_3x3_matrix_determinant(mat)[:, None, None]
+    return out
+
+
 class SfmLearnerWrapper(Wrapper):
     def init_sfmlearner(self, args):
         if 'models' in sys.modules:
@@ -157,6 +191,8 @@ class SfmLearnerWrapper(Wrapper):
                 intrinsics_inv = 0.01 * intrinsics_inv.view(intrinsics_inv.size(0), self.nb_ref_imgs, 9)
                 intrinsics_inv = intrinsics_inv.mean(1).view(intrinsics_inv.size(0), 3, 3)
                 intrinsics_inv = modify_intrinsics_inv(intrinsics_inv, args.intrinsics_type)
+                if args.intrinsics_true_inv:
+                    intrinsics_inv = batch_3x3_matrix_inverse(intrinsics)
 
                 self.conv5.purge()
                 return exp_mask, pose, intrinsics, intrinsics_inv

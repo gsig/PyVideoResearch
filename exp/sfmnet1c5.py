@@ -23,6 +23,7 @@ args = [
     '--data', '/scratch/gsigurds/CharadesEgo_v1_rgb/',
     '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar',
     '--lr', '2e-4',
+    '--lr-decay-rate', '100',
     '--optimizer', 'adam',
     '--weight-decay', '0',
     '--batch-size', '10',
@@ -32,13 +33,13 @@ args = [
     '--epochs', '40',
     '--workers', '4',
     '--photo-loss-weight', '1.0',
-    '--mask-loss-weight', '1.0',
+    '--mask-loss-weight', '1000000.0',
     '--smooth-loss-weight', '0.1',
     '--inverse-loss-weight', '0.01',
     '--metrics', '',
     '--metric', 'val_loss',
     '--tasks', 'depth_visualization_task',
-    '--evaluate',
+    #'--evaluate',
 ]
 sys.argv.extend(args)
 try:

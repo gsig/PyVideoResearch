@@ -21,10 +21,10 @@ class VideoHomographyDeformer(nn.Module):
         theta = self.theta.view(-1, 2, 3)
         grid = F.affine_grid(theta, x.size())
         projection = self.projection.view(-1, 2, 3)
-        projection[:, 1, 0] = projection[:, 0, 0]
-        projection[:, 1, 1] = projection[:, 0, 1]
-        projection[:, 0, 2] = 0
-        projection[:, 1, 2] = 0
+        #projection[:, 1, 0] = projection[:, 0, 0]
+        #projection[:, 1, 1] = projection[:, 0, 1]
+        #projection[:, 0, 2] = 1
+        #projection[:, 1, 2] = 1
         grid_projection = F.affine_grid(projection, x.size())
         grid = grid / grid_projection
         x = F.grid_sample(x, grid, padding_mode="reflection")

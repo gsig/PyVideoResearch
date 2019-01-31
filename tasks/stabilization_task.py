@@ -80,6 +80,8 @@ class StabilizationTask(Task):
         transform[3] = scale * math.sin(rotation)
 
         augmenter.theta.data.copy_(transform[None, :].repeat(channels, 1))
+        import pdb
+        pdb.set_trace()
         return augmenter(video)
 
     @classmethod

@@ -32,9 +32,9 @@ args = [
     '--workers', '0',
     '--evaluate',
     '--features', 'conv1;layer1;fc',
-    '--content-weight', '0.000001',
+    '--content-weight', '0.0001',
     '--motion-weight', '1',
-    '--stabilization-target', 'transformer2',
+    '--stabilization-target', 'transformer',
     '--style-weight', '0',
     '--grid-weight', '0',
 ]

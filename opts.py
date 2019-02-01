@@ -5,7 +5,7 @@ import os
 
 def parse():
     print('parsing arguments')
-    parser = argparse.ArgumentParser(description='PyTorch Charades Training')
+    parser = argparse.ArgumentParser(description='PyVideoResearch')
 
     # Experiment parameters
     parser.add_argument('--name', default='test')

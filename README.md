@@ -111,6 +111,8 @@ The models are stored here: https://www.dropbox.com/sh/duodxydolzz5qfl/AAC0i70lv
 * i3d_something_something.py
 * inpainting.py
 * nonlocal_resnet50_3d_charades.py
+    * i3d31b.pth.tar
+    * i3d31b.pth.tar
 * nonlocal_resnet50_3d_kinetics.py
     * i3d8l.pth.tar
     * i3d8l.txt

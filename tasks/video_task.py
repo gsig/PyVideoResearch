@@ -49,6 +49,7 @@ class VideoTask(Task):
             # store predictions
             scores_video = scores.max(dim=0)[0]
             outputs.append(scores_video.cpu())
+            # ids.append(meta['id'][0])
             timer.tic()
             if i % args.print_freq == 0:
                 print('[{name}] {task}: [{0}/{1}]\t'

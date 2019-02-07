@@ -2,17 +2,17 @@
 # Non-local 3D ResNet50 
 # pretrained on Kinetics
 # fine-tuning on Charades
-# original name: i3d13b
+# original name: i3d31b
 # model_best.txt:
-#     CharadesmAPvalvideo 0.31509522635404147
-#     loss_train 0.05229745948463118
-#     loss_val 0.11164817365037429
-#     top1train 51.6221341564131
-#     top1val 46.75675675675676
-#     top5train 145.78099624764053
-#     top5val 151.35135135135135
-#     videotop1valvideo 63.016639828234034
-#     videotop5valvideo 234.99731615673645
+#     train_loss 0.058912872455846095
+#     train_top1 43.606517911256105
+#     train_top5 125.22190584455218
+#     val_loss 0.10237216038836373
+#     val_top1 42.22222222222222
+#     val_top5 147.77777777777777
+#     video_task_CharadesmAP 0.32087015304465993
+#     video_task_videotop1 64.30488459473966
+#     video_task_videotop5 237.30542136339238
 import sys
 import pdb
 import traceback
@@ -45,7 +45,7 @@ args = [
     '--pretrained',
     '--start-epoch', '1',
     '--resume', '/nfs.yoda/gsigurds/caches/' + name + '/model.pth.tar' +
-                ';/nfs.yoda/gsigurds/ai2/caches/i3d8l/model_best.pth.tar',
+                ';/nfs.yoda/gsigurds/ai2/caches/i3d8l2/model_best.pth.tar',
     '--workers', '4',
     '--disable-cudnn-benchmark',
     '--disable-cudnn',

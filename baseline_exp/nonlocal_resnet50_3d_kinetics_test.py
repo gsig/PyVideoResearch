@@ -32,7 +32,7 @@ args = [
     '--batch-size', '32',
     '--train-size', '0.2',
     '--weight-decay', '0.0001',
-    '--val-size', '0.1',
+    '--val-size', '1.0',
     '--cache-dir', '/nfs.yoda/gsigurds/caches/',
     '--data', '/scratch/gsigurds/kinetics_compress/train_256/',
     '--valdata', '/scratch/gsigurds/kinetics_compress/val_256/',

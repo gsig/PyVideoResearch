@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-# Nonlocal 3D ResNet50 evaluating on whole video on Kinetics
+# Nonlocal 3D ResNet50 evaluating on whole video on Kinetics using fully convolutional testing
 # using 4 GPUs
 # orignal name: nonlocal_resnet50_3d_kinetics_fullyconvtest
 # model_best.txt:
-#     val_loss ?
-#     val_top1 ?
-#     val_top5 ?
-#     videotop1 ?
-#     videotop5 ?
+#     videotop1 69.48361675653256
+#     videotop5 89.54790543343012
 import sys
 import pdb
 import traceback

@@ -14,6 +14,7 @@ class Kineticsmp4X2(Kineticsmp4):
         target = target[::2, :]
         return img, target, meta
 
+    @classmethod
     def get(cls, args, splits=('train', 'val', 'val_video')):
         train_file = args.train_file
         val_file = args.val_file

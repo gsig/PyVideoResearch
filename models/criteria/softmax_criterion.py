@@ -26,8 +26,7 @@ class SoftmaxCriterion(DefaultCriterion):
 
         loss = self.loss(a, softmax_target.cuda())
         print('losses class: {}'.format(loss.item()))
-        a = a.cpu()
 
         if synchronous:
             a = winsmooth(a, kernelsize=self.win_smooth)
-        return a, loss, target
+        return a.detach().cpu(), loss, target.detach().cpu()

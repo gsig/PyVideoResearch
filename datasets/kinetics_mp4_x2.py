@@ -27,9 +27,9 @@ class Kineticsmp4X2(Kineticsmp4):
             input_size=args.input_size)
         val_dataset = cls(
             args, args.valdata, 'val', val_file, args.cache,
-            transform=transforms.Compose([
-                videotransforms.CenterCrop(256)
-            ]),
+            #transform=transforms.Compose([
+            #    videotransforms.CenterCrop(256)
+            #]),
             input_size=args.input_size)
         valvideo_dataset = cls(
             args, args.valdata, 'val_video', val_file, args.cache,

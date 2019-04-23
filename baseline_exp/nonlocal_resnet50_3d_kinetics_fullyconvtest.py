@@ -28,7 +28,7 @@ args = [
     '--wrapper', 'default',
     '--criterion', 'softmax_criterion',
     '--epochs', '300',
-    '--batch-size', '32',
+    '--batch-size', '4',
     '--train-size', '0.2',
     '--weight-decay', '0.0001',
     '--val-size', '1.0',

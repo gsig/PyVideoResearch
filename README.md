@@ -95,10 +95,10 @@ The models are stored here: https://www.dropbox.com/sh/duodxydolzz5qfl/AAC0i70lv
 * ResNet1010 pre-trained on Charades
     * resnet101_rgb.pth.tar
     * resnet101_rgb_python3.pth.tar
-* I3D pre-trained on ImageNet (courtesy of https://github.com/piergiaj)
-    * aj_rgb_imagenet.pth
 * I3D pre-trained on ImageNet+Kinetics (courtesy of https://github.com/piergiaj)
-    * aj_rgb_kinetics.pth
+    * aj_rgb_imagenet.pth
+* I3D pre-trained on Charades (courtesy of https://github.com/piergiaj)
+    * aj_rgb_charades.pth
 
 * actor_observer_3d_charades_ego.py
 * actor_observer_charades_ego.py

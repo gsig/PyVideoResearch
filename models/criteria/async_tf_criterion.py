@@ -4,7 +4,7 @@ import torch.nn as nn
 import math
 from random import random
 from models.layers.verbose_gradients import VerboseGradients
-#from memory_profiler import profile
+# from memory_profiler import profile
 from models.layers.utils import axb, avg
 from models.criteria.utils import winsmooth
 from models.criteria.default_criterion import DefaultCriterion
@@ -75,10 +75,8 @@ class AsyncTFCriterion(DefaultCriterion, MessagePassing):
 
     def forward(self, a, aa, target, meta, niter=1, synchronous=False):
         mask = [True] * a.shape[0]
-        if type(meta) is list:
-            idtime = zip(meta[0]['id'], meta[0]['time'])
-        else:
-            idtime = zip(meta['id'], meta['time'])
+        # idtime = zip(meta['id'], meta['time'])
+        idtime = [(m['id'], m['time']) for m in zip(*meta)]  # for 'do_not_collate'
         if a.dim() == 3 and self.training:
             # temporal mode
             mask = [True if i == 0 else False for x in idtime for i in range(target.shape[1])]
@@ -102,7 +100,7 @@ class AsyncTFCriterion(DefaultCriterion, MessagePassing):
             qa = self.balance_labels(qa, target)
 
         loss = self.loss(qa, target)
-        loss += self.loss(torch.nn.Sigmoid()(a), target) * self.orig_loss
+        loss += self.loss(torch.nn.Sigmoid()(a), target)
         # self.set_msg(a, idtime)
         # self.set_msg(qa, idtime)
         self.set_msg(nn.Sigmoid()(a), idtime, mask)

@@ -28,17 +28,21 @@ class VideoTask(Task):
 
         for i, (input, target, meta) in enumerate(loader):
             if not args.cpu:
-                input = input.cuda()
+                # input = input.cuda()
                 target = target.cuda(async=True)
 
             # split batch into smaller chunks
             if args.video_batch_size == -1:
+                if not args.cpu:
+                    input = input.cuda()
                 output = model(input, meta)
             else:
                 output_chunks = []
                 for chunk in input.split(args.video_batch_size):
+                    if not args.cpu:
+                        chunk = chunk.cuda()
                     output_chunks.append(model(chunk, meta))
-                output = gather(output_chunks, input.device)
+                output = gather(output_chunks, target.device)
 
             if type(output) != tuple:
                 output = (output,)
@@ -49,7 +53,10 @@ class VideoTask(Task):
             # store predictions
             scores_video = scores.max(dim=0)[0]
             outputs.append(scores_video.cpu())
-            # ids.append(meta['id'][0])
+            if type(meta) in [tuple, list]:
+                ids.append(meta[0]['id'])  # 'do_not_collate' style meta
+            else:
+                ids.append(meta['id'][0])
             timer.tic()
             if i % args.print_freq == 0:
                 print('[{name}] {task}: [{0}/{1}]\t'

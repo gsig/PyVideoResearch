@@ -3,13 +3,13 @@ Asynchronous Temporal Fields Base model
 """
 import torch.nn as nn
 import torch
-from wrapper import Wrapper
+from models.wrappers.default_wrapper import DefaultWrapper
 
 
-class AsyncTFBase(Wrapper):
-    def __init__(self, basenet, args):
-        super(AsyncTFBase, self).__init__(basenet, args)
-        nclasses, nhidden = args.nclass, args.nhidden
+class AsyncTFWrapper(DefaultWrapper):
+    def __init__(self, basenet, opts, *args, **kwargs):
+        super(AsyncTFWrapper, self).__init__(basenet, opts, *args, **kwargs)
+        nclasses, nhidden = opts.nclass, opts.nhidden
         self.mA = basenet
         self.nc = nclasses
         # self.mAA = nn.Linear(1, nclasses * nclasses)

@@ -127,6 +127,6 @@ class AsyncTFCriterion(DefaultCriterion, MessagePassing):
             out = qa.clone()
             if synchronous:
                 out = winsmooth(out, kernelsize=self.win_smooth)
-            return out, loss, target
+            return out.detach().cpu(), loss, target.detach().cpu()
         else:
             return self.forward(a, aa, target, meta, niter=niter + 1, synchronous=synchronous)

@@ -76,7 +76,7 @@ class AsyncTFCriterion(DefaultCriterion, MessagePassing):
     def forward(self, a, aa, target, meta, niter=1, synchronous=False):
         mask = [True] * a.shape[0]
         # idtime = zip(meta['id'], meta['time'])
-        idtime = [(m['id'], m['time']) for m in zip(*meta)]  # for 'do_not_collate'
+        idtime = [(m['id'], m['time']) for m in meta]  # for 'do_not_collate'
         if a.dim() == 3 and self.training:
             # temporal mode
             mask = [True if i == 0 else False for x in idtime for i in range(target.shape[1])]

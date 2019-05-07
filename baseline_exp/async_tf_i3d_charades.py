@@ -28,7 +28,7 @@ args = [
     '--dataset', 'charades_video_x2',
     '--arch', 'aj_i3d',
     '--criterion', 'async_tf_criterion',
-    '--wrapper', 'async_tf_base',
+    '--wrapper', 'async_tf_wrapper',
     '--lr', '2.5e-3',
     '--lr-decay-rate', '8',
     '--epochs', '20',

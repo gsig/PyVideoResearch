@@ -135,3 +135,7 @@ The models are stored here: https://www.dropbox.com/sh/duodxydolzz5qfl/AAC0i70lv
     * anet2.pth.tar
     * anet2.txt
 
+## Infrequently Asked Questions
+
+* [Using external libraries in layers](https://github.com/gsig/PyVideoResearch/issues/10#issuecomment-480625062)
+* [Clip performance versus video performance and "why is this number lower?"](https://github.com/gsig/PyVideoResearch/issues/11#issuecomment-485630885)

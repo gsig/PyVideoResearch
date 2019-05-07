@@ -57,6 +57,7 @@ class VideoTask(Task):
                       '{metrics}'.format(
                           i, len(loader), timer=timer, name=args.name, task=self.name,
                           metrics=' \t'.join(str(m) for m in metrics)))
+            del loss, output, target  # make sure we don't hold on to the graph
         submission_file(
             ids, outputs, '{}/epoch_{:03d}.txt'.format(args.cache, epoch+1))
         metrics = dict(m.compute() for m in metrics)

@@ -42,6 +42,7 @@ class VideoTask(Task):
                     if not args.cpu:
                         chunk = chunk.cuda()
                     output_chunks.append(model(chunk, meta))
+                    del chunk
                 output = gather(output_chunks, target.device)
 
             if type(output) != tuple:

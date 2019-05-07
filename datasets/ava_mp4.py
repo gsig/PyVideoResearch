@@ -131,25 +131,34 @@ class AVAmp4(Kineticsmp4, Dataset):
         return labels
 
     @classmethod
-    def get(cls, args):
+    def get(cls, args, splits=('train', 'val', 'val_video')):
         train_file = args.train_file
         val_file = args.val_file
-        train_dataset = cls(
-            args, args.data, 'train', train_file, args.cache,
-            transform=transforms.Compose([
-                videotransforms.ScaledCenterCrop(args.input_size),
-            ]),
-            input_size=args.input_size)
-        val_dataset = cls(
-            args, args.valdata, 'val', val_file, args.cache,
-            transform=transforms.Compose([
-                videotransforms.ScaledCenterCrop(args.input_size),
-            ]),
-            input_size=args.input_size)
-        valvideo_dataset = cls(
-            args, args.valdata, 'val_video', val_file, args.cache,
-            transform=transforms.Compose([
-                videotransforms.ScaledCenterCrop(args.input_size),
-            ]),
-            input_size=args.input_size)
+        if 'train' in splits:
+            train_dataset = cls(
+                args, args.data, 'train', train_file, args.cache,
+                transform=transforms.Compose([
+                    videotransforms.ScaledCenterCrop(args.input_size),
+                ]),
+                input_size=args.input_size)
+        else:
+            train_dataset = None
+        if 'val' in splits:
+            val_dataset = cls(
+                args, args.valdata, 'val', val_file, args.cache,
+                transform=transforms.Compose([
+                    videotransforms.ScaledCenterCrop(args.input_size),
+                ]),
+                input_size=args.input_size)
+        else:
+            val_dataset = None
+        if 'val_video' in splits:
+            valvideo_dataset = cls(
+                args, args.valdata, 'val_video', val_file, args.cache,
+                transform=transforms.Compose([
+                    videotransforms.ScaledCenterCrop(args.input_size),
+                ]),
+                input_size=args.input_size)
+        else:
+            valvideo_dataset = None
         return train_dataset, val_dataset, valvideo_dataset

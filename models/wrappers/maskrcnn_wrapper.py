@@ -61,12 +61,14 @@ class MaskRCNNWrapper(Wrapper):
         self.freeze_head = args.freeze_head
         
         # for visualizing bounding boxes
-        this_dir = os.path.dirname(__file__)
-        lib_path = os.path.join(this_dir, '../../external/Detectron.pytorch/lib')
-        sys.path.insert(0, lib_path)
-        import utils.vis as vis_utils
-        self.vis_utils = vis_utils
-        sys.path.pop(0)
+        # this_dir = os.path.dirname(__file__)
+        # lib_path = os.path.join(this_dir, '../../external/Detectron.pytorch/lib')
+        # sys.path.insert(0, lib_path)
+        # import utils.vis as vis_utils
+        # self.vis_utils = vis_utils
+        # sys.path.pop(0)
+
+        # for full i3d model
         #for i, end_point in enumerate(self.basenet.VALID_ENDPOINTS):
         #    if end_point == 'Mixed_4f':  # first half should include Mixed_4f
         #        self.first_layers = self.basenet.VALID_ENDPOINTS[:i+1]

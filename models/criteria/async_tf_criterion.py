@@ -7,7 +7,7 @@ from models.layers.verbose_gradients import VerboseGradients
 #from memory_profiler import profile
 from models.layers.utils import axb, avg
 from models.criteria.utils import winsmooth
-from default_criterion import DefaultCriterion
+from models.criteria.default_criterion import DefaultCriterion
 
 
 class MessagePassing(object):

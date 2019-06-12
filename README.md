@@ -48,6 +48,7 @@ year={2018},
 code = {https://github.com/gsig/PyVideoResearch},
 }
 ```
+and remember to cite the papers for the datasets/methods you use.
 
 ## Installation Instructions
 

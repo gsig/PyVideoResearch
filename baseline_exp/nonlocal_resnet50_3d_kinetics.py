@@ -10,11 +10,8 @@
 #     top5train 86.47467598908595
 #     top5val 85.57291666666667
 import sys
-import pdb
-import traceback
 sys.path.insert(0, '.')
-from main import main
-from bdb import BdbQuit
+from main import pdbmain
 import os
 os.nice(19)
 name = __file__.split('/')[-1].split('.')[0]
@@ -46,12 +43,4 @@ args = [
     '--disable-cudnn-benchmark',
 ]
 sys.argv.extend(args)
-try:
-    main()
-except BdbQuit:
-    sys.exit(1)
-except Exception:
-    traceback.print_exc()
-    print('')
-    pdb.post_mortem()
-    sys.exit(1)
+pdbmain()

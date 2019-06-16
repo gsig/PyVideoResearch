@@ -18,6 +18,8 @@ from misc_utils.utils import seed
 from misc_utils.experiments import get_script_dir_commit_hash, experiment_folder
 from metrics.get import get_metrics
 from tasks.get import get_tasks
+import pdb
+from bdb import BdbQuit
 
 # pytorch bugfixes
 import cv2
@@ -87,6 +89,18 @@ def main():
         is_best = scores[args.metric] > best_score
         best_score = max(scores[args.metric], best_score)
         checkpoints.save(epoch, args, model, optimizer, is_best, scores, args.metric)
+
+         
+def pdbmain():
+    try:
+        main()
+    except BdbQuit:
+        sys.exit(1)
+    except Exception:
+        traceback.print_exc()
+        print('')
+        pdb.post_mortem()
+        sys.exit(1)
 
 
 if __name__ == '__main__':
